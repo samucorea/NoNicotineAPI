@@ -12,7 +12,9 @@ namespace NoNicotineAPI.Models
 
         public int LinkRequestStatusId { get; set; }
         public LinkRequestStatus LinkRequestStatus { get; set; }
-        public ICollection<Therapist> Therapists { get; set; }
-        public ICollection<Patient> Patients { get; set; }
+        public Guid TherapistId { get; set; }
+        public Therapist Therapist { get; set; }
+        public Guid PatientId { get; set; }
+        public Patient Patient { get; set; }
     }
 }

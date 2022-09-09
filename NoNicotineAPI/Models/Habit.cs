@@ -10,6 +10,6 @@ namespace NoNicotineAPI.Models
         public int HabitId { get; set; }
         public string Name { get; set; }
 
-        public ICollection<Patient> Patients { get; set; }
+        public List<PatientHabit> PatientHabits { get; set; }
     }
 }

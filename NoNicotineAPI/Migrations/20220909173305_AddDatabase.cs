@@ -10,7 +10,7 @@ namespace NoNicotineAPI.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Feelings",
+                name: "Feeling",
                 columns: table => new
                 {
                     FeelingId = table.Column<int>(type: "int", nullable: false)
@@ -19,11 +19,11 @@ namespace NoNicotineAPI.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Feelings", x => x.FeelingId);
+                    table.PrimaryKey("PK_Feeling", x => x.FeelingId);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Habits",
+                name: "Habit",
                 columns: table => new
                 {
                     HabitId = table.Column<int>(type: "int", nullable: false)
@@ -32,11 +32,11 @@ namespace NoNicotineAPI.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Habits", x => x.HabitId);
+                    table.PrimaryKey("PK_Habit", x => x.HabitId);
                 });
 
             migrationBuilder.CreateTable(
-                name: "IdentificationTypes",
+                name: "IdentificationType",
                 columns: table => new
                 {
                     IdentificationTypeId = table.Column<int>(type: "int", nullable: false)
@@ -45,11 +45,11 @@ namespace NoNicotineAPI.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_IdentificationTypes", x => x.IdentificationTypeId);
+                    table.PrimaryKey("PK_IdentificationType", x => x.IdentificationTypeId);
                 });
 
             migrationBuilder.CreateTable(
-                name: "LinkRequestStatuses",
+                name: "LinkRequestStatus",
                 columns: table => new
                 {
                     LinkRequestStatusId = table.Column<int>(type: "int", nullable: false)
@@ -58,11 +58,11 @@ namespace NoNicotineAPI.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_LinkRequestStatuses", x => x.LinkRequestStatusId);
+                    table.PrimaryKey("PK_LinkRequestStatus", x => x.LinkRequestStatusId);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Symptoms",
+                name: "Symptom",
                 columns: table => new
                 {
                     SymptomId = table.Column<int>(type: "int", nullable: false)
@@ -71,11 +71,11 @@ namespace NoNicotineAPI.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Symptoms", x => x.SymptomId);
+                    table.PrimaryKey("PK_Symptom", x => x.SymptomId);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Therapists",
+                name: "Therapist",
                 columns: table => new
                 {
                     TherapistId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -87,37 +87,17 @@ namespace NoNicotineAPI.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Therapists", x => x.TherapistId);
+                    table.PrimaryKey("PK_Therapist", x => x.TherapistId);
                     table.ForeignKey(
-                        name: "FK_Therapists_IdentificationTypes_IdentificationTypeId",
+                        name: "FK_Therapist_IdentificationType_IdentificationTypeId",
                         column: x => x.IdentificationTypeId,
-                        principalTable: "IdentificationTypes",
+                        principalTable: "IdentificationType",
                         principalColumn: "IdentificationTypeId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "LinkRequests",
-                columns: table => new
-                {
-                    LinkRequestId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    DateAcceptedOrDeclined = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LinkRequestStatusId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_LinkRequests", x => x.LinkRequestId);
-                    table.ForeignKey(
-                        name: "FK_LinkRequests_LinkRequestStatuses_LinkRequestStatusId",
-                        column: x => x.LinkRequestStatusId,
-                        principalTable: "LinkRequestStatuses",
-                        principalColumn: "LinkRequestStatusId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Patients",
+                name: "Patient",
                 columns: table => new
                 {
                     PatientId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -127,45 +107,20 @@ namespace NoNicotineAPI.Migrations
                     DailyConsumption = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     AffiliationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    TherapistId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    TherapistId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Patients", x => x.PatientId);
+                    table.PrimaryKey("PK_Patient", x => x.PatientId);
                     table.ForeignKey(
-                        name: "FK_Patients_Therapists_TherapistId",
+                        name: "FK_Patient_Therapist_TherapistId",
                         column: x => x.TherapistId,
-                        principalTable: "Therapists",
-                        principalColumn: "TherapistId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalTable: "Therapist",
+                        principalColumn: "TherapistId");
                 });
 
             migrationBuilder.CreateTable(
-                name: "LinkRequestTherapist",
-                columns: table => new
-                {
-                    LinkRequestsLinkRequestId = table.Column<int>(type: "int", nullable: false),
-                    TherapistsTherapistId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_LinkRequestTherapist", x => new { x.LinkRequestsLinkRequestId, x.TherapistsTherapistId });
-                    table.ForeignKey(
-                        name: "FK_LinkRequestTherapist_LinkRequests_LinkRequestsLinkRequestId",
-                        column: x => x.LinkRequestsLinkRequestId,
-                        principalTable: "LinkRequests",
-                        principalColumn: "LinkRequestId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_LinkRequestTherapist_Therapists_TherapistsTherapistId",
-                        column: x => x.TherapistsTherapistId,
-                        principalTable: "Therapists",
-                        principalColumn: "TherapistId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Entries",
+                name: "Entry",
                 columns: table => new
                 {
                     EntryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -176,65 +131,79 @@ namespace NoNicotineAPI.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Entries", x => x.EntryId);
+                    table.PrimaryKey("PK_Entry", x => x.EntryId);
                     table.ForeignKey(
-                        name: "FK_Entries_Patients_PatientId",
+                        name: "FK_Entry_Patient_PatientId",
                         column: x => x.PatientId,
-                        principalTable: "Patients",
+                        principalTable: "Patient",
                         principalColumn: "PatientId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "HabitPatient",
+                name: "LinkRequest",
                 columns: table => new
                 {
-                    HabitsHabitId = table.Column<int>(type: "int", nullable: false),
-                    PatientsPatientId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    LinkRequestId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    DateAcceptedOrDeclined = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    LinkRequestStatusId = table.Column<int>(type: "int", nullable: false),
+                    TherapistId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    PatientId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_HabitPatient", x => new { x.HabitsHabitId, x.PatientsPatientId });
+                    table.PrimaryKey("PK_LinkRequest", x => x.LinkRequestId);
                     table.ForeignKey(
-                        name: "FK_HabitPatient_Habits_HabitsHabitId",
-                        column: x => x.HabitsHabitId,
-                        principalTable: "Habits",
+                        name: "FK_LinkRequest_LinkRequestStatus_LinkRequestStatusId",
+                        column: x => x.LinkRequestStatusId,
+                        principalTable: "LinkRequestStatus",
+                        principalColumn: "LinkRequestStatusId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_LinkRequest_Patient_PatientId",
+                        column: x => x.PatientId,
+                        principalTable: "Patient",
+                        principalColumn: "PatientId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_LinkRequest_Therapist_TherapistId",
+                        column: x => x.TherapistId,
+                        principalTable: "Therapist",
+                        principalColumn: "TherapistId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PatientHabit",
+                columns: table => new
+                {
+                    PatientHabitId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Hour = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Days = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PatientId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    HabitId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PatientHabit", x => x.PatientHabitId);
+                    table.ForeignKey(
+                        name: "FK_PatientHabit_Habit_HabitId",
+                        column: x => x.HabitId,
+                        principalTable: "Habit",
                         principalColumn: "HabitId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_HabitPatient_Patients_PatientsPatientId",
-                        column: x => x.PatientsPatientId,
-                        principalTable: "Patients",
+                        name: "FK_PatientHabit_Patient_PatientId",
+                        column: x => x.PatientId,
+                        principalTable: "Patient",
                         principalColumn: "PatientId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "LinkRequestPatient",
-                columns: table => new
-                {
-                    LinkRequestsLinkRequestId = table.Column<int>(type: "int", nullable: false),
-                    PatientsPatientId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_LinkRequestPatient", x => new { x.LinkRequestsLinkRequestId, x.PatientsPatientId });
-                    table.ForeignKey(
-                        name: "FK_LinkRequestPatient_LinkRequests_LinkRequestsLinkRequestId",
-                        column: x => x.LinkRequestsLinkRequestId,
-                        principalTable: "LinkRequests",
-                        principalColumn: "LinkRequestId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_LinkRequestPatient_Patients_PatientsPatientId",
-                        column: x => x.PatientsPatientId,
-                        principalTable: "Patients",
-                        principalColumn: "PatientId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "PatientRelapseHistoric",
+                name: "PatientRelapseHistory",
                 columns: table => new
                 {
                     PatientRelapseHistoryId = table.Column<int>(type: "int", nullable: false)
@@ -246,11 +215,11 @@ namespace NoNicotineAPI.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PatientRelapseHistoric", x => x.PatientRelapseHistoryId);
+                    table.PrimaryKey("PK_PatientRelapseHistory", x => x.PatientRelapseHistoryId);
                     table.ForeignKey(
-                        name: "FK_PatientRelapseHistoric_Patients_PatientId",
+                        name: "FK_PatientRelapseHistory_Patient_PatientId",
                         column: x => x.PatientId,
-                        principalTable: "Patients",
+                        principalTable: "Patient",
                         principalColumn: "PatientId",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -266,15 +235,15 @@ namespace NoNicotineAPI.Migrations
                 {
                     table.PrimaryKey("PK_EntryFeeling", x => new { x.EntriesEntryId, x.FeelingsFeelingId });
                     table.ForeignKey(
-                        name: "FK_EntryFeeling_Entries_EntriesEntryId",
+                        name: "FK_EntryFeeling_Entry_EntriesEntryId",
                         column: x => x.EntriesEntryId,
-                        principalTable: "Entries",
+                        principalTable: "Entry",
                         principalColumn: "EntryId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_EntryFeeling_Feelings_FeelingsFeelingId",
+                        name: "FK_EntryFeeling_Feeling_FeelingsFeelingId",
                         column: x => x.FeelingsFeelingId,
-                        principalTable: "Feelings",
+                        principalTable: "Feeling",
                         principalColumn: "FeelingId",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -290,22 +259,22 @@ namespace NoNicotineAPI.Migrations
                 {
                     table.PrimaryKey("PK_EntrySymptom", x => new { x.EntriesEntryId, x.SymptomsSymptomId });
                     table.ForeignKey(
-                        name: "FK_EntrySymptom_Entries_EntriesEntryId",
+                        name: "FK_EntrySymptom_Entry_EntriesEntryId",
                         column: x => x.EntriesEntryId,
-                        principalTable: "Entries",
+                        principalTable: "Entry",
                         principalColumn: "EntryId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_EntrySymptom_Symptoms_SymptomsSymptomId",
+                        name: "FK_EntrySymptom_Symptom_SymptomsSymptomId",
                         column: x => x.SymptomsSymptomId,
-                        principalTable: "Symptoms",
+                        principalTable: "Symptom",
                         principalColumn: "SymptomId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Entries_PatientId",
-                table: "Entries",
+                name: "IX_Entry_PatientId",
+                table: "Entry",
                 column: "PatientId");
 
             migrationBuilder.CreateIndex(
@@ -319,38 +288,43 @@ namespace NoNicotineAPI.Migrations
                 column: "SymptomsSymptomId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_HabitPatient_PatientsPatientId",
-                table: "HabitPatient",
-                column: "PatientsPatientId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_LinkRequestPatient_PatientsPatientId",
-                table: "LinkRequestPatient",
-                column: "PatientsPatientId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_LinkRequests_LinkRequestStatusId",
-                table: "LinkRequests",
+                name: "IX_LinkRequest_LinkRequestStatusId",
+                table: "LinkRequest",
                 column: "LinkRequestStatusId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LinkRequestTherapist_TherapistsTherapistId",
-                table: "LinkRequestTherapist",
-                column: "TherapistsTherapistId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PatientRelapseHistoric_PatientId",
-                table: "PatientRelapseHistoric",
+                name: "IX_LinkRequest_PatientId",
+                table: "LinkRequest",
                 column: "PatientId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Patients_TherapistId",
-                table: "Patients",
+                name: "IX_LinkRequest_TherapistId",
+                table: "LinkRequest",
                 column: "TherapistId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Therapists_IdentificationTypeId",
-                table: "Therapists",
+                name: "IX_Patient_TherapistId",
+                table: "Patient",
+                column: "TherapistId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PatientHabit_HabitId",
+                table: "PatientHabit",
+                column: "HabitId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PatientHabit_PatientId",
+                table: "PatientHabit",
+                column: "PatientId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PatientRelapseHistory_PatientId",
+                table: "PatientRelapseHistory",
+                column: "PatientId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Therapist_IdentificationTypeId",
+                table: "Therapist",
                 column: "IdentificationTypeId");
         }
 
@@ -363,43 +337,37 @@ namespace NoNicotineAPI.Migrations
                 name: "EntrySymptom");
 
             migrationBuilder.DropTable(
-                name: "HabitPatient");
+                name: "LinkRequest");
 
             migrationBuilder.DropTable(
-                name: "LinkRequestPatient");
+                name: "PatientHabit");
 
             migrationBuilder.DropTable(
-                name: "LinkRequestTherapist");
+                name: "PatientRelapseHistory");
 
             migrationBuilder.DropTable(
-                name: "PatientRelapseHistoric");
+                name: "Feeling");
 
             migrationBuilder.DropTable(
-                name: "Feelings");
+                name: "Entry");
 
             migrationBuilder.DropTable(
-                name: "Entries");
+                name: "Symptom");
 
             migrationBuilder.DropTable(
-                name: "Symptoms");
+                name: "LinkRequestStatus");
 
             migrationBuilder.DropTable(
-                name: "Habits");
+                name: "Habit");
 
             migrationBuilder.DropTable(
-                name: "LinkRequests");
+                name: "Patient");
 
             migrationBuilder.DropTable(
-                name: "Patients");
+                name: "Therapist");
 
             migrationBuilder.DropTable(
-                name: "LinkRequestStatuses");
-
-            migrationBuilder.DropTable(
-                name: "Therapists");
-
-            migrationBuilder.DropTable(
-                name: "IdentificationTypes");
+                name: "IdentificationType");
         }
     }
 }

@@ -16,6 +16,6 @@ namespace NoNicotineAPI.Models
         public int IdentificationTypeId { get; set; }
         public IdentificationType IdentificationType { get; set; }
         public List<Patient> Patients { get; set; }
-        public ICollection<LinkRequest> LinkRequests { get; set; }
+        public List<LinkRequest> LinkRequests { get; set; }
     }
 }

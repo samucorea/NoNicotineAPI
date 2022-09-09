@@ -12,7 +12,7 @@ using NoNicotineAPI;
 namespace NoNicotineAPI.Migrations
 {
     [DbContext(typeof(NoNicotineContext))]
-    [Migration("20220908230653_AddDatabase")]
+    [Migration("20220909173305_AddDatabase")]
     partial class AddDatabase
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -54,51 +54,6 @@ namespace NoNicotineAPI.Migrations
                     b.ToTable("EntrySymptom");
                 });
 
-            modelBuilder.Entity("HabitPatient", b =>
-                {
-                    b.Property<int>("HabitsHabitId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("PatientsPatientId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("HabitsHabitId", "PatientsPatientId");
-
-                    b.HasIndex("PatientsPatientId");
-
-                    b.ToTable("HabitPatient");
-                });
-
-            modelBuilder.Entity("LinkRequestPatient", b =>
-                {
-                    b.Property<int>("LinkRequestsLinkRequestId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("PatientsPatientId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("LinkRequestsLinkRequestId", "PatientsPatientId");
-
-                    b.HasIndex("PatientsPatientId");
-
-                    b.ToTable("LinkRequestPatient");
-                });
-
-            modelBuilder.Entity("LinkRequestTherapist", b =>
-                {
-                    b.Property<int>("LinkRequestsLinkRequestId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("TherapistsTherapistId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("LinkRequestsLinkRequestId", "TherapistsTherapistId");
-
-                    b.HasIndex("TherapistsTherapistId");
-
-                    b.ToTable("LinkRequestTherapist");
-                });
-
             modelBuilder.Entity("NoNicotineAPI.Models.Entry", b =>
                 {
                     b.Property<Guid>("EntryId")
@@ -122,7 +77,7 @@ namespace NoNicotineAPI.Migrations
 
                     b.HasIndex("PatientId");
 
-                    b.ToTable("Entries");
+                    b.ToTable("Entry");
                 });
 
             modelBuilder.Entity("NoNicotineAPI.Models.Feeling", b =>
@@ -139,7 +94,7 @@ namespace NoNicotineAPI.Migrations
 
                     b.HasKey("FeelingId");
 
-                    b.ToTable("Feelings");
+                    b.ToTable("Feeling");
                 });
 
             modelBuilder.Entity("NoNicotineAPI.Models.Habit", b =>
@@ -156,7 +111,7 @@ namespace NoNicotineAPI.Migrations
 
                     b.HasKey("HabitId");
 
-                    b.ToTable("Habits");
+                    b.ToTable("Habit");
                 });
 
             modelBuilder.Entity("NoNicotineAPI.Models.IdentificationType", b =>
@@ -173,7 +128,7 @@ namespace NoNicotineAPI.Migrations
 
                     b.HasKey("IdentificationTypeId");
 
-                    b.ToTable("IdentificationTypes");
+                    b.ToTable("IdentificationType");
                 });
 
             modelBuilder.Entity("NoNicotineAPI.Models.LinkRequest", b =>
@@ -190,11 +145,21 @@ namespace NoNicotineAPI.Migrations
                     b.Property<int>("LinkRequestStatusId")
                         .HasColumnType("int");
 
+                    b.Property<Guid>("PatientId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TherapistId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("LinkRequestId");
 
                     b.HasIndex("LinkRequestStatusId");
 
-                    b.ToTable("LinkRequests");
+                    b.HasIndex("PatientId");
+
+                    b.HasIndex("TherapistId");
+
+                    b.ToTable("LinkRequest");
                 });
 
             modelBuilder.Entity("NoNicotineAPI.Models.LinkRequestStatus", b =>
@@ -211,7 +176,7 @@ namespace NoNicotineAPI.Migrations
 
                     b.HasKey("LinkRequestStatusId");
 
-                    b.ToTable("LinkRequestStatuses");
+                    b.ToTable("LinkRequestStatus");
                 });
 
             modelBuilder.Entity("NoNicotineAPI.Models.Patient", b =>
@@ -241,14 +206,44 @@ namespace NoNicotineAPI.Migrations
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("TherapistId")
+                    b.Property<Guid?>("TherapistId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("PatientId");
 
                     b.HasIndex("TherapistId");
 
-                    b.ToTable("Patients");
+                    b.ToTable("Patient");
+                });
+
+            modelBuilder.Entity("NoNicotineAPI.Models.PatientHabit", b =>
+                {
+                    b.Property<int>("PatientHabitId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PatientHabitId"), 1L, 1);
+
+                    b.Property<string>("Days")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("HabitId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Hour")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("PatientId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("PatientHabitId");
+
+                    b.HasIndex("HabitId");
+
+                    b.HasIndex("PatientId");
+
+                    b.ToTable("PatientHabit");
                 });
 
             modelBuilder.Entity("NoNicotineAPI.Models.PatientRelapseHistory", b =>
@@ -276,7 +271,7 @@ namespace NoNicotineAPI.Migrations
 
                     b.HasIndex("PatientId");
 
-                    b.ToTable("PatientRelapseHistoric");
+                    b.ToTable("PatientRelapseHistory");
                 });
 
             modelBuilder.Entity("NoNicotineAPI.Models.Symptom", b =>
@@ -293,7 +288,7 @@ namespace NoNicotineAPI.Migrations
 
                     b.HasKey("SymptomId");
 
-                    b.ToTable("Symptoms");
+                    b.ToTable("Symptom");
                 });
 
             modelBuilder.Entity("NoNicotineAPI.Models.Therapist", b =>
@@ -324,7 +319,7 @@ namespace NoNicotineAPI.Migrations
 
                     b.HasIndex("IdentificationTypeId");
 
-                    b.ToTable("Therapists");
+                    b.ToTable("Therapist");
                 });
 
             modelBuilder.Entity("EntryFeeling", b =>
@@ -357,51 +352,6 @@ namespace NoNicotineAPI.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("HabitPatient", b =>
-                {
-                    b.HasOne("NoNicotineAPI.Models.Habit", null)
-                        .WithMany()
-                        .HasForeignKey("HabitsHabitId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("NoNicotineAPI.Models.Patient", null)
-                        .WithMany()
-                        .HasForeignKey("PatientsPatientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("LinkRequestPatient", b =>
-                {
-                    b.HasOne("NoNicotineAPI.Models.LinkRequest", null)
-                        .WithMany()
-                        .HasForeignKey("LinkRequestsLinkRequestId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("NoNicotineAPI.Models.Patient", null)
-                        .WithMany()
-                        .HasForeignKey("PatientsPatientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("LinkRequestTherapist", b =>
-                {
-                    b.HasOne("NoNicotineAPI.Models.LinkRequest", null)
-                        .WithMany()
-                        .HasForeignKey("LinkRequestsLinkRequestId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("NoNicotineAPI.Models.Therapist", null)
-                        .WithMany()
-                        .HasForeignKey("TherapistsTherapistId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("NoNicotineAPI.Models.Entry", b =>
                 {
                     b.HasOne("NoNicotineAPI.Models.Patient", "Patient")
@@ -421,18 +371,51 @@ namespace NoNicotineAPI.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("NoNicotineAPI.Models.Patient", "Patient")
+                        .WithMany("LinkRequests")
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("NoNicotineAPI.Models.Therapist", "Therapist")
+                        .WithMany("LinkRequests")
+                        .HasForeignKey("TherapistId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("LinkRequestStatus");
+
+                    b.Navigation("Patient");
+
+                    b.Navigation("Therapist");
                 });
 
             modelBuilder.Entity("NoNicotineAPI.Models.Patient", b =>
                 {
                     b.HasOne("NoNicotineAPI.Models.Therapist", "Therapist")
                         .WithMany("Patients")
-                        .HasForeignKey("TherapistId")
+                        .HasForeignKey("TherapistId");
+
+                    b.Navigation("Therapist");
+                });
+
+            modelBuilder.Entity("NoNicotineAPI.Models.PatientHabit", b =>
+                {
+                    b.HasOne("NoNicotineAPI.Models.Habit", "Habit")
+                        .WithMany("PatientHabits")
+                        .HasForeignKey("HabitId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Therapist");
+                    b.HasOne("NoNicotineAPI.Models.Patient", "Patient")
+                        .WithMany("PatientHabits")
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Habit");
+
+                    b.Navigation("Patient");
                 });
 
             modelBuilder.Entity("NoNicotineAPI.Models.PatientRelapseHistory", b =>
@@ -457,6 +440,11 @@ namespace NoNicotineAPI.Migrations
                     b.Navigation("IdentificationType");
                 });
 
+            modelBuilder.Entity("NoNicotineAPI.Models.Habit", b =>
+                {
+                    b.Navigation("PatientHabits");
+                });
+
             modelBuilder.Entity("NoNicotineAPI.Models.IdentificationType", b =>
                 {
                     b.Navigation("Therapists");
@@ -471,11 +459,17 @@ namespace NoNicotineAPI.Migrations
                 {
                     b.Navigation("Entries");
 
+                    b.Navigation("LinkRequests");
+
+                    b.Navigation("PatientHabits");
+
                     b.Navigation("PatientRelapseHistoric");
                 });
 
             modelBuilder.Entity("NoNicotineAPI.Models.Therapist", b =>
                 {
+                    b.Navigation("LinkRequests");
+
                     b.Navigation("Patients");
                 });
 #pragma warning restore 612, 618

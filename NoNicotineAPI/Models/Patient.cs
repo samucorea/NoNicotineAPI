@@ -15,11 +15,11 @@ namespace NoNicotineAPI.Models
         public DateTime StartTime { get; set; }
         public DateTime AffiliationDate { get; set; }
 
-        public Guid TherapistId { get; set; }
-        public Therapist Therapist { get; set; }
+        public Guid? TherapistId { get; set; }
+        public Therapist? Therapist { get; set; }
         public List<Entry> Entries { get; set; }
-        public ICollection<LinkRequest> LinkRequests { get; set; }
+        public List<LinkRequest> LinkRequests { get; set; }
         public List<PatientRelapseHistory> PatientRelapseHistoric { get; set; }
-        public ICollection<Habit> Habits { get; set; }
+        public List<PatientHabit> PatientHabits { get; set; }
     }
 }

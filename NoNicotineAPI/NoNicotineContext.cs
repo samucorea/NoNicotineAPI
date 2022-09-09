@@ -10,16 +10,17 @@ namespace NoNicotineAPI
 
         }
 
-        public DbSet<Entry> Entries { get; set; }
-        public DbSet<Feeling> Feelings { get; set; }
-        public DbSet<Habit> Habits { get; set; }
-        public DbSet<IdentificationType> IdentificationTypes { get; set; }
-        public DbSet<LinkRequest> LinkRequests { get; set; }
-        public DbSet<LinkRequestStatus> LinkRequestStatuses { get; set; }
-        public DbSet<Patient> Patients { get; set; }
-        public DbSet<PatientRelapseHistory> PatientRelapseHistoric { get; set; }
-        public DbSet<Symptom> Symptoms { get; set; }
-        public DbSet<Therapist> Therapists { get; set; }
+        public DbSet<Entry> Entry { get; set; }
+        public DbSet<Feeling> Feeling { get; set; }
+        public DbSet<Habit> Habit { get; set; }
+        public DbSet<IdentificationType> IdentificationType { get; set; }
+        public DbSet<LinkRequest> LinkRequest { get; set; }
+        public DbSet<LinkRequestStatus> LinkRequestStatus { get; set; }
+        public DbSet<Patient> Patient { get; set; }
+        public DbSet<PatientHabit> PatientHabit { get; set; }
+        public DbSet<PatientRelapseHistory> PatientRelapseHistory { get; set; }
+        public DbSet<Symptom> Symptom { get; set; }
+        public DbSet<Therapist> Therapist { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
