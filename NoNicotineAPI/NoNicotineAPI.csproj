@@ -8,7 +8,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MediatR" Version="10.0.1" />
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Serilog.AspNetCore" Version="6.0.1" />
     <PackageReference Include="Serilog.Sinks.MSSqlServer" Version="5.7.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
@@ -16,6 +28,11 @@
 
   <ItemGroup>
     <Folder Include="Models\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NoNicotine_Data\NoNicotine_Data.csproj" />
+    <ProjectReference Include="..\NoNicotin_Business\NoNicotin_Business.csproj" />
   </ItemGroup>
 
 </Project>
