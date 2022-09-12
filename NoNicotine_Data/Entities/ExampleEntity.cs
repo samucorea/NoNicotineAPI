@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace NoNicotine_Data.Entities
 {
-    public class ExampleEntity
+    public class ExampleEntity : BaseEntity
     {
-        public string ID { get; set; }
+        public string Example { get; set; }
     }
 }

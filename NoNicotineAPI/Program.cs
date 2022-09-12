@@ -22,7 +22,7 @@ builder.Services.AddMediatR(typeof(Program));
 string sqlServerConnectionString = builder.Configuration.GetConnectionString("local");
 //builder.Services.AddDbContext<NoNicotineContext>(opt => opt.UseSqlServer(sqlServerConnectionString));
 builder.Services.AddDbContext<AppDbContext>(opts =>
-    opts.UseSqlServer("Data Source=localhost;Initial Catalog=test1;Integrated Security=True"));
+    opts.UseSqlServer(sqlServerConnectionString));
 
 
 var logger = new LoggerConfiguration()
