@@ -19,8 +19,6 @@ namespace NoNicotine_Data.Context
         {
             base.OnModelCreating(builder);
         }
-
-        public DbSet<ExampleEntity> ExampleEntities { get; set; }
         public DbSet<Patient> Patients { get; set; }
     }
 }

@@ -23,9 +23,9 @@ namespace NoNicotineAPI.Controllers
                 var result = await _mediator.Send(request);
                 return Ok(result);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
     }
