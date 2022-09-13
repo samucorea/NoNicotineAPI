@@ -11,13 +11,9 @@ namespace NoNicotine_Data.Entities
     {
         public DateTime DateAcceptedOrDeclined { get; set; }
 
-        [ForeignKey("LinkRequestStatus")]
-        public string LinkRequestStatusId { get; set; }
-        public LinkRequestStatus LinkRequestStatus { get; set; }
-
         [ForeignKey("Therapist")]
-        public string TherapistId { get; set; }
-        public Therapist Therapist { get; set; }
+        public string? TherapistId { get; set; }
+        public Therapist? Therapist { get; set; }
 
         [ForeignKey("Patient")]
         public string PatientId { get; set; }

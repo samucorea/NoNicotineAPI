@@ -9,7 +9,6 @@ namespace NoNicotine_Data.Entities
 {
     public class Entry : BaseEntity
     {
-        public DateTime Date { get; set; }
         public string Message { get; set; }
         public bool TherapistAllowed { get; set; }
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -14,11 +15,16 @@ namespace NoNicotine_Data.Entities
         public DateTime BirthDate { get; set; }
         public decimal DailyConsumption { get; set; }
         public DateTime StartTime { get; set; }
-        public DateTime AffiliationDate { get; set; }
+        public bool Active { get; set; }
+
+        [ForeignKey("IdentityUser")]
+        public string IdentityUserId { get; set; }
+        public IdentityUser IdentityUser { get; set; }
 
         [ForeignKey("Therapist")]
         public string? TherapistId { get; set; }
         public Therapist? Therapist { get; set; }
+
         public List<Entry> Entries { get; set; }
         public List<LinkRequest> LinkRequests { get; set; }
         public List<PatientRelapseHistory> PatientRelapseHistoric { get; set; }

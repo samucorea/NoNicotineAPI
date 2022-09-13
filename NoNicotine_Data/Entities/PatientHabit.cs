@@ -10,7 +10,6 @@ namespace NoNicotine_Data.Entities
     public class PatientHabit : BaseEntity
     {
         public DateTime Hour { get; set; }
-        public string Days { get; set; }
 
         [ForeignKey("Patient")]
         public string PatientId { get; set; }
@@ -19,5 +18,9 @@ namespace NoNicotine_Data.Entities
         [ForeignKey("Habit")]
         public string HabitId { get; set; }
         public Habit Habit { get; set; }
+
+        [ForeignKey("HabitSchedule")]
+        public string HabitScheduleId { get; set; }
+        public HabitSchedule HabitSchedule { get; set; }
     }
 }
