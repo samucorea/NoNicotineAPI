@@ -4,14 +4,12 @@ using NoNicotin_Business.Queries;
 
 namespace NoNicotineAPI.Controllers
 {
-    public class PatternsExample : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    public class PatternsExampleController : Controller
     {
-        public PatternsExample(IMediator mediator) => _mediator = mediator;
+        public PatternsExampleController(IMediator mediator) => _mediator = mediator;
         private readonly IMediator _mediator;
-        public IActionResult Index()
-        {
-            return View();
-        }
 
         [HttpGet]
         public async Task<ActionResult> GetProducts()

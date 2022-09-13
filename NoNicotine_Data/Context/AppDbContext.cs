@@ -21,5 +21,6 @@ namespace NoNicotine_Data.Context
         }
 
         public DbSet<ExampleEntity> ExampleEntities { get; set; }
+        public DbSet<Patient> Patients { get; set; }
     }
 }
