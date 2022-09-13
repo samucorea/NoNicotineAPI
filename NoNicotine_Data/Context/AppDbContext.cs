@@ -44,7 +44,5 @@ namespace NoNicotine_Data.Context
                 property.SetScale(2);
             }
         }
-
-        public DbSet<ExampleEntity> ExampleEntities { get; set; }
     }
 }
