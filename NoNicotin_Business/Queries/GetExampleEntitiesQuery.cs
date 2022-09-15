@@ -8,8 +8,8 @@ using MediatR;
 
 namespace NoNicotin_Business.Queries
 {
-    public class GetExampleEntitiesQuery : IRequest<List<ExampleEntity>>
+    public class GetExampleEntitiesQuery : IRequest<List<bool>>
     {
-        public record GetProductsQuery() : IRequest<IEnumerable<ExampleEntity>>;
+        public record GetProductsQuery() : IRequest<IEnumerable<bool>>;
     }
 }

@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace NoNicotine_Data.Entities
 {
-    public class ExampleEntity : BaseEntity
+    public class Feeling : BaseEntity
     {
-        public string Example { get; set; }
+        public string Name { get; set; }
+
+        public ICollection<Entry> Entries { get; set; }
     }
 }
