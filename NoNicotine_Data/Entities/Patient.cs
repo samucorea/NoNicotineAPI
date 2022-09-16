@@ -13,6 +13,7 @@ namespace NoNicotine_Data.Entities
         public string Name { get; set; }
         public char Sex { get; set; }
         public DateTime BirthDate { get; set; }
+        public string Identification { get; set; }
         public decimal DailyConsumption { get; set; }
         public DateTime StartTime { get; set; }
         public bool Active { get; set; }
