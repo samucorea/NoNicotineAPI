@@ -44,7 +44,7 @@ namespace NoNicotin_Business.Handler
             if (!result.Succeeded)
             {
                 _logger.LogError("creating a new role", result.Errors);
-                
+
                 return new Response<IdentityRole>
                 {
                     Succeeded = false,

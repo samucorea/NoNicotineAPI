@@ -8,6 +8,7 @@ namespace NoNicotine_Data.Entities
 {
     public class HabitSchedule : BaseEntity
     {
+        public DateTime Hour { get; set; }
         public bool Monday { get; set; }
         public bool Tuesday { get; set; }
         public bool Wednesday { get; set; }
