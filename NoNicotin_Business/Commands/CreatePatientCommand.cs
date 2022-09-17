@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Identity;
+using NoNicotin_Business.Value_Objects;
 using NoNicotine_Data.Entities;
 using NoNicotineAPI.Models;
 using System;
@@ -18,5 +19,10 @@ namespace NoNicotin_Business.Commands
         public DateTime BirthDate { get; set; }
         public string? Email { get; set; }
         public string? Password { get; set; }
+
+        public string? Identification { get; set; }
+
+        public string IdentificationPatientType { get; set; } = IdentificationType.IDENTIFICATION_CARD;
+
     }
 }

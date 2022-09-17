@@ -35,14 +35,14 @@ namespace NoNicotin_Business.Handler
 
         public async Task<Response<Patient>> Handle(CreatePatientCommand request, CancellationToken cancellationToken)
         {
-
+            
             using var transaction = _context.Database.BeginTransaction();
 
             try
             {
                 //checks if email is already registred
                 var response = validateRequest(request);
-                if(response != null)
+                if (response != null)
                 {
                     return response;
                 }
@@ -72,13 +72,14 @@ namespace NoNicotin_Business.Handler
                     Name = request.Name,
                     BirthDate = request.BirthDate,
                     Sex = request.Sex,
-                    IdentityUserId = tempIdentityUser.Id
+                    IdentityUserId = tempIdentityUser.Id,
+                    IdentificationType = request.IdentificationPatientType
                 };
 
                 resultIdentity = await _userManager.AddToRoleAsync(tempIdentityUser, PATIENT_ROLE);
                 if (!resultIdentity.Succeeded)
                 {
-                    return new Response<Patient>(resultIdentity.Errors)
+                    return new Response<Patient>()
                     {
                         Succeeded = false,
                         Message = "Could not assign patient role to user",
