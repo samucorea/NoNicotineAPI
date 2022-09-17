@@ -8,9 +8,7 @@ using System.Threading.Tasks;
 namespace NoNicotine_Data.Entities
 {
     public class PatientHabit : BaseEntity
-    {
-        public DateTime Hour { get; set; }
-
+    {        
         [ForeignKey("Patient")]
         public string PatientId { get; set; }
         public Patient Patient { get; set; }
