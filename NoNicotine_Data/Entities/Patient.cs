@@ -19,7 +19,6 @@ namespace NoNicotine_Data.Entities
 
         [ForeignKey("IdentityUser")]
         public string IdentityUserId { get; set; }
-        public IdentityUser IdentityUser { get; set; }
 
         [ForeignKey("Therapist")]
         public string? TherapistId { get; set; }

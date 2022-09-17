@@ -1,5 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Identity;
+using NoNicotine_Data.Entities;
+using NoNicotineAPI.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -9,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace NoNicotin_Business.Commands
 {
-    public class CreatePatientCommand:IRequest<bool>
+    public class CreatePatientCommand:IRequest<Response<Patient>>
     {
         public string? Name { get; set; }
         public char Sex { get; set; }
