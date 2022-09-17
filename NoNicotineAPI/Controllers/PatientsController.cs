@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NoNicotin_Business.Commands;
+using NoNicotin_Business.Queries;
 
 namespace NoNicotineAPI.Controllers
 {
@@ -12,19 +13,37 @@ namespace NoNicotineAPI.Controllers
 
         public PatientsController(IMediator mediator)
         {
-            _mediator = mediator; 
-        } 
+            _mediator = mediator;
+        }
         private readonly IMediator _mediator;
 
         [HttpPost]
         public async Task<IActionResult> CreatePatient(CreatePatientCommand request)
         {
-           
-           var result = await _mediator.Send(request);
-           if (result.Succeeded)
-           {
-               return Ok(result);
-           }
+
+            var result = await _mediator.Send(request);
+            if (result.Succeeded)
+            {
+                return Ok(result);
+            }
+
+            return BadRequest(result);
+        }
+
+        [HttpGet]
+        [Route("{id}")]
+        public async Task<IActionResult> GetPatient(string id)
+        {
+            var request = new GetPatientQuery()
+            {
+                Id = id
+            };
+
+            var result = await _mediator.Send(request);
+            if (result.Succeeded)
+            {
+                return Ok(result);
+            }
 
             return BadRequest(result);
         }
