@@ -14,6 +14,8 @@ namespace NoNicotine_Data.Entities
         public char Sex { get; set; }
         public DateTime BirthDate { get; set; }
         public string Identification { get; set; }
+
+        public int IdentificationType { get; set; }
         public bool Active { get; set; }
 
         [ForeignKey("IdentityUser")]
