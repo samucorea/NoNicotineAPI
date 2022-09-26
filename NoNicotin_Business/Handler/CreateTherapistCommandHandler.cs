@@ -66,6 +66,7 @@ namespace NoNicotin_Business.Handler
                     BirthDate = request.BirthDate,
                     Sex = request.Sex,
                     IdentityUserId = tempIdentityUser.Id,
+                    Identification = request.Identification,
                     IdentificationType = request.IdentificationTherapistType
                 };
 
