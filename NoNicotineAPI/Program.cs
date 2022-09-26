@@ -1,8 +1,10 @@
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using NoNicotin_Business.Commands;
 using NoNicotine_Data.Context;
 using NoNicotineAPI;
@@ -10,6 +12,7 @@ using Serilog;
 using Serilog.Sinks.MSSqlServer;
 using System.Configuration;
 using System.Reflection;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,18 +23,25 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 //MediatR
-builder.Services.AddMediatR(Assembly.GetExecutingAssembly(),
-    typeof(CreatePatientCommand).Assembly);
+//builder.Services.AddMediatR(Assembly.GetExecutingAssembly(),
+//    typeof(CreatePatientCommand).Assembly);
+var assembly = AppDomain.CurrentDomain.GetAssemblies().Where(assembly => assembly.FullName.Contains("NoNicotin_Business")).First();
+
+if (assembly != null)
+{
+    builder.Services.AddMediatR(assembly);
+}
 
 string sqlServerConnectionString = builder.Configuration.GetConnectionString("local");
-//builder.Services.AddDbContext<NoNicotineContext>(opt => opt.UseSqlServer(sqlServerConnectionString));
+
 builder.Services.AddDbContext<AppDbContext>(opts =>
     opts.UseSqlServer(sqlServerConnectionString));
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
                                        options.SignIn.RequireConfirmedAccount = true)
-       .AddEntityFrameworkStores<AppDbContext>()
-       .AddDefaultTokenProviders();
+        .AddRoles<IdentityRole>()
+       .AddEntityFrameworkStores<AppDbContext>();
+
 
 builder.Services.Configure<IdentityOptions>(options =>
 {
@@ -73,6 +83,21 @@ var logger = new LoggerConfiguration()
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(logger);
 
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+{
+    options.RequireHttpsMetadata = false;
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters()
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+    };
+});
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -84,10 +109,14 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
+app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseExceptionHandler("/error");
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
+
+
