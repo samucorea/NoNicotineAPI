@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using NoNicotin_Business.Commands;
+using NoNicotin_Business.Queries;
 
 namespace NoNicotineAPI.Controllers
 {
@@ -17,6 +18,24 @@ namespace NoNicotineAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateTherapist(CreateTherapistCommand request)
         {
+            var result = await _mediator.Send(request);
+            if (result.Succeeded)
+            {
+                return Ok(result);
+            }
+
+            return BadRequest(result);
+        }
+
+        [HttpGet]
+        [Route("{id}")]
+        public async Task<IActionResult> GetTherapist(string id)
+        {
+            var request = new GetTherapistQuery()
+            {
+                Id = id
+            };
+
             var result = await _mediator.Send(request);
             if (result.Succeeded)
             {

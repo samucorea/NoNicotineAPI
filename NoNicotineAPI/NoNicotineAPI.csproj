@@ -30,7 +30,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\NoNicotine_Data\NoNicotine_Data.csproj" />
-    <ProjectReference Include="..\NoNicotin_Business\NoNicotin_Business.csproj" />
+    <ProjectReference Include="..\NoNicotine_Business\NoNicotine_Business.csproj" />
   </ItemGroup>
 
 </Project>
