@@ -58,7 +58,9 @@ namespace NoNicotin_Business.Handler
                     Name = request.Name,
                     BirthDate = request.BirthDate,
                     Sex = request.Sex,
-                    IdentityUserId = tempIdentityUser.Result.Id
+                    IdentityUserId = tempIdentityUser.Id,
+                    Identification = request.Identification,
+                    IdentificationType = request.IdentificationPatientType
                 };
                 // adds patient to db
                 _context.Patients.Add(patient);
