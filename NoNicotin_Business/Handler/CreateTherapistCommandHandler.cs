@@ -1,8 +1,5 @@
 ﻿using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NoNicotin_Business.Commands;
 using NoNicotine_Data.Context;
@@ -14,18 +11,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-
 namespace NoNicotin_Business.Handler
 {
-    public class CreatePatientCommandHandler : IRequestHandler<CreatePatientCommand, Response<Patient>>
+    public class CreateTherapistCommandHandler : IRequestHandler<CreateTherapistCommand, Response<Therapist>>
     {
-
         private readonly AppDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly ILogger<CreatePatientCommandHandler> _logger;
-        private const string PATIENT_ROLE = "patient";
-        public CreatePatientCommandHandler(AppDbContext context, UserManager<IdentityUser> userManager, ILogger<CreatePatientCommandHandler> logger, RoleManager<IdentityRole> roleManager)
+        private readonly ILogger<CreateTherapistCommandHandler> _logger;
+        private const string THERAPIST_ROLE = "therapist";
+        public CreateTherapistCommandHandler(AppDbContext context, UserManager<IdentityUser> userManager, ILogger<CreateTherapistCommandHandler> logger, RoleManager<IdentityRole> roleManager)
         {
             _context = context;
             _userManager = userManager;
@@ -33,14 +28,12 @@ namespace NoNicotin_Business.Handler
             _roleManager = roleManager;
         }
 
-        public async Task<Response<Patient>> Handle(CreatePatientCommand request, CancellationToken cancellationToken)
+        public async Task<Response<Therapist>> Handle(CreateTherapistCommand request, CancellationToken cancellationToken)
         {
-            
             using var transaction = _context.Database.BeginTransaction();
-
             try
             {
-                //checks if email is already registred
+                //Checks if email is already registred
                 var response = ValidateRequest(request);
                 if (response != null)
                 {
@@ -51,7 +44,7 @@ namespace NoNicotin_Business.Handler
                 var resultIdentity = await _userManager.CreateAsync(identityUser, request.Password);
                 if (!resultIdentity.Succeeded)
                 {
-                    return new Response<Patient>
+                    return new Response<Therapist>
                     {
                         Succeeded = false,
                         Message = "Could not create user"
@@ -61,40 +54,40 @@ namespace NoNicotin_Business.Handler
                 var tempIdentityUser = await _userManager.FindByEmailAsync(request.Email);
                 if (tempIdentityUser == null)
                 {
-                    return new Response<Patient>
+                    return new Response<Therapist>
                     {
                         Succeeded = false,
                         Message = "Something went wrong"
                     };
                 }
-                var patient = new Patient()
+                var therapist = new Therapist()
                 {
                     Name = request.Name,
                     BirthDate = request.BirthDate,
                     Sex = request.Sex,
                     IdentityUserId = tempIdentityUser.Id,
                     Identification = request.Identification,
-                    IdentificationType = request.IdentificationPatientType
+                    IdentificationType = request.IdentificationTherapistType
                 };
 
-                resultIdentity = await _userManager.AddToRoleAsync(tempIdentityUser, PATIENT_ROLE);
+                resultIdentity = await _userManager.AddToRoleAsync(tempIdentityUser, THERAPIST_ROLE);
                 if (!resultIdentity.Succeeded)
                 {
-                    return new Response<Patient>()
+                    return new Response<Therapist>()
                     {
                         Succeeded = false,
-                        Message = "Could not assign patient role to user",
+                        Message = "Could not assign therapist role to user",
                     };
                 }
 
-                _context.Patient.Add(patient);
+                _context.Therapist.Add(therapist);
 
                 var result = _context.SaveChanges();
                 if (result <= 0)
                 {
-                    _logger.LogError("Saving changes when creating patient");
+                    _logger.LogError("Saving changes when creating therapist");
 
-                    return new Response<Patient>
+                    return new Response<Therapist>
                     {
                         Succeeded = false,
                         Message = "Something went wrong"
@@ -103,49 +96,73 @@ namespace NoNicotin_Business.Handler
 
                 transaction.Commit();
 
-                return new Response<Patient>
+                return new Response<Therapist>
                 {
                     Succeeded = true,
-                    Data = patient
+                    Data = therapist
                 };
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
                 transaction.Rollback();
-                return new Response<Patient>
+                return new Response<Therapist>
                 {
                     Succeeded = false,
                     Message = "Something went wrong"
                 };
             }
 
-
-
         }
 
-        private Response<Patient>? ValidateRequest(CreatePatientCommand request)
+        private Response<Therapist>? ValidateRequest(CreateTherapistCommand request)
         {
             if (_userManager.FindByEmailAsync(request.Email).Result is not null)
             {
-                return new Response<Patient>
+                return new Response<Therapist>
                 {
                     Message = "Email already taken",
                     Succeeded = false
                 };
             }
 
-            if (request.Name == null || request.Name == "")
+            if (request.Name == string.Empty)
             {
-                return new Response<Patient>
+                return new Response<Therapist>
                 {
-                    Message = "You must specify a patient name",
+                    Message = "You must specify a therapist name",
+                    Succeeded = false
+                };
+            }
+
+            if (request.Sex == ' ')
+            {
+                return new Response<Therapist>
+                {
+                    Message = "You must specify a therapist sex",
+                    Succeeded = false
+                };
+            }
+
+            if (request.Identification == string.Empty)
+            {
+                return new Response<Therapist>
+                {
+                    Message = "You must specify a therapist identification number",
+                    Succeeded = false
+                };
+            }
+
+            if (request.IdentificationTherapistType == string.Empty)
+            {
+                return new Response<Therapist>
+                {
+                    Message = "You must select an identification type",
                     Succeeded = false
                 };
             }
 
             return null;
         }
-
     }
 }
