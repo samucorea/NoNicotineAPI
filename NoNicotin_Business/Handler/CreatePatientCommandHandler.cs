@@ -33,7 +33,7 @@ namespace NoNicotin_Business.Handler
 
         public async Task<Response<Patient>> Handle(CreatePatientCommand request, CancellationToken cancellationToken)
         {
-            
+
             using var transaction = _context.Database.BeginTransaction();
 
             try
@@ -124,6 +124,25 @@ namespace NoNicotin_Business.Handler
 
         private Response<Patient>? ValidateRequest(CreatePatientCommand request)
         {
+
+            if (request.Email == string.Empty)
+            {
+                return new Response<Patient>
+                {
+                    Message = "You must specify a valid email",
+                    Succeeded = false
+                };
+            }
+
+            if (request.Password == string.Empty)
+            {
+                return new Response<Patient>
+                {
+                    Message = "You must specify a password",
+                    Succeeded = false
+                };
+            }
+
             if (_userManager.FindByEmailAsync(request.Email).Result is not null)
             {
                 return new Response<Patient>
@@ -151,12 +170,21 @@ namespace NoNicotin_Business.Handler
                 };
             }
 
-            if(request.BirthDate.AddYears(18) > DateTime.Now)
+            if (request.BirthDate.AddYears(18) > DateTime.Now)
             {
-              
+
                 return new Response<Patient>
                 {
                     Message = "You must be 18 years old or greater to register",
+                    Succeeded = false
+                };
+            }
+
+            if (request.Identification == string.Empty)
+            {
+                return new Response<Patient>
+                {
+                    Message = "You must specify the patient identification number",
                     Succeeded = false
                 };
             }
@@ -170,23 +198,6 @@ namespace NoNicotin_Business.Handler
                 };
             }
 
-            if (request.Email == string.Empty)
-            {
-                return new Response<Patient>
-                {
-                    Message = "You must specify a valid email",
-                    Succeeded = false
-                };
-            }
-
-            if (request.Password == string.Empty)
-            {
-                return new Response<Patient>
-                {
-                    Message = "You must specify a password",
-                    Succeeded = false
-                };
-            }
 
             return null;
         }
