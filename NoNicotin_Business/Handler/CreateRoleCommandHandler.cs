@@ -24,7 +24,7 @@ namespace NoNicotin_Business.Handler
 
         public async Task<Response<IdentityRole>> Handle(CreateRoleCommand request, CancellationToken cancellationToken)
         {
-            if (request == null || request.Name == "")
+            if (request.Name == string.Empty)
             {
                 return new Response<IdentityRole>()
                 {

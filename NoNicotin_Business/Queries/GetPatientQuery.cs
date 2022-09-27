@@ -11,6 +11,6 @@ namespace NoNicotin_Business.Queries
 {
     public class GetPatientQuery : IRequest<Response<Patient>>
     {
-        public string? Id { get; set; }
+        public string Id { get; set; } = string.Empty;
     }
 }
