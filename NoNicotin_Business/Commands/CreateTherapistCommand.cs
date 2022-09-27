@@ -18,7 +18,6 @@ namespace NoNicotin_Business.Commands
         public string Email { get; set; } = String.Empty;
         public string Password { get; set; } = String.Empty;
         public string Identification { get; set; } = String.Empty;
-
-        public string IdentificationTherapistType { get; set; } = IdentificationType.IDENTIFICATION_CARD;
+        public string IdentificationTherapistType { get; set; } = String.Empty;
     }
 }
