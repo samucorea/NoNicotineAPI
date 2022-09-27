@@ -22,15 +22,13 @@ namespace NoNicotin_Business.Handler
 
         private readonly AppDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ILogger<CreatePatientCommandHandler> _logger;
         private const string PATIENT_ROLE = "patient";
-        public CreatePatientCommandHandler(AppDbContext context, UserManager<IdentityUser> userManager, ILogger<CreatePatientCommandHandler> logger, RoleManager<IdentityRole> roleManager)
+        public CreatePatientCommandHandler(AppDbContext context, UserManager<IdentityUser> userManager, ILogger<CreatePatientCommandHandler> logger)
         {
             _context = context;
             _userManager = userManager;
             _logger = logger;
-            _roleManager = roleManager;
         }
 
         public async Task<Response<Patient>> Handle(CreatePatientCommand request, CancellationToken cancellationToken)
@@ -41,7 +39,7 @@ namespace NoNicotin_Business.Handler
             try
             {
                 //checks if email is already registred
-                var response = validateRequest(request);
+                var response = ValidateRequest(request);
                 if (response != null)
                 {
                     return response;
@@ -111,7 +109,7 @@ namespace NoNicotin_Business.Handler
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError("Error creating patient: {errMessage}", ex.Message);
                 transaction.Rollback();
                 return new Response<Patient>
                 {
@@ -124,7 +122,7 @@ namespace NoNicotin_Business.Handler
 
         }
 
-        private Response<Patient>? validateRequest(CreatePatientCommand request)
+        private Response<Patient>? ValidateRequest(CreatePatientCommand request)
         {
             if (_userManager.FindByEmailAsync(request.Email).Result is not null)
             {
@@ -135,11 +133,57 @@ namespace NoNicotin_Business.Handler
                 };
             }
 
-            if (request.Name == null || request.Name == "")
+            if (request.Name == string.Empty)
             {
                 return new Response<Patient>
                 {
                     Message = "You must specify a patient name",
+                    Succeeded = false
+                };
+            }
+
+            if (request.Sex == ' ')
+            {
+                return new Response<Patient>
+                {
+                    Message = "You must specify the patient sex",
+                    Succeeded = false
+                };
+            }
+
+            if(request.BirthDate.AddYears(18) > DateTime.Now)
+            {
+              
+                return new Response<Patient>
+                {
+                    Message = "You must be 18 years old or greater to register",
+                    Succeeded = false
+                };
+            }
+
+            if (request.IdentificationPatientType == string.Empty)
+            {
+                return new Response<Patient>
+                {
+                    Message = "You must specify the identification type",
+                    Succeeded = false
+                };
+            }
+
+            if (request.Email == string.Empty)
+            {
+                return new Response<Patient>
+                {
+                    Message = "You must specify a valid email",
+                    Succeeded = false
+                };
+            }
+
+            if (request.Password == string.Empty)
+            {
+                return new Response<Patient>
+                {
+                    Message = "You must specify a password",
                     Succeeded = false
                 };
             }

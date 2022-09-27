@@ -33,7 +33,7 @@ namespace NoNicotin_Business.Handler
         public async Task<Response<AuthenticationData>> Handle(AuthenticateQuery request, CancellationToken cancellationToken)
         {
 
-            var response = ValidateInputs(request);
+            var response = ValidateRequest(request);
             if(response != null)
             {
                 return response;
@@ -65,7 +65,7 @@ namespace NoNicotin_Business.Handler
             var roles = await _userManager.GetRolesAsync(user);
             if (roles == null || roles.Count < 1)
             {
-                _logger.LogError("Could not find roles in user", user);
+                _logger.LogError("Could not find roles in user {user}", user);
                 return new Response<AuthenticationData>
                 {
                     Succeeded = false,
@@ -108,9 +108,9 @@ namespace NoNicotin_Business.Handler
 
         }
         
-        private Response<AuthenticationData>? ValidateInputs(AuthenticateQuery request)
+        private static Response<AuthenticationData>? ValidateRequest(AuthenticateQuery request)
         {
-            if (request.Email == null || request.Email == "" || request.Password == "" || request.Password == null)
+            if (request.Email == string.Empty || request.Password == string.Empty)
             {
                 return new Response<AuthenticationData>()
                 {

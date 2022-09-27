@@ -7,6 +7,6 @@ namespace NoNicotin_Business.Commands
 {
     public class CreateRoleCommand : IRequest<Response<IdentityRole>>
     {
-        public string? Name { get; set; }
+        public string Name { get; set; } = string.Empty;
     }
 }
