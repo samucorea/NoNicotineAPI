@@ -34,7 +34,7 @@ namespace NoNicotin_Business.Handler
                 return response;
             }
 
-            var therapist = await _context.Therapist.FindAsync(request.Id);
+            var therapist = await _context.Therapist.FindAsync(request.Id, cancellationToken);
             if (therapist == null)
             {
                 return new Response<Therapist>
