@@ -13,16 +13,14 @@ namespace NoNicotine_Data.Entities
         public string Name { get; set; }
         public char Sex { get; set; }
         public DateTime BirthDate { get; set; }
-        public string Identification { get; set; }
-
-        public int IdentificationType { get; set; }
+        public string? Identification { get; set; }
+        public string? IdentificationType { get; set; }
         public bool Active { get; set; }
 
         [ForeignKey("IdentityUser")]
-        public string IdentityUserId { get; set; }
-        public IdentityUser IdentityUser { get; set; }
+        public string? IdentityUserId { get; set; }
 
-        public List<Patient> Patients { get; set; }
-        public List<LinkRequest> LinkRequests { get; set; }
+        public List<Patient>? Patients { get; set; }
+        public List<LinkRequest>? LinkRequests { get; set; }
     }
 }
