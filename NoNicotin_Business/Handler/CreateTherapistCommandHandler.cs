@@ -126,11 +126,38 @@ namespace NoNicotin_Business.Handler
                 };
             }
 
-            if (request.Name == null || request.Name == "")
+            if (request.Name == string.Empty)
             {
                 return new Response<Therapist>
                 {
                     Message = "You must specify a therapist name",
+                    Succeeded = false
+                };
+            }
+
+            if (request.Sex == ' ')
+            {
+                return new Response<Therapist>
+                {
+                    Message = "You must specify a therapist sex",
+                    Succeeded = false
+                };
+            }
+
+            if (request.Identification == string.Empty)
+            {
+                return new Response<Therapist>
+                {
+                    Message = "You must specify a therapist identification number",
+                    Succeeded = false
+                };
+            }
+
+            if (request.IdentificationTherapistType == string.Empty)
+            {
+                return new Response<Therapist>
+                {
+                    Message = "You must select an identification type",
                     Succeeded = false
                 };
             }
