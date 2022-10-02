@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Identity;
-using NoNicotin_Business.Value_Objects;
+using NoNicotine_Business.Value_Objects;
 using NoNicotine_Data.Entities;
 using NoNicotineAPI.Models;
 using System;
@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NoNicotin_Business.Commands
+namespace NoNicotine_Business.Commands
 {
     public class CreatePatientCommand:IRequest<Response<Patient>>
     {

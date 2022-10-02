@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using NoNicotin_Business.Value_Objects;
+using NoNicotine_Business.Value_Objects;
 using NoNicotine_Data.Entities;
 using NoNicotineAPI.Models;
 using System;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NoNicotin_Business.Queries
+namespace NoNicotine_Business.Queries
 {
     public class AuthenticateQuery : IRequest<Response<AuthenticationData>>
     {

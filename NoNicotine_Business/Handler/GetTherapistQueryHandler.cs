@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using NoNicotin_Business.Queries;
+using NoNicotine_Business.Queries;
 using NoNicotine_Data.Context;
 using NoNicotine_Data.Entities;
 using NoNicotineAPI.Models;
@@ -12,7 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-namespace NoNicotin_Business.Handler
+namespace NoNicotine_Business.Handler
 {
     public class GetTherapistQueryHandler : IRequestHandler<GetTherapistQuery, Response<Therapist>>
     {
@@ -27,12 +27,6 @@ namespace NoNicotin_Business.Handler
 
         public async Task<Response<Therapist>> Handle(GetTherapistQuery request, CancellationToken cancellationToken)
         {
-
-            var response = ValidateRequest(request);
-            if (response != null)
-            {
-                return response;
-            }
 
             var therapist = await _context.Therapist.FindAsync(request.Id, cancellationToken);
             if (therapist == null)
@@ -50,20 +44,6 @@ namespace NoNicotin_Business.Handler
                 Data = therapist
             };
 
-        }
-
-        private static Response<Therapist>? ValidateRequest(GetTherapistQuery request)
-        {
-            if (request.Id == null || request.Id.Length == 0)
-            {
-                return new Response<Therapist>
-                {
-                    Succeeded = false,
-                    Message = "Missing Therapist Id"
-                };
-            }
-
-            return null;
         }
     }
 }

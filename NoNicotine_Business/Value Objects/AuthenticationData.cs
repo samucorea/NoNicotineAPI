@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NoNicotin_Business.Value_Objects
+namespace NoNicotine_Business.Value_Objects
 {
     public class AuthenticationData
     {

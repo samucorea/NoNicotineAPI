@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using NoNicotin_Business.Commands;
+using NoNicotine_Business.Commands;
 using NoNicotineAPI.Models;
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NoNicotin_Business.Handler
+namespace NoNicotine_Business.Handler
 {
     public class CreateRoleCommandHandler : IRequestHandler<CreateRoleCommand, Response<IdentityRole>>
     {

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NoNicotin_Business.Queries
+namespace NoNicotine_Business.Queries
 {
     public class GetPatientQuery : IRequest<Response<Patient>>
     {

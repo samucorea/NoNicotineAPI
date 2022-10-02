@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using NoNicotin_Business.Commands;
+using NoNicotine_Business.Commands;
 
 namespace NoNicotineAPI.Controllers
 {

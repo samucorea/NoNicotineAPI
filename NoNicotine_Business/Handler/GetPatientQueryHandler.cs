@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Logging;
-using NoNicotin_Business.Queries;
+using NoNicotine_Business.Queries;
 using NoNicotine_Data.Context;
 using NoNicotine_Data.Entities;
 using NoNicotineAPI.Models;
@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-namespace NoNicotin_Business.Handler
+namespace NoNicotine_Business.Handler
 {
     public class GetPatientQueryHandler : IRequestHandler<GetPatientQuery, Response<Patient>>
     {

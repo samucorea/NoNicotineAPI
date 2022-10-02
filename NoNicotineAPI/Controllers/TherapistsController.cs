@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using NoNicotin_Business.Commands;
-using NoNicotin_Business.Queries;
+using NoNicotine_Business.Commands;
+using NoNicotine_Business.Queries;
 
 namespace NoNicotineAPI.Controllers
 {

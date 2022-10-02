@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using NoNicotin_Business.Commands;
+using NoNicotine_Business.Commands;
 using NoNicotine_Data.Context;
 using NoNicotine_Data.Entities;
 using NoNicotineAPI.Models;
@@ -15,7 +15,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-namespace NoNicotin_Business.Handler
+namespace NoNicotine_Business.Handler
 {
     public class CreatePatientCommandHandler : IRequestHandler<CreatePatientCommand, Response<Patient>>
     {
