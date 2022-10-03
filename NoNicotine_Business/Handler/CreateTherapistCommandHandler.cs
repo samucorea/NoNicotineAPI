@@ -17,15 +17,13 @@ namespace NoNicotine_Business.Handler
     {
         private readonly AppDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ILogger<CreateTherapistCommandHandler> _logger;
         private const string THERAPIST_ROLE = "therapist";
-        public CreateTherapistCommandHandler(AppDbContext context, UserManager<IdentityUser> userManager, ILogger<CreateTherapistCommandHandler> logger, RoleManager<IdentityRole> roleManager)
+        public CreateTherapistCommandHandler(AppDbContext context, UserManager<IdentityUser> userManager, ILogger<CreateTherapistCommandHandler> logger)
         {
             _context = context;
             _userManager = userManager;
             _logger = logger;
-            _roleManager = roleManager;
         }
 
         public async Task<Response<Therapist>> Handle(CreateTherapistCommand request, CancellationToken cancellationToken)
@@ -66,6 +64,7 @@ namespace NoNicotine_Business.Handler
                     BirthDate = request.BirthDate,
                     Sex = request.Sex,
                     IdentityUserId = tempIdentityUser.Id,
+                    Identification = request.Identification,
                     IdentificationType = request.IdentificationTherapistType
                 };
 
@@ -103,7 +102,7 @@ namespace NoNicotine_Business.Handler
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError("Error creating therapist: {errMessage}", ex.Message);
                 transaction.Rollback();
                 return new Response<Therapist>
                 {
@@ -116,6 +115,24 @@ namespace NoNicotine_Business.Handler
 
         private Response<Therapist>? ValidateRequest(CreateTherapistCommand request)
         {
+            if (request.Email == string.Empty)
+            {
+                return new Response<Therapist>
+                {
+                    Message = "You must specify a valid email",
+                    Succeeded = false
+                };
+            }
+
+            if (request.Password == string.Empty)
+            {
+                return new Response<Therapist>
+                {
+                    Message = "You must specify a password",
+                    Succeeded = false
+                };
+            }
+
             if (_userManager.FindByEmailAsync(request.Email).Result is not null)
             {
                 return new Response<Therapist>
@@ -125,11 +142,65 @@ namespace NoNicotine_Business.Handler
                 };
             }
 
-            if (request.Name == null || request.Name == "")
+            if (request.Name == string.Empty)
             {
                 return new Response<Therapist>
                 {
                     Message = "You must specify a therapist name",
+                    Succeeded = false
+                };
+            }
+
+            if (request.Sex == ' ')
+            {
+                return new Response<Therapist>
+                {
+                    Message = "You must specify the therapist sex",
+                    Succeeded = false
+                };
+            }
+
+            if (request.BirthDate.AddYears(18) > DateTime.Now)
+            {
+                return new Response<Therapist>
+                {
+                    Message = "You must be 18 years old or greater to register",
+                    Succeeded = false
+                };
+            }
+
+            if (request.Identification == string.Empty)
+            {
+                return new Response<Therapist>
+                {
+                    Message = "You must specify the therapist identification number",
+                    Succeeded = false
+                };
+            }
+
+            if (request.IdentificationTherapistType == string.Empty)
+            {
+                return new Response<Therapist>
+                {
+                    Message = "You must specify the identification type",
+                    Succeeded = false
+                };
+            }
+
+            if (request.Email == string.Empty)
+            {
+                return new Response<Therapist>
+                {
+                    Message = "You must specify a valid email",
+                    Succeeded = false
+                };
+            }
+
+            if (request.Password == string.Empty)
+            {
+                return new Response<Therapist>
+                {
+                    Message = "You must specify a password",
                     Succeeded = false
                 };
             }

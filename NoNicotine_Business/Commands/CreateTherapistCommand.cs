@@ -12,14 +12,12 @@ namespace NoNicotine_Business.Commands
 {
     public class CreateTherapistCommand:IRequest<Response<Therapist>>
     {
-        public string? Name { get; set; }
-        public char Sex { get; set; }
-        public DateTime BirthDate { get; set; }
-        public string? Email { get; set; }
-        public string? Password { get; set; }
-
-        public string? Identification { get; set; }
-
-        public string IdentificationTherapistType { get; set; } = IdentificationType.IDENTIFICATION_CARD;
+        public string Name { get; set; } = String.Empty;
+        public char Sex { get; set; } = ' ';
+        public DateTime BirthDate { get; set; } = DateTime.Now;
+        public string Email { get; set; } = String.Empty;
+        public string Password { get; set; } = String.Empty;
+        public string Identification { get; set; } = String.Empty;
+        public string IdentificationTherapistType { get; set; } = String.Empty;
     }
 }

@@ -33,7 +33,7 @@ namespace NoNicotine_Business.Handler
                 return response;
             }
 
-            var patient = await _context.Patient.FindAsync(request.Id);
+            var patient = await _context.Patient.FindAsync(request.Id, cancellationToken);
             if (patient == null)
             {
                 return new Response<Patient>
@@ -53,7 +53,7 @@ namespace NoNicotine_Business.Handler
 
         private static Response<Patient>? ValidateRequest(GetPatientQuery request)
         {
-            if (request.Id == null || request.Id.Length == 0)
+            if (request.Id == string.Empty)
             {
                 return new Response<Patient>
                 {

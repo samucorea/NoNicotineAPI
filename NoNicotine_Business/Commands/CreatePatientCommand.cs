@@ -14,15 +14,15 @@ namespace NoNicotine_Business.Commands
 {
     public class CreatePatientCommand:IRequest<Response<Patient>>
     {
-        public string? Name { get; set; }
-        public char Sex { get; set; }
-        public DateTime BirthDate { get; set; }
-        public string? Email { get; set; }
-        public string? Password { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public char Sex { get; set; } = ' ';
+        public DateTime BirthDate { get; set; } = DateTime.Now;
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
 
-        public string? Identification { get; set; }
+        public string Identification { get; set; } = string.Empty;
 
-        public string IdentificationPatientType { get; set; } = IdentificationType.IDENTIFICATION_CARD;
+        public string IdentificationPatientType { get; set; } = string.Empty;
 
     }
 }

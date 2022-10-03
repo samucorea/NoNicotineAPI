@@ -22,20 +22,18 @@ namespace NoNicotine_Business.Handler
 
         private readonly AppDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ILogger<CreatePatientCommandHandler> _logger;
         private const string PATIENT_ROLE = "patient";
-        public CreatePatientCommandHandler(AppDbContext context, UserManager<IdentityUser> userManager, ILogger<CreatePatientCommandHandler> logger, RoleManager<IdentityRole> roleManager)
+        public CreatePatientCommandHandler(AppDbContext context, UserManager<IdentityUser> userManager, ILogger<CreatePatientCommandHandler> logger)
         {
             _context = context;
             _userManager = userManager;
             _logger = logger;
-            _roleManager = roleManager;
         }
 
         public async Task<Response<Patient>> Handle(CreatePatientCommand request, CancellationToken cancellationToken)
         {
-            
+
             using var transaction = _context.Database.BeginTransaction();
 
             try
@@ -73,6 +71,7 @@ namespace NoNicotine_Business.Handler
                     BirthDate = request.BirthDate,
                     Sex = request.Sex,
                     IdentityUserId = tempIdentityUser.Id,
+                    Identification = request.Identification,
                     IdentificationType = request.IdentificationPatientType
                 };
 
@@ -110,7 +109,7 @@ namespace NoNicotine_Business.Handler
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError("Error creating patient: {errMessage}", ex.Message);
                 transaction.Rollback();
                 return new Response<Patient>
                 {
@@ -125,6 +124,25 @@ namespace NoNicotine_Business.Handler
 
         private Response<Patient>? ValidateRequest(CreatePatientCommand request)
         {
+
+            if (request.Email == string.Empty)
+            {
+                return new Response<Patient>
+                {
+                    Message = "You must specify a valid email",
+                    Succeeded = false
+                };
+            }
+
+            if (request.Password == string.Empty)
+            {
+                return new Response<Patient>
+                {
+                    Message = "You must specify a password",
+                    Succeeded = false
+                };
+            }
+
             if (_userManager.FindByEmailAsync(request.Email).Result is not null)
             {
                 return new Response<Patient>
@@ -134,7 +152,7 @@ namespace NoNicotine_Business.Handler
                 };
             }
 
-            if (request.Name == null || request.Name == "")
+            if (request.Name == string.Empty)
             {
                 return new Response<Patient>
                 {
@@ -142,6 +160,44 @@ namespace NoNicotine_Business.Handler
                     Succeeded = false
                 };
             }
+
+            if (request.Sex == ' ')
+            {
+                return new Response<Patient>
+                {
+                    Message = "You must specify the patient sex",
+                    Succeeded = false
+                };
+            }
+
+            if (request.BirthDate.AddYears(18) > DateTime.Now)
+            {
+
+                return new Response<Patient>
+                {
+                    Message = "You must be 18 years old or greater to register",
+                    Succeeded = false
+                };
+            }
+
+            if (request.Identification == string.Empty)
+            {
+                return new Response<Patient>
+                {
+                    Message = "You must specify the patient identification number",
+                    Succeeded = false
+                };
+            }
+
+            if (request.IdentificationPatientType == string.Empty)
+            {
+                return new Response<Patient>
+                {
+                    Message = "You must specify the identification type",
+                    Succeeded = false
+                };
+            }
+
 
             return null;
         }
