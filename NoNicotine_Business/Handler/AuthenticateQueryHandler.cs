@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using NoNicotin_Business.Queries;
-using NoNicotin_Business.Value_Objects;
+using NoNicotine_Business.Queries;
+using NoNicotine_Business.Value_Objects;
 using NoNicotine_Data.Entities;
 using NoNicotineAPI.Models;
 using System;
@@ -15,7 +15,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NoNicotin_Business.Handler
+namespace NoNicotine_Business.Handler
 {
     public class AuthenticateQueryHandler : IRequestHandler<AuthenticateQuery, Response<AuthenticationData>>
     {

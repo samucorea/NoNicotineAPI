@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using NoNicotineAPI.Models;
 
 
-namespace NoNicotin_Business.Commands
+namespace NoNicotine_Business.Commands
 {
     public class CreateRoleCommand : IRequest<Response<IdentityRole>>
     {

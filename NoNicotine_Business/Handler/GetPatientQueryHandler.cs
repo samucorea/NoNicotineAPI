@@ -1,11 +1,6 @@
 ﻿using MediatR;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using NoNicotin_Business.Commands;
-using NoNicotin_Business.Queries;
+using NoNicotine_Business.Queries;
 using NoNicotine_Data.Context;
 using NoNicotine_Data.Entities;
 using NoNicotineAPI.Models;
@@ -16,22 +11,17 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-namespace NoNicotin_Business.Handler
+namespace NoNicotine_Business.Handler
 {
     public class GetPatientQueryHandler : IRequestHandler<GetPatientQuery, Response<Patient>>
     {
 
         private readonly AppDbContext _context;
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly ILogger<CreatePatientCommandHandler> _logger;
-        private const string PATIENT_ROLE = "patient";
-        public GetPatientQueryHandler(AppDbContext context, UserManager<IdentityUser> userManager, ILogger<CreatePatientCommandHandler> logger, RoleManager<IdentityRole> roleManager)
+        private readonly ILogger<GetPatientQueryHandler> _logger;
+        public GetPatientQueryHandler(AppDbContext context, ILogger<GetPatientQueryHandler> logger)
         {
             _context = context;
-            _userManager = userManager;
             _logger = logger;
-            _roleManager = roleManager;
         }
 
         public async Task<Response<Patient>> Handle(GetPatientQuery request, CancellationToken cancellationToken)

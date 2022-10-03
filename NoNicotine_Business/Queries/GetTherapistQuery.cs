@@ -7,10 +7,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NoNicotin_Business.Queries
+namespace NoNicotine_Business.Queries
 {
-    public class GetPatientQuery : IRequest<Response<Patient>>
+    public class GetTherapistQuery : IRequest<Response<Therapist>>
     {
-        public string Id { get; set; } = string.Empty;
+        public string Id { get; set; }
     }
 }

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using NoNicotin_Business.Commands;
+using NoNicotine_Business.Commands;
 using NoNicotine_Data.Context;
 using NoNicotineAPI;
 using Serilog;
