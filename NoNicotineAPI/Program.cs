@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using NoNicotine_Business.Commands;
+using NoNicotine_Business.Repositories;
+using NoNicotine_Business.Services;
 using NoNicotine_Data.Context;
 using NoNicotineAPI;
 using Serilog;
@@ -25,7 +27,7 @@ builder.Services.AddSwaggerGen();
 //MediatR
 //builder.Services.AddMediatR(Assembly.GetExecutingAssembly(),
 //    typeof(CreatePatientCommand).Assembly);
-var assembly = AppDomain.CurrentDomain.GetAssemblies().Where(assembly => assembly.FullName.Contains("NoNicotin_Business")).First();
+var assembly = AppDomain.CurrentDomain.GetAssemblies().Where(assembly => assembly.FullName.Contains("NoNicotine_Business")).First();
 
 if (assembly != null)
 {
@@ -35,7 +37,10 @@ if (assembly != null)
 string sqlServerConnectionString = builder.Configuration.GetConnectionString("local");
 
 builder.Services.AddDbContext<AppDbContext>(opts =>
-    opts.UseSqlServer(sqlServerConnectionString));
+    opts.UseSqlServer(sqlServerConnectionString, builder =>
+    {
+        builder.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
+    }));
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
                                        options.SignIn.RequireConfirmedAccount = true)
@@ -55,6 +60,9 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.SignIn.RequireConfirmedEmail = false;
     options.SignIn.RequireConfirmedPhoneNumber = false;
 });
+
+builder.Services.AddSingleton<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<IPatientsRepository, PatientsRepository>();
 
 builder.Services.AddCors(options =>
 {

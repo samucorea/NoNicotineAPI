@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NoNicotine_Data.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,9 @@ namespace NoNicotine_Business.Value_Objects
 {
     public class AuthenticationData
     {
-        public string? Token { get; set; }
+        public string Token { get; set; } = string.Empty;
+
+        public RefreshToken RefreshToken { get; set; } = new RefreshToken();
 
     }
 }

@@ -29,6 +29,8 @@ namespace NoNicotine_Data.Context
         public DbSet<Symptom> Symptom { get; set; }
         public DbSet<Therapist> Therapist { get; set; }
 
+        public DbSet<RefreshToken> RefreshToken { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

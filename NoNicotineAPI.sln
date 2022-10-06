@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoNicotine_Data", "NoNicoti
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoNicotine_Business", "NoNicotine_Business\NoNicotine_Business.csproj", "{5E1234AE-4126-4FB7-8DAE-F04EE55F976F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoNicotineAPI.UnitTests", "NoNicotineAPI.UnitTests\NoNicotineAPI.UnitTests.csproj", "{5360B231-1C3E-4DE0-BBEF-87D9665BAEAD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{5E1234AE-4126-4FB7-8DAE-F04EE55F976F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5E1234AE-4126-4FB7-8DAE-F04EE55F976F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5E1234AE-4126-4FB7-8DAE-F04EE55F976F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5360B231-1C3E-4DE0-BBEF-87D9665BAEAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5360B231-1C3E-4DE0-BBEF-87D9665BAEAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5360B231-1C3E-4DE0-BBEF-87D9665BAEAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5360B231-1C3E-4DE0-BBEF-87D9665BAEAD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

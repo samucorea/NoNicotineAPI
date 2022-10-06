@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NoNicotine_Business.Commands;
+using NoNicotine_Business.Repositories;
 using NoNicotine_Data.Context;
 using NoNicotine_Data.Entities;
 using NoNicotineAPI.Models;
@@ -20,21 +21,21 @@ namespace NoNicotine_Business.Handler
     public class CreatePatientCommandHandler : IRequestHandler<CreatePatientCommand, Response<Patient>>
     {
 
-        private readonly AppDbContext _context;
+        private readonly IPatientsRepository _patientsRepository;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ILogger<CreatePatientCommandHandler> _logger;
         private const string PATIENT_ROLE = "patient";
-        public CreatePatientCommandHandler(AppDbContext context, UserManager<IdentityUser> userManager, ILogger<CreatePatientCommandHandler> logger)
+        public CreatePatientCommandHandler(IPatientsRepository patientsRepository, UserManager<IdentityUser> userManager, ILogger<CreatePatientCommandHandler> logger)
         {
-            _context = context;
             _userManager = userManager;
             _logger = logger;
+            _patientsRepository = patientsRepository;
         }
 
         public async Task<Response<Patient>> Handle(CreatePatientCommand request, CancellationToken cancellationToken)
         {
 
-            using var transaction = _context.Database.BeginTransaction();
+            //using var transaction = _context.Database.BeginTransaction();
 
             try
             {
@@ -52,7 +53,7 @@ namespace NoNicotine_Business.Handler
                     return new Response<Patient>
                     {
                         Succeeded = false,
-                        Message = "Could not create user"
+                        Message = $"Could not create user: {resultIdentity.Errors.First().Description}"
                     };
                 }
 
@@ -85,9 +86,8 @@ namespace NoNicotine_Business.Handler
                     };
                 }
 
-                _context.Patient.Add(patient);
+                var result = await _patientsRepository.CreatePatientAsync(patient);
 
-                var result = _context.SaveChanges();
                 if (result <= 0)
                 {
                     _logger.LogError("Saving changes when creating patient");
@@ -99,7 +99,7 @@ namespace NoNicotine_Business.Handler
                     };
                 }
 
-                transaction.Commit();
+                //transaction.Commit();
 
                 return new Response<Patient>
                 {
@@ -110,7 +110,7 @@ namespace NoNicotine_Business.Handler
             catch (Exception ex)
             {
                 _logger.LogError("Error creating patient: {errMessage}", ex.Message);
-                transaction.Rollback();
+               // transaction.Rollback();
                 return new Response<Patient>
                 {
                     Succeeded = false,

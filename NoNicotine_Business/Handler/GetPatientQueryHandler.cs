@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Logging;
 using NoNicotine_Business.Queries;
+using NoNicotine_Business.Repositories;
 using NoNicotine_Data.Context;
 using NoNicotine_Data.Entities;
 using NoNicotineAPI.Models;
@@ -16,12 +17,10 @@ namespace NoNicotine_Business.Handler
     public class GetPatientQueryHandler : IRequestHandler<GetPatientQuery, Response<Patient>>
     {
 
-        private readonly AppDbContext _context;
-        private readonly ILogger<GetPatientQueryHandler> _logger;
-        public GetPatientQueryHandler(AppDbContext context, ILogger<GetPatientQueryHandler> logger)
+        private readonly IPatientsRepository _context;
+        public GetPatientQueryHandler(IPatientsRepository context)
         {
             _context = context;
-            _logger = logger;
         }
 
         public async Task<Response<Patient>> Handle(GetPatientQuery request, CancellationToken cancellationToken)
@@ -33,7 +32,7 @@ namespace NoNicotine_Business.Handler
                 return response;
             }
 
-            var patient = await _context.Patient.FindAsync(request.Id, cancellationToken);
+            var patient = await _context.GetPatientByIdAsync(request.Id);
             if (patient == null)
             {
                 return new Response<Patient>
