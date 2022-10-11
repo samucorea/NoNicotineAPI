@@ -24,18 +24,21 @@ namespace NoNicotine_Business.Handler
         private readonly IPatientsRepository _patientsRepository;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ILogger<CreatePatientCommandHandler> _logger;
+        private readonly AppDbContext _context;
         private const string PATIENT_ROLE = "patient";
-        public CreatePatientCommandHandler(IPatientsRepository patientsRepository, UserManager<IdentityUser> userManager, ILogger<CreatePatientCommandHandler> logger)
+        public CreatePatientCommandHandler(IPatientsRepository patientsRepository, UserManager<IdentityUser> userManager, 
+            ILogger<CreatePatientCommandHandler> logger, AppDbContext dbContext)
         {
             _userManager = userManager;
             _logger = logger;
             _patientsRepository = patientsRepository;
+            _context = dbContext;
         }
 
         public async Task<Response<Patient>> Handle(CreatePatientCommand request, CancellationToken cancellationToken)
         {
 
-            //using var transaction = _context.Database.BeginTransaction();
+            using var transaction = _context.Database.BeginTransaction();
 
             try
             {
@@ -48,6 +51,7 @@ namespace NoNicotine_Business.Handler
 
                 var identityUser = new IdentityUser { UserName = request.Email, Email = request.Email };
                 var resultIdentity = await _userManager.CreateAsync(identityUser, request.Password);
+ 
                 if (!resultIdentity.Succeeded)
                 {
                     return new Response<Patient>
@@ -57,26 +61,17 @@ namespace NoNicotine_Business.Handler
                     };
                 }
 
-                var tempIdentityUser = await _userManager.FindByEmailAsync(request.Email);
-                if (tempIdentityUser == null)
-                {
-                    return new Response<Patient>
-                    {
-                        Succeeded = false,
-                        Message = "Something went wrong"
-                    };
-                }
                 var patient = new Patient()
                 {
                     Name = request.Name,
                     BirthDate = request.BirthDate,
                     Sex = request.Sex,
-                    IdentityUserId = tempIdentityUser.Id,
+                    IdentityUserId = identityUser.Id,
                     Identification = request.Identification,
                     IdentificationType = request.IdentificationPatientType
                 };
 
-                resultIdentity = await _userManager.AddToRoleAsync(tempIdentityUser, PATIENT_ROLE);
+                resultIdentity = await _userManager.AddToRoleAsync(identityUser, PATIENT_ROLE);
                 if (!resultIdentity.Succeeded)
                 {
                     return new Response<Patient>()
@@ -86,7 +81,10 @@ namespace NoNicotine_Business.Handler
                     };
                 }
 
-                var result = await _patientsRepository.CreatePatientAsync(patient);
+
+                await _context.Patient.AddAsync(patient, cancellationToken);
+
+                var result = await _context.SaveChangesAsync();
 
                 if (result <= 0)
                 {
@@ -99,7 +97,7 @@ namespace NoNicotine_Business.Handler
                     };
                 }
 
-                //transaction.Commit();
+                transaction.Commit();
 
                 return new Response<Patient>
                 {
@@ -110,7 +108,7 @@ namespace NoNicotine_Business.Handler
             catch (Exception ex)
             {
                 _logger.LogError("Error creating patient: {errMessage}", ex.Message);
-               // transaction.Rollback();
+                transaction.Rollback();
                 return new Response<Patient>
                 {
                     Succeeded = false,
