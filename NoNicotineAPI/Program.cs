@@ -25,7 +25,7 @@ builder.Services.AddSwaggerGen();
 //MediatR
 //builder.Services.AddMediatR(Assembly.GetExecutingAssembly(),
 //    typeof(CreatePatientCommand).Assembly);
-var assembly = AppDomain.CurrentDomain.GetAssemblies().Where(assembly => assembly.FullName.Contains("NoNicotin_Business")).First();
+var assembly = AppDomain.CurrentDomain.GetAssemblies().Where(assembly => assembly.FullName.Contains("NoNicotine_Business")).First();
 
 if (assembly != null)
 {

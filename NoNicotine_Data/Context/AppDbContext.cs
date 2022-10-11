@@ -21,7 +21,6 @@ namespace NoNicotine_Data.Context
         public DbSet<Entry> Entry { get; set; }
         public DbSet<Feeling> Feeling { get; set; }
         public DbSet<Habit> Habit { get; set; }
-        public DbSet<HabitSchedule> HabitSchedule { get; set; }
         public DbSet<LinkRequest> LinkRequest { get; set; }
         public DbSet<Patient> Patient { get; set; }
         public DbSet<PatientHabit> PatientHabit { get; set; }
@@ -43,6 +42,10 @@ namespace NoNicotine_Data.Context
                 property.SetPrecision(18);
                 property.SetScale(2);
             }
+
+            //Composite primary key for PatientHabit
+            modelBuilder.Entity<PatientHabit>()
+            .HasKey(patientHabit => new { patientHabit.PatientId, patientHabit.HabitId});
         }
     }
 }

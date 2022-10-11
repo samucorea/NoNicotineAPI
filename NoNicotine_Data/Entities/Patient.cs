@@ -15,7 +15,6 @@ namespace NoNicotine_Data.Entities
         public DateTime BirthDate { get; set; }
         public string? Identification { get; set; }
         public string? IdentificationType { get; set; }
-        public decimal DailyConsumption { get; set; }
         public DateTime StartTime { get; set; }
         public bool Active { get; set; }
 
