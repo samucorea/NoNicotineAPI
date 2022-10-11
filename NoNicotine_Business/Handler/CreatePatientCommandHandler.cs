@@ -21,17 +21,15 @@ namespace NoNicotine_Business.Handler
     public class CreatePatientCommandHandler : IRequestHandler<CreatePatientCommand, Response<Patient>>
     {
 
-        private readonly IPatientsRepository _patientsRepository;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ILogger<CreatePatientCommandHandler> _logger;
         private readonly AppDbContext _context;
         private const string PATIENT_ROLE = "patient";
-        public CreatePatientCommandHandler(IPatientsRepository patientsRepository, UserManager<IdentityUser> userManager, 
+        public CreatePatientCommandHandler( UserManager<IdentityUser> userManager, 
             ILogger<CreatePatientCommandHandler> logger, AppDbContext dbContext)
         {
             _userManager = userManager;
             _logger = logger;
-            _patientsRepository = patientsRepository;
             _context = dbContext;
         }
 

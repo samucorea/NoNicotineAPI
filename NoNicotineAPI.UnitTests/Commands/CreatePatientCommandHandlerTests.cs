@@ -16,14 +16,12 @@ namespace NoNicotineAPI.UnitTests.Commands
 {
     public class CreatePatientCommandHandlerTests
     {
-        private readonly Mock<IPatientsRepository> _mockRepo;
         private readonly Mock<UserManager<IdentityUser>> _mockUserManager;
         private readonly Mock<ILogger<CreatePatientCommandHandler>> _mockLogger;
         private readonly Mock<AppDbContext> _mockDbContext;
 
         public CreatePatientCommandHandlerTests()
-        {
-            _mockRepo = new Mock<IPatientsRepository>();
+        { 
             _mockUserManager = new Mock<UserManager<IdentityUser>>(Mock.Of<IUserStore<IdentityUser>>(), null, null, null, null, null, null, null, null);
             _mockLogger = new Mock<ILogger<CreatePatientCommandHandler>>();
             _mockDbContext = MockDbContext.GetMockDbContext();
@@ -47,7 +45,7 @@ namespace NoNicotineAPI.UnitTests.Commands
             ).ReturnsAsync(IdentityResult.Success);
 
 
-            var handler = new CreatePatientCommandHandler(_mockRepo.Object, _mockUserManager.Object, _mockLogger.Object, _mockDbContext.Object);
+            var handler = new CreatePatientCommandHandler(_mockUserManager.Object, _mockLogger.Object, _mockDbContext.Object);
 
             var result = await handler.Handle(new CreatePatientCommand()
             {

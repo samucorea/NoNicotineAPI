@@ -17,8 +17,8 @@ namespace NoNicotine_Business.Handler
     public class GetPatientQueryHandler : IRequestHandler<GetPatientQuery, Response<Patient>>
     {
 
-        private readonly IPatientsRepository _context;
-        public GetPatientQueryHandler(IPatientsRepository context)
+        private readonly AppDbContext _context;
+        public GetPatientQueryHandler(AppDbContext context)
         {
             _context = context;
         }
@@ -32,7 +32,7 @@ namespace NoNicotine_Business.Handler
                 return response;
             }
 
-            var patient = await _context.GetPatientByIdAsync(request.Id);
+            var patient = await _context.Patient.FindAsync(request.Id);
             if (patient == null)
             {
                 return new Response<Patient>
