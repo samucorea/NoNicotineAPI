@@ -13,17 +13,17 @@ using System.Threading.Tasks;
 
 namespace NoNicotine_Business.Handler
 {
-    public class UpdateTherapistCommandHandler : IRequestHandler<UpdateTherapistCommand, Response<Therapist>>
+    public class UpdatePatientCommandHandler : IRequestHandler<UpdatePatientCommand, Response<Patient>>
     {
         private readonly AppDbContext _context;
-        private readonly ILogger<UpdateTherapistCommandHandler> _logger;
-        public UpdateTherapistCommandHandler(AppDbContext context, ILogger<UpdateTherapistCommandHandler> logger)
+        private readonly ILogger<UpdatePatientCommandHandler> _logger;
+        public UpdatePatientCommandHandler(AppDbContext context, ILogger<UpdatePatientCommandHandler> logger)
         {
             _context = context;
             _logger = logger;
         }
 
-        public async Task<Response<Therapist>> Handle(UpdateTherapistCommand request, CancellationToken cancellationToken)
+        public async Task<Response<Patient>> Handle(UpdatePatientCommand request, CancellationToken cancellationToken)
         {
             var response = ValidateRequest(request);
             if(response != null)
@@ -31,47 +31,47 @@ namespace NoNicotine_Business.Handler
                 return response;
             }
 
-            var therapist = await _context.Therapist.Where(patient => patient.IdentityUserId == request.Id).FirstOrDefaultAsync(cancellationToken);
-            if (therapist == null)
+            var patient = await _context.Patient.Where(patient => patient.IdentityUserId == request.Id).FirstOrDefaultAsync(cancellationToken);
+            if (patient == null)
             {
-                return new Response<Therapist>()
+                return new Response<Patient>()
                 {
                     Succeeded = false,
-                    Message = "Therapist not found with specified id"
+                    Message = "Patient not found with specified id"
                 };
             }
 
-            therapist.BirthDate = request.BirthDate ?? therapist.BirthDate;
-            therapist.Sex = request.Sex ?? therapist.Sex;
-            therapist.Name = request.Name ?? therapist.Name;
+            patient.BirthDate = request.BirthDate ?? patient.BirthDate;
+            patient.Sex = request.Sex ?? patient.Sex;
+            patient.Name = request.Name ?? patient.Name;
 
-            _context.Therapist.Update(therapist);
+            _context.Patient.Update(patient);
 
             var result = await _context.SaveChangesAsync();
 
             if (result < 1)
             {
-                return new Response<Therapist>()
+                return new Response<Patient>()
                 {
                     Succeeded = false,
                     Message = "Something went wrong"
                 };
             }
 
-            _logger.LogInformation("Therapist with ID {therapistId} updated", therapist.ID);
+            _logger.LogInformation("Patient with ID {patientId} updated", patient.ID);
 
-            return new Response<Therapist>()
+            return new Response<Patient>()
             {
                 Succeeded = true,
-                Data = therapist
+                Data = patient
             };
         }
 
-        private static Response<Therapist>? ValidateRequest(UpdateTherapistCommand request)
+        private static Response<Patient>? ValidateRequest(UpdatePatientCommand request)
         {
             if(request == null || request.Id == string.Empty)
             {
-                return new Response<Therapist>()
+                return new Response<Patient>()
                 {
                     Succeeded = false,
                     Message = "You must specify a user Id to update"
@@ -80,16 +80,16 @@ namespace NoNicotine_Business.Handler
 
             if(request.Name != null && request.Name == string.Empty)
             {
-                return new Response<Therapist>()
+                return new Response<Patient>()
                 {
                     Succeeded = false,
-                    Message = "You can't update a therapist with an empty name"
+                    Message = "You can't update a patient with an empty name"
                 };
             }
 
             if (request.Sex != null && (request.Sex != 'M' && request.Sex != 'F'))
             {
-                return new Response<Therapist>()
+                return new Response<Patient>()
                 {
                     Succeeded = false,
                     Message = "You must specify a sex (M or F)"
