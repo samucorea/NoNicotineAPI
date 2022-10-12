@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NoNicotine_Business.Commands;
+using NoNicotine_Business.Repositories;
 using NoNicotine_Data.Context;
 using NoNicotine_Data.Entities;
 using NoNicotineAPI.Models;
@@ -20,15 +21,16 @@ namespace NoNicotine_Business.Handler
     public class CreatePatientCommandHandler : IRequestHandler<CreatePatientCommand, Response<Patient>>
     {
 
-        private readonly AppDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ILogger<CreatePatientCommandHandler> _logger;
+        private readonly AppDbContext _context;
         private const string PATIENT_ROLE = "patient";
-        public CreatePatientCommandHandler(AppDbContext context, UserManager<IdentityUser> userManager, ILogger<CreatePatientCommandHandler> logger)
+        public CreatePatientCommandHandler( UserManager<IdentityUser> userManager, 
+            ILogger<CreatePatientCommandHandler> logger, AppDbContext dbContext)
         {
-            _context = context;
             _userManager = userManager;
             _logger = logger;
+            _context = dbContext;
         }
 
         public async Task<Response<Patient>> Handle(CreatePatientCommand request, CancellationToken cancellationToken)
@@ -47,35 +49,27 @@ namespace NoNicotine_Business.Handler
 
                 var identityUser = new IdentityUser { UserName = request.Email, Email = request.Email };
                 var resultIdentity = await _userManager.CreateAsync(identityUser, request.Password);
+ 
                 if (!resultIdentity.Succeeded)
                 {
                     return new Response<Patient>
                     {
                         Succeeded = false,
-                        Message = "Could not create user"
+                        Message = $"Could not create user: {resultIdentity.Errors.First().Description}"
                     };
                 }
 
-                var tempIdentityUser = await _userManager.FindByEmailAsync(request.Email);
-                if (tempIdentityUser == null)
-                {
-                    return new Response<Patient>
-                    {
-                        Succeeded = false,
-                        Message = "Something went wrong"
-                    };
-                }
                 var patient = new Patient()
                 {
                     Name = request.Name,
                     BirthDate = request.BirthDate,
                     Sex = request.Sex,
-                    IdentityUserId = tempIdentityUser.Id,
+                    IdentityUserId = identityUser.Id,
                     Identification = request.Identification,
                     IdentificationType = request.IdentificationPatientType
                 };
 
-                resultIdentity = await _userManager.AddToRoleAsync(tempIdentityUser, PATIENT_ROLE);
+                resultIdentity = await _userManager.AddToRoleAsync(identityUser, PATIENT_ROLE);
                 if (!resultIdentity.Succeeded)
                 {
                     return new Response<Patient>()
@@ -85,9 +79,11 @@ namespace NoNicotine_Business.Handler
                     };
                 }
 
-                _context.Patient.Add(patient);
 
-                var result = _context.SaveChanges();
+                await _context.Patient.AddAsync(patient, cancellationToken);
+
+                var result = await _context.SaveChangesAsync();
+
                 if (result <= 0)
                 {
                     _logger.LogError("Saving changes when creating patient");
