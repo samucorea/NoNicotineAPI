@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NoNicotine_Business.Commands;
 
@@ -6,6 +7,7 @@ namespace NoNicotineAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class RolesController : Controller
     {
         private readonly IMediator _mediator;
