@@ -44,5 +44,19 @@ namespace NoNicotineAPI.Controllers
 
             return BadRequest(result);
         }
+
+        [HttpPut]
+        [Route("{id}")]
+        public async Task<IActionResult> UpdateTherapist(string id, UpdateTherapistCommand request)
+        {
+
+            var result = await _mediator.Send(request);
+            if (result.Succeeded)
+            {
+                return Ok(result);
+            }
+
+            return BadRequest(result);
+        }
     }
 }
