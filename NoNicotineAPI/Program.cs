@@ -62,7 +62,7 @@ builder.Services.Configure<IdentityOptions>(options =>
 });
 
 builder.Services.AddSingleton<IAuthenticationService, AuthenticationService>();
-builder.Services.AddScoped<IPatientsRepository, PatientsRepository>();
+
 
 builder.Services.AddCors(options =>
 {

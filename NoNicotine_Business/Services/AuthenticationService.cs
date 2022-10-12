@@ -44,7 +44,7 @@ namespace NoNicotine_Business.Services
                         new Claim(JwtRegisteredClaimNames.Sub, subject),
                         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                         new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
-                        new Claim("Email", user.Email),
+                        new Claim("UserId", user.Id),
                         new Claim(ClaimTypes.Role, role)
                     };
 
