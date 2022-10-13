@@ -23,6 +23,11 @@ namespace NoNicotine_Data.Context
         public DbSet<Habit> Habit { get; set; }
         public DbSet<LinkRequest> LinkRequest { get; set; }
         public DbSet<Patient> Patient { get; set; }
+        public DbSet<PatientConsumptionMethods> PatientConsumptionMethods { get; set; }
+        public DbSet<CigaretteDetails> CigaretteDetails { get; set; }
+        public DbSet<ElectronicCigaretteDetails> ElectronicCigaretteDetails { get; set; }
+        public DbSet<CigarDetails> CigarDetails { get; set; }
+        public DbSet<HookahDetails> HookahDetails { get; set; }
         public DbSet<PatientHabit> PatientHabit { get; set; }
         public DbSet<PatientRelapseHistory> PatientRelapseHistory { get; set; }
         public DbSet<Symptom> Symptom { get; set; }

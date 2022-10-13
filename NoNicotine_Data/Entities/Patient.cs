@@ -25,6 +25,9 @@ namespace NoNicotine_Data.Entities
         public string? TherapistId { get; set; }
         public Therapist? Therapist { get; set; }
 
+        public string? PatientConsumptionMethodsId { get; set; }
+        public PatientConsumptionMethods? PatientConsumptionMethods { get; set; }
+
         public List<Entry>? Entries { get; set; }
         public List<LinkRequest>? LinkRequests { get; set; }
         public List<PatientRelapseHistory>? PatientRelapseHistoric { get; set; }
