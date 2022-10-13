@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NoNicotine_Business.Commands;
 using NoNicotine_Business.Queries;
+using NoNicotine_Business.Services;
 using System.Security.Claims;
 
 namespace NoNicotineAPI.Controllers
@@ -11,9 +12,11 @@ namespace NoNicotineAPI.Controllers
     [ApiController]
     public class TherapistsController : Controller
     {
-        public TherapistsController(IMediator mediator)
+        private readonly IAuthenticationService _authenticationService;
+        public TherapistsController(IMediator mediator, IAuthenticationService authenticationService)
         {
             _mediator = mediator;
+            _authenticationService = authenticationService;
         }
         private readonly IMediator _mediator;
 
@@ -30,12 +33,19 @@ namespace NoNicotineAPI.Controllers
         }
 
         [HttpGet]
-        [Route("{id}")]
-        public async Task<IActionResult> GetTherapist(string id)
+        [Authorize(Roles = "therapist")]
+        public async Task<IActionResult> GetTherapist()
         {
+            if (HttpContext.User.Identity is not ClaimsIdentity identity)
+            {
+                return Unauthorized();
+            }
+
+            var therapistUserId = _authenticationService.GetUserIdFromClaims(identity);
+
             var request = new GetTherapistQuery()
             {
-                Id = id
+                UserId = therapistUserId
             };
 
             var result = await _mediator.Send(request);
@@ -58,12 +68,7 @@ namespace NoNicotineAPI.Controllers
                 return Unauthorized();
             }
 
-            var therapistUserIdClaim = identity.FindFirst("UserId");
-            if (therapistUserIdClaim == null)
-            {
-                return BadRequest("Something went wrong");
-            }
-            var therapistUserId = therapistUserIdClaim.Value;
+            var therapistUserId = _authenticationService.GetUserIdFromClaims(identity);
 
             request.Id = therapistUserId;
             var result = await _mediator.Send(request);

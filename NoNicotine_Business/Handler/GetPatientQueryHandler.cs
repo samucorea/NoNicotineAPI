@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NoNicotine_Business.Queries;
 using NoNicotine_Business.Repositories;
@@ -32,7 +33,7 @@ namespace NoNicotine_Business.Handler
                 return response;
             }
 
-            var patient = await _context.Patient.FindAsync(request.Id);
+            var patient = await _context.Patient.Where(patient => patient.IdentityUserId == request.UserId).FirstOrDefaultAsync(cancellationToken);
             if (patient == null)
             {
                 return new Response<Patient>
@@ -52,7 +53,7 @@ namespace NoNicotine_Business.Handler
 
         private static Response<Patient>? ValidateRequest(GetPatientQuery request)
         {
-            if (request.Id == string.Empty)
+            if (request.UserId == string.Empty)
             {
                 return new Response<Patient>
                 {

@@ -7,7 +7,6 @@ namespace NoNicotineAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class RolesController : Controller
     {
         private readonly IMediator _mediator;

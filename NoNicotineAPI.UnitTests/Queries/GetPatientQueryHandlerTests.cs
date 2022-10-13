@@ -1,17 +1,13 @@
-﻿ using Moq;
+﻿using Microsoft.EntityFrameworkCore;
+using Moq;
 using NoNicotine_Business.Handler;
 using NoNicotine_Business.Queries;
-using NoNicotine_Business.Repositories;
 using NoNicotine_Data.Context;
 using NoNicotine_Data.Entities;
 using NoNicotineAPI.Models;
 using NoNicotineAPI.UnitTests.Mocks;
 using Shouldly;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace NoNicotineAPI.UnitTests.Queries
 {
@@ -37,7 +33,7 @@ namespace NoNicotineAPI.UnitTests.Queries
 
             var handler = new GetPatientQueryHandler(_mockDbContext.Object);
 
-            var result = await handler.Handle(new GetPatientQuery() { Id = "abcd" }, CancellationToken.None);
+            var result = await handler.Handle(new GetPatientQuery() { UserId = "abcd" }, CancellationToken.None);
 
             result.ShouldBeOfType<Response<Patient>>();
 
@@ -49,17 +45,24 @@ namespace NoNicotineAPI.UnitTests.Queries
 
         public async Task GetPatientByIdTest_ShouldReturnNullIfPatientIsNotFoundWithAMessage()
         {
-
-            _mockDbContext.Setup(x => x.Patient.FindAsync("abcd")).ReturnsAsync(new Patient()
+            var data = new List<Patient>
             {
-                ID = "abcd",
-                Name = "Samuel Garcia"
-            });
+                new Patient { Name = "BBB" },
+                new Patient { Name = "ZZZ" },
+                new Patient { Name = "AAA" },
+            }.AsQueryable();
 
+            var mockSet = new Mock<DbSet<Patient>>();
+            mockSet.As<IQueryable<Patient>>().Setup(m => m.Provider).Returns(data.Provider);
+            mockSet.As<IQueryable<Patient>>().Setup(m => m.Expression).Returns(data.Expression);
+            mockSet.As<IQueryable<Patient>>().Setup(m => m.ElementType).Returns(data.ElementType);
+            mockSet.As<IQueryable<Patient>>().Setup(m => m.GetEnumerator()).Returns(() => data.GetEnumerator());
+
+            _mockDbContext.Setup(c => c.Patient).Returns(mockSet.Object);
 
             var handler = new GetPatientQueryHandler(_mockDbContext.Object);
 
-            var result = await handler.Handle(new GetPatientQuery() { Id = "a" }, CancellationToken.None);
+            var result = await handler.Handle(new GetPatientQuery() { UserId = "a" }, CancellationToken.None);
 
             result.ShouldBeOfType<Response<Patient>>();
 

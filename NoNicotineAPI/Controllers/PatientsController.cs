@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 using NoNicotine_Business.Commands;
 using NoNicotine_Business.Queries;
+using NoNicotine_Business.Services;
 using System.Security.Claims;
 
 namespace NoNicotineAPI.Controllers
@@ -13,10 +14,11 @@ namespace NoNicotineAPI.Controllers
     [ApiController]
     public class PatientsController : Controller
     {
-
-        public PatientsController(IMediator mediator)
+        private readonly IAuthenticationService _authenticationService;
+        public PatientsController(IMediator mediator, IAuthenticationService authenticationService)
         {
             _mediator = mediator;
+            _authenticationService = authenticationService;
         }
         private readonly IMediator _mediator;
 
@@ -34,13 +36,22 @@ namespace NoNicotineAPI.Controllers
         }
 
         [HttpGet]
-        [Route("{id}")]
-        public async Task<IActionResult> GetPatient(string id)
+        [Authorize(Roles = "patient")]
+        public async Task<IActionResult> GetPatient()
         {
-           
+
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+
+            if (identity == null)
+            {
+                return Unauthorized();
+            }
+
+            var patientUserId = _authenticationService.GetUserIdFromClaims(identity);
+
             var request = new GetPatientQuery()
             {
-                Id = id
+                UserId = patientUserId
             };
 
             var result = await _mediator.Send(request);
@@ -64,13 +75,11 @@ namespace NoNicotineAPI.Controllers
                 return Unauthorized();
             }
 
-            var patientUserIdClaim = identity.FindFirst("UserId");
-            if (patientUserIdClaim == null)
+            var patientUserId = _authenticationService.GetUserIdFromClaims(identity);
+            if(patientUserId == "")
             {
                 return BadRequest("Something went wrong");
             }
-
-            var patientUserId = patientUserIdClaim.Value;
 
             request.Id = patientUserId;
             var result = await _mediator.Send(request);
