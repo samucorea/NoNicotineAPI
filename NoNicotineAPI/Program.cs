@@ -34,13 +34,14 @@ if (assembly != null)
     builder.Services.AddMediatR(assembly);
 }
 
-string sqlServerConnectionString = builder.Configuration.GetConnectionString("local");
+var connectionStringKey = builder.Environment.IsDevelopment() ? "local" : "AZURE_SQL_CONNECTIONSTRING";
+
+string sqlServerConnectionString = builder.Configuration.GetConnectionString(connectionStringKey);
 
 builder.Services.AddDbContext<AppDbContext>(opts =>
-    opts.UseSqlServer(sqlServerConnectionString, builder =>
-    {
-        builder.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
-    }));
+{
+    opts.UseSqlServer(sqlServerConnectionString);
+});
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
                                        options.SignIn.RequireConfirmedAccount = true)
@@ -99,9 +100,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
     {
         ValidateIssuer = true,
         ValidateAudience = true,
-        ValidAudience = builder.Configuration["Jwt:Audience"],
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+        ValidAudience = builder.Configuration["Audience"],
+        ValidIssuer = builder.Configuration["Issuer"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Key"]))
     };
 });
 
