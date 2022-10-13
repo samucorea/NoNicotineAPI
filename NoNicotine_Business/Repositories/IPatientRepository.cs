@@ -9,7 +9,7 @@ namespace NoNicotine_Business.Repositories
 {
     public interface IPatientRepository
     {
-        public Task<Patient?> GetPatientByIdAsync(string id);
+        public Task<Patient?> GetPatientByUserIdAsync(string userId, CancellationToken cancellationToken);
 
         public Task<int> CreatePatientAsync(Patient patient, CancellationToken cancellationToken);
     }

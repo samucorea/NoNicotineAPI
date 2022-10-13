@@ -37,16 +37,14 @@ namespace NoNicotineAPI.Controllers
 
         [HttpGet]
         [Authorize(Roles = "patient")]
+        [Route("GetPatient")]
         public async Task<IActionResult> GetPatient()
         {
 
-            var identity = HttpContext.User.Identity as ClaimsIdentity;
-
-            if (identity == null)
+            if (HttpContext.User.Identity is not ClaimsIdentity identity)
             {
                 return Unauthorized();
             }
-
             var patientUserId = _authenticationService.GetUserIdFromClaims(identity);
 
             var request = new GetPatientQuery()

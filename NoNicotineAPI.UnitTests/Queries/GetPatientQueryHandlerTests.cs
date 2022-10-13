@@ -2,6 +2,7 @@
 using Moq;
 using NoNicotine_Business.Handler;
 using NoNicotine_Business.Queries;
+using NoNicotine_Business.Repositories;
 using NoNicotine_Data.Context;
 using NoNicotine_Data.Entities;
 using NoNicotineAPI.Models;
@@ -13,11 +14,11 @@ namespace NoNicotineAPI.UnitTests.Queries
 {
     public class GetPatientQueryHandlerTests
     {
-        private readonly Mock<AppDbContext> _mockDbContext;
+        private readonly Mock<IPatientRepository> _mockPatientRepository;
 
         public GetPatientQueryHandlerTests()
         {
-            _mockDbContext = MockDbContext.GetMockDbContext();
+            _mockPatientRepository = new Mock<IPatientRepository>();
         }
 
         [Fact]
@@ -25,13 +26,9 @@ namespace NoNicotineAPI.UnitTests.Queries
         public async Task GetPatientByIdTest_ShouldReturnPatientWithSpecifiedId()
         {
 
-            _mockDbContext.Setup(x => x.Patient.FindAsync("abcd")).ReturnsAsync(new Patient()
-            {
-                ID = "abcd",
-                Name = "Samuel Garcia"
-            });
+            _mockPatientRepository.Setup(r => r.GetPatientByUserIdAsync("abcd", CancellationToken.None)).ReturnsAsync(new Patient() { ID = "abcd" });
 
-            var handler = new GetPatientQueryHandler(_mockDbContext.Object);
+            var handler = new GetPatientQueryHandler(_mockPatientRepository.Object);
 
             var result = await handler.Handle(new GetPatientQuery() { UserId = "abcd" }, CancellationToken.None);
 
@@ -45,22 +42,8 @@ namespace NoNicotineAPI.UnitTests.Queries
 
         public async Task GetPatientByIdTest_ShouldReturnNullIfPatientIsNotFoundWithAMessage()
         {
-            var data = new List<Patient>
-            {
-                new Patient { Name = "BBB" },
-                new Patient { Name = "ZZZ" },
-                new Patient { Name = "AAA" },
-            }.AsQueryable();
 
-            var mockSet = new Mock<DbSet<Patient>>();
-            mockSet.As<IQueryable<Patient>>().Setup(m => m.Provider).Returns(data.Provider);
-            mockSet.As<IQueryable<Patient>>().Setup(m => m.Expression).Returns(data.Expression);
-            mockSet.As<IQueryable<Patient>>().Setup(m => m.ElementType).Returns(data.ElementType);
-            mockSet.As<IQueryable<Patient>>().Setup(m => m.GetEnumerator()).Returns(() => data.GetEnumerator());
-
-            _mockDbContext.Setup(c => c.Patient).Returns(mockSet.Object);
-
-            var handler = new GetPatientQueryHandler(_mockDbContext.Object);
+            var handler = new GetPatientQueryHandler(_mockPatientRepository.Object);
 
             var result = await handler.Handle(new GetPatientQuery() { UserId = "a" }, CancellationToken.None);
 
@@ -76,7 +59,7 @@ namespace NoNicotineAPI.UnitTests.Queries
         public async Task GetPatientByIdTest_ShouldFailIfIdIsNotSpecified()
         {
 
-            var handler = new GetPatientQueryHandler(_mockDbContext.Object);
+            var handler = new GetPatientQueryHandler(_mockPatientRepository.Object);
 
             var result = await handler.Handle(new GetPatientQuery() { }, CancellationToken.None);
 

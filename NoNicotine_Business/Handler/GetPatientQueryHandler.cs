@@ -18,10 +18,10 @@ namespace NoNicotine_Business.Handler
     public class GetPatientQueryHandler : IRequestHandler<GetPatientQuery, Response<Patient>>
     {
 
-        private readonly AppDbContext _context;
-        public GetPatientQueryHandler(AppDbContext context)
+        private readonly IPatientRepository _patientRepository;
+        public GetPatientQueryHandler(IPatientRepository patientRepository)
         {
-            _context = context;
+            _patientRepository = patientRepository;
         }
 
         public async Task<Response<Patient>> Handle(GetPatientQuery request, CancellationToken cancellationToken)
@@ -33,7 +33,7 @@ namespace NoNicotine_Business.Handler
                 return response;
             }
 
-            var patient = await _context.Patient.Where(patient => patient.IdentityUserId == request.UserId).FirstOrDefaultAsync(cancellationToken);
+            var patient = await _patientRepository.GetPatientByUserIdAsync(request.UserId, cancellationToken);
             if (patient == null)
             {
                 return new Response<Patient>
