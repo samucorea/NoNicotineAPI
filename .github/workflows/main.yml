@@ -29,3 +29,5 @@ jobs:
           ref: ${{ github.event.pull_request.base.sha }}
       
       - uses: wagoid/commitlint-github-action@v5
+      - name: Tests
+        run: dotnet test
