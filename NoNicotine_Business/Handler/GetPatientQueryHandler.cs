@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NoNicotine_Business.Queries;
 using NoNicotine_Business.Repositories;
@@ -17,10 +18,10 @@ namespace NoNicotine_Business.Handler
     public class GetPatientQueryHandler : IRequestHandler<GetPatientQuery, Response<Patient>>
     {
 
-        private readonly AppDbContext _context;
-        public GetPatientQueryHandler(AppDbContext context)
+        private readonly IPatientRepository _patientRepository;
+        public GetPatientQueryHandler(IPatientRepository patientRepository)
         {
-            _context = context;
+            _patientRepository = patientRepository;
         }
 
         public async Task<Response<Patient>> Handle(GetPatientQuery request, CancellationToken cancellationToken)
@@ -32,7 +33,7 @@ namespace NoNicotine_Business.Handler
                 return response;
             }
 
-            var patient = await _context.Patient.FindAsync(request.Id);
+            var patient = await _patientRepository.GetPatientByUserIdAsync(request.UserId, cancellationToken);
             if (patient == null)
             {
                 return new Response<Patient>
@@ -52,7 +53,7 @@ namespace NoNicotine_Business.Handler
 
         private static Response<Patient>? ValidateRequest(GetPatientQuery request)
         {
-            if (request.Id == string.Empty)
+            if (request.UserId == string.Empty)
             {
                 return new Response<Patient>
                 {

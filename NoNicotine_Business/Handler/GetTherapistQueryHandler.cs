@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NoNicotine_Business.Queries;
 using NoNicotine_Data.Context;
@@ -28,7 +29,7 @@ namespace NoNicotine_Business.Handler
         public async Task<Response<Therapist>> Handle(GetTherapistQuery request, CancellationToken cancellationToken)
         {
 
-            var therapist = await _context.Therapist.FindAsync(request.Id, cancellationToken);
+            var therapist = await _context.Therapist.Where(therapist => therapist.IdentityUserId == request.UserId).FirstOrDefaultAsync(cancellationToken);
             if (therapist == null)
             {
                 return new Response<Therapist>

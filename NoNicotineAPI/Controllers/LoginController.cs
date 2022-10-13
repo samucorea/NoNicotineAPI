@@ -29,11 +29,6 @@ namespace NoNicotineAPI.Controllers
         {
             var result = await _mediator.Send(request);
 
-            if (result.Data == null)
-            {
-                return BadRequest("Something went wrong");
-            }
-
             if (result.Succeeded)
             {
                 var cookieOptions = new CookieOptions()
