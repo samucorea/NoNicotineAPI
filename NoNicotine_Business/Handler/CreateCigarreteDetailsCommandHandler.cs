@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using MediatR;
+using Microsoft.Extensions.Logging;
 using NoNicotine_Business.Commands;
 using NoNicotine_Data.Context;
 using NoNicotine_Data.Entities;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace NoNicotine_Business.Handler
 {
-    public class CreateCigarreteDetailsCommandHandler
+    public class CreateCigarreteDetailsCommandHandler : IRequestHandler<CreateCigarreteDetailsCommand, Response<CigaretteDetails>>
     {
         private readonly AppDbContext _context;
         private readonly ILogger<CreateCigarreteDetailsCommandHandler> _logger;

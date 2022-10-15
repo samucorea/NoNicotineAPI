@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NoNicotine_Business.Commands;
 using NoNicotine_Data.Context;
@@ -30,7 +31,7 @@ namespace NoNicotine_Business.Handler
                 {
                     return response;
                 }
-                var isCigarDetail = await _context.CigarDetails.FindAsync(request.cigarDetailsId);
+                var isCigarDetail = await _context.CigarDetails.Where(x => x.PatientConsumptionMethodsId == request.patientConsumptionId).FirstOrDefaultAsync();
 
                 if (request.unitsPerDay is not null)
                     isCigarDetail.unitsPerDay = (short)request.unitsPerDay;
@@ -73,7 +74,7 @@ namespace NoNicotine_Business.Handler
 
         private async Task<Response<CigarDetails>>? ValidateRequest(UpdateCigarDetailsCommand request)
         {
-            var isCigarDetail = await _context.CigarDetails.FindAsync(request.cigarDetailsId);
+            var isCigarDetail = await _context.CigarDetails.Where(x=>x.PatientConsumptionMethodsId == request.patientConsumptionId).FirstOrDefaultAsync();
             if (isCigarDetail is null)
             {
                 return new Response<CigarDetails>()
