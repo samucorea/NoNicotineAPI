@@ -9,6 +9,7 @@ using System.Security.Claims;
 namespace NoNicotineAPI.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize(Roles = "therapist")]
     [ApiController]
     public class TherapistsController : Controller
     {
@@ -21,19 +22,20 @@ namespace NoNicotineAPI.Controllers
         private readonly IMediator _mediator;
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> CreateTherapist(CreateTherapistCommand request)
         {
             var result = await _mediator.Send(request);
             if (result.Succeeded)
             {
-                return Ok(result);
+                return Ok(result.Data);
             }
 
             return BadRequest(result);
         }
 
         [HttpGet]
-        [Authorize(Roles = "therapist")]
+        [Route("GetTherapist")]
         public async Task<IActionResult> GetTherapist()
         {
             if (HttpContext.User.Identity is not ClaimsIdentity identity)
@@ -51,14 +53,13 @@ namespace NoNicotineAPI.Controllers
             var result = await _mediator.Send(request);
             if (result.Succeeded)
             {
-                return Ok(result);
+                return Ok(result.Data);
             }
 
             return BadRequest(result);
         }
 
         [HttpPut]
-        [Authorize(Roles = "therapist")]
         public async Task<IActionResult> UpdateTherapist(UpdateTherapistCommand request)
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
@@ -74,7 +75,7 @@ namespace NoNicotineAPI.Controllers
             var result = await _mediator.Send(request);
             if (result.Succeeded)
             {
-                return Ok(result);
+                return Ok(result.Data);
             }
 
             return BadRequest(result);
