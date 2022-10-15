@@ -87,4 +87,4 @@ namespace NoNicotine_Business.Handler
         }
     }
 }
-}
+
