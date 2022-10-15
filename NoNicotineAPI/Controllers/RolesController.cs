@@ -23,7 +23,7 @@ namespace NoNicotineAPI.Controllers
 
             if(result.Succeeded)
             {
-                return Ok(result);
+                return Ok(result.Data);
             }
 
             return BadRequest(result);

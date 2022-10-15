@@ -12,6 +12,7 @@ namespace NoNicotineAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "patient")]
     public class PatientsController : Controller
     {
         private readonly IAuthenticationService _authenticationService;
@@ -23,20 +24,20 @@ namespace NoNicotineAPI.Controllers
         private readonly IMediator _mediator;
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> CreatePatient(CreatePatientCommand request)
         {
 
             var result = await _mediator.Send(request);
             if (result.Succeeded)
             {
-                return Ok(result);
+                return Ok(result.Data);
             }
 
             return BadRequest(result);
         }
 
         [HttpGet]
-        [Authorize(Roles = "patient")]
         [Route("GetPatient")]
         public async Task<IActionResult> GetPatient()
         {
@@ -53,9 +54,9 @@ namespace NoNicotineAPI.Controllers
             };
 
             var result = await _mediator.Send(request);
-            if (result.Succeeded)
+            if (result.Succeeded && result.Data != null)
             {
-                return Ok(result);
+                return Ok(result.Data);
             }
 
             return BadRequest(result);
@@ -63,7 +64,6 @@ namespace NoNicotineAPI.Controllers
 
 
         [HttpPut]
-        [Authorize(Roles = "patient")]
         public async Task<IActionResult> UpdatePatient(UpdatePatientCommand request)
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
@@ -81,9 +81,9 @@ namespace NoNicotineAPI.Controllers
 
             request.Id = patientUserId;
             var result = await _mediator.Send(request);
-            if (result.Succeeded)
+            if (result.Succeeded && result.Data != null)
             {
-                return Ok(result);
+                return Ok(result.Data);
             }
 
             return BadRequest(result);

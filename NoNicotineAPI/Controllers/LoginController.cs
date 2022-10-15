@@ -65,13 +65,8 @@ namespace NoNicotineAPI.Controllers
             request.Token = requestRefreshToken;
 
             var result = await _mediator.Send(request);
-            if (result.Data == null)
-            {
-                return BadRequest("Something went wrong");
-            }
-
-
-            if (result.Succeeded)
+         
+            if (result.Succeeded && result.Data != null)
             {
                 var refreshToken = result.Data.RefreshToken;
                 var cookieOptions = new CookieOptions()
@@ -90,7 +85,7 @@ namespace NoNicotineAPI.Controllers
                 return Ok(response);
             }
 
-            return Unauthorized(result.Message);
+            return Unauthorized(result);
 
 
         }
