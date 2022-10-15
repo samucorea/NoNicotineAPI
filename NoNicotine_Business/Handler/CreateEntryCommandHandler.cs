@@ -46,7 +46,8 @@ namespace NoNicotine_Business.Handler
                 PatientId = patient.ID,
                 Symptoms = MapListToString(request.Symptoms),
                 Feelings = MapListToString(request.Feelings),
-                Message = request.Message
+                Message = request.Message,
+                TherapistAllowed = request.TherapistAllowed,
             };
 
             var succeeded = await _entryRepository.CreateEntryAsync(newEntry, cancellationToken);

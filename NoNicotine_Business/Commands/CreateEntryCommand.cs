@@ -13,6 +13,8 @@ namespace NoNicotine_Business.Commands
     {
         public string UserId { get; set; } = string.Empty;
 
+        public bool TherapistAllowed { get; set; }
+
         public string Message { get; set; } = string.Empty;
         public List<string> Symptoms { get; set; } = new List<string>();
         public List<string> Feelings { get; set; } = new List<string>();
