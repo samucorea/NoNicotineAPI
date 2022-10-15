@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NoNicotine_Business.Commands;
+using NoNicotine_Business.Queries;
 using NoNicotine_Business.Services;
 using NoNicotine_Data.Entities;
 using NoNicotineAPI.Models;
@@ -21,6 +22,7 @@ namespace NoNicotineAPI.Controllers
             _mediator = mediator;
             _authenticationService = authenticationService;
         }
+
         [HttpPost]
         public async Task<IActionResult> CreateEntry(CreateEntryCommand request)
         {
@@ -46,6 +48,32 @@ namespace NoNicotineAPI.Controllers
                     Symptoms = MapStringToList(entry.Symptoms)
                 };
                 return Ok(entryResponse);
+            }
+
+            return BadRequest(result);
+        }
+
+        [HttpGet]
+        [Route("{entryId}")]
+        public async Task<IActionResult> GetEntryById(string entryId)
+        {
+
+            if (HttpContext.User.Identity is not ClaimsIdentity identity)
+            {
+                return Unauthorized();
+            }
+            var patientUserId = _authenticationService.GetUserIdFromClaims(identity);
+
+            var request = new GetEntryQuery()
+            {
+                UserId = patientUserId,
+                EntryId = entryId
+            };
+
+            var result = await _mediator.Send(request);
+            if (result.Succeeded && result.Data != null)
+            {
+                return Ok(result.Data);
             }
 
             return BadRequest(result);

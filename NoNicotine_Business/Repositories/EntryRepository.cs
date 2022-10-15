@@ -25,9 +25,9 @@ namespace NoNicotine_Business.Repositories
             return await _context.SaveChangesAsync(cancellationToken) == 1;
         }
 
-        public async Task<Entry?> GetEntryByPatientIdAsync(string patientId, CancellationToken cancellationToken)
+        public async Task<Entry?> GetPatientEntryByIdAsync(string patiendId, string entryId, CancellationToken cancellationToken)
         {
-            var entry = await _context.Entry.Where(entry => entry.PatientId == patientId).FirstOrDefaultAsync(cancellationToken);
+            var entry = await _context.Entry.Where(entry => entry.ID == entryId && entry.PatientId == patiendId).FirstOrDefaultAsync(cancellationToken);
             if (entry == null)
             {
                 return null;
