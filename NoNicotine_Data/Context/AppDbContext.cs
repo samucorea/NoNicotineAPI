@@ -21,7 +21,6 @@ namespace NoNicotine_Data.Context
         public AppDbContext() { }
 
         public DbSet<Entry> Entry { get; set; }
-        public DbSet<Feeling> Feeling { get; set; }
         public DbSet<Habit> Habit { get; set; }
         public DbSet<LinkRequest> LinkRequest { get; set; }
         public virtual DbSet<Patient> Patient { get; set; }
@@ -32,7 +31,6 @@ namespace NoNicotine_Data.Context
         public DbSet<HookahDetails> HookahDetails { get; set; }
         public DbSet<PatientHabit> PatientHabit { get; set; }
         public DbSet<PatientRelapseHistory> PatientRelapseHistory { get; set; }
-        public DbSet<Symptom> Symptom { get; set; }
         public DbSet<Therapist> Therapist { get; set; }
 
         public DbSet<RefreshToken> RefreshToken { get; set; }
