@@ -14,8 +14,11 @@ namespace NoNicotine_Data.Entities
 
         [ForeignKey("Patient")]
         public string PatientId { get; set; }
-        public Patient Patient { get; set; }
-        public ICollection<Symptom> Symptoms { get; set; }
-        public ICollection<Feeling> Feelings { get; set; }
+        public Patient? Patient { get; set; }
+        //saved as "tired,headache"
+        public string Symptoms { get; set; } = string.Empty;
+
+        //saved as "sad,shamed"
+        public string Feelings { get; set; } = string.Empty;
     }
 }
