@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using NoNicotine_Business.Queries;
+using NoNicotine_Business.Commands;
 using NoNicotine_Business.Services;
 using NoNicotine_Business.Value_Objects;
 using NoNicotine_Data.Context;
@@ -20,7 +20,7 @@ using System.Threading.Tasks;
 
 namespace NoNicotine_Business.Handler
 {
-    public class RefreshTokenQueryHandler : IRequestHandler<RefreshTokenQuery, Response<AuthenticationData>>
+    public class CreateRefreshTokenCommandHandler : IRequestHandler<CreateRefreshTokenCommand, Response<AuthenticationData>>
     {
         private readonly AppDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
@@ -28,7 +28,7 @@ namespace NoNicotine_Business.Handler
         private readonly IAuthenticationService _authenticationService;
 
 
-        public RefreshTokenQueryHandler(AppDbContext context, ILogger<AuthenticateQueryHandler> logger, IConfiguration configuration, UserManager<IdentityUser> userManager, IAuthenticationService authenticationService)
+        public CreateRefreshTokenCommandHandler(AppDbContext context, ILogger<AuthenticateQueryHandler> logger, IConfiguration configuration, UserManager<IdentityUser> userManager, IAuthenticationService authenticationService)
         {
             _context = context;
             _configuration = configuration;
@@ -36,7 +36,7 @@ namespace NoNicotine_Business.Handler
             _authenticationService = authenticationService;
         }
 
-        public async Task<Response<AuthenticationData>> Handle(RefreshTokenQuery request, CancellationToken cancellationToken)
+        public async Task<Response<AuthenticationData>> Handle(CreateRefreshTokenCommand request, CancellationToken cancellationToken)
         {
 
             var response = ValidateRequest(request);
@@ -45,13 +45,7 @@ namespace NoNicotine_Business.Handler
                 return response;
             }
 
-            var requestRefreshToken = new RefreshToken()
-            {
-                UserId = request.UserId,
-                Token = request.Token
-            };
-
-            var userRefreshToken = _context.RefreshToken.Where(refreshToken => refreshToken.Token == requestRefreshToken.Token
+            var userRefreshToken = _context.RefreshToken.Where(refreshToken => refreshToken.Token == request.RefreshToken
             ).FirstOrDefault();
 
             if (userRefreshToken == null)
@@ -72,8 +66,6 @@ namespace NoNicotine_Business.Handler
                 };
 
             }
-
-
 
             var newRefreshToken = _authenticationService.GenerateRefreshToken(userRefreshToken.UserId);
 
@@ -127,24 +119,14 @@ namespace NoNicotine_Business.Handler
             };
         }
 
-        private static Response<AuthenticationData>? ValidateRequest(RefreshTokenQuery request)
+        private static Response<AuthenticationData>? ValidateRequest(CreateRefreshTokenCommand request)
         {
-            if (request.Token == "")
+            if (request.RefreshToken == "")
             {
                 return new Response<AuthenticationData>()
                 {
                     Succeeded = false,
                     Message = "Missing Refresh Token"
-
-                };
-            }
-
-            if (request.UserId == "")
-            {
-                return new Response<AuthenticationData>()
-                {
-                    Succeeded = false,
-                    Message = "Missing User Id in Refresh Token"
 
                 };
             }

@@ -8,12 +8,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NoNicotine_Business.Queries
+namespace NoNicotine_Business.Commands
 {
-    public class RefreshTokenQuery : IRequest<Response<AuthenticationData>>
+    public class CreateRefreshTokenCommand : IRequest<Response<AuthenticationData>>
     {
-        public string UserId { get; set; } = string.Empty;
-
-        public string Token { get; set; } = string.Empty;
+        public string RefreshToken { get; set; } = string.Empty;
     }
 }
