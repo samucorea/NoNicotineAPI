@@ -35,5 +35,11 @@ namespace NoNicotine_Business.Repositories
 
             return entry;
         }
+        public async Task<List<Entry>> GetPatientEntriesAsync(string patiendId, CancellationToken cancellationToken)
+        {
+            var entries = await _context.Entry.Where(entry => entry.PatientId == patiendId).ToListAsync(cancellationToken);
+
+            return entries;
+        }
     }
 }
