@@ -44,7 +44,6 @@ namespace NoNicotine_Business.Handler
                 };
                
                 await _context.HookahDetails.AddAsync(isHookaDetails);
-                _context.PatientConsumptionMethods.Update(isPatientConsumption);
                 var result = await _context.SaveChangesAsync();
 
                 if (result < 1)
@@ -55,6 +54,11 @@ namespace NoNicotine_Business.Handler
                         Message = "Something went wrong"
                     };
                 }
+
+                // updates relationship with patient comsumption method
+                isPatientConsumption.HookahDetailsId = isHookaDetails.ID;
+                _context.PatientConsumptionMethods.Update(isPatientConsumption);
+                await _context.SaveChangesAsync();
 
                 return new Response<HookahDetails>()
                 {

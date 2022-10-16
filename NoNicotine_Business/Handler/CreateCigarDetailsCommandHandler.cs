@@ -33,6 +33,7 @@ namespace NoNicotine_Business.Handler
                 {
                     return isValidation;
                 }
+                var isPatientConsumption = await _context.PatientConsumptionMethods.FindAsync(request.PatientConsumptionMethodsId);
 
                 var isCigarDetails = new CigarDetails()
                 {
@@ -55,6 +56,10 @@ namespace NoNicotine_Business.Handler
                     };
                 }
 
+                // updates relationship with patient comsumption method
+                isPatientConsumption.CigarDetailsId = isCigarDetails.ID;
+                _context.PatientConsumptionMethods.Update(isPatientConsumption);
+                await _context.SaveChangesAsync();
                 return new Response<CigarDetails>()
                 {
                     Succeeded = true,

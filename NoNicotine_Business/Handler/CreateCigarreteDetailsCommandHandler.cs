@@ -33,6 +33,10 @@ namespace NoNicotine_Business.Handler
                     return isValidation;
                 }
 
+                // patient consumption method
+                var isPatientConsumption = await _context.PatientConsumptionMethods.FindAsync(request.PatientConsumptionMethodsId);
+
+
                 var isCigarreteDetails = new CigaretteDetails()
                 {
                     unitsPerBox = request.unitsPerBox,
@@ -53,6 +57,10 @@ namespace NoNicotine_Business.Handler
                         Message = "Something went wrong"
                     };
                 }
+
+                isPatientConsumption.CigaretteDetailsId = isCigarreteDetails.ID;
+                _context.PatientConsumptionMethods.Update(isPatientConsumption);
+                await _context.SaveChangesAsync();
 
                 return new Response<CigaretteDetails>()
                 {
