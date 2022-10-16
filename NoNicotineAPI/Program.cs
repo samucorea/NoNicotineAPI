@@ -37,10 +37,7 @@ if (assembly != null)
 string sqlServerConnectionString = builder.Configuration.GetConnectionString("local");
 
 builder.Services.AddDbContext<AppDbContext>(opts =>
-    opts.UseSqlServer(sqlServerConnectionString, builder =>
-    {
-        builder.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
-    }));
+    opts.UseSqlServer(sqlServerConnectionString));
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
                                        options.SignIn.RequireConfirmedAccount = true)

@@ -13,6 +13,6 @@ namespace NoNicotine_Business.Commands
     {
         public short? daysPerWeek { get; set; }
         public decimal? setupPrice { get; set; }
-        public string PatientConsumptionMethodsId { get; set; }
+        public string PatientConsumptionMethodsId { get; set; } = string.Empty;
     }
 }

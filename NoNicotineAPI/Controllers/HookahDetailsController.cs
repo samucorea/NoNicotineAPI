@@ -32,10 +32,11 @@ namespace NoNicotineAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetHookahDetail(GetHookahDetailsQuery request)
+        [Route("{patientConsumptionId}")]
+        public async Task<IActionResult> GetHookahDetail(string patientConsumptionId)
         {
 
-            var result = await _mediator.Send(request);
+            var result = await _mediator.Send(new GetHookahDetailsQuery() { PatientConsumptionId=patientConsumptionId});
             if (result.Succeeded)
             {
                 return Ok(result);

@@ -11,6 +11,6 @@ namespace NoNicotine_Business.Queries
 {
     public class GetCigarDetailsQuery : IRequest<Response<CigarDetails>>
     {
-        public string PatientConsumtionId { get; set; }
+        public string PatientConsumptionId { get; set; } = string.Empty;
     }
 }

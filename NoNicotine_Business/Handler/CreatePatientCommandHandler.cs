@@ -59,6 +59,7 @@ namespace NoNicotine_Business.Handler
                     };
                 }
 
+            
                 var patient = new Patient()
                 {
                     Name = request.Name,
@@ -66,7 +67,8 @@ namespace NoNicotine_Business.Handler
                     Sex = request.Sex,
                     IdentityUserId = identityUser.Id,
                     Identification = request.Identification,
-                    IdentificationType = request.IdentificationPatientType
+                    IdentificationType = request.IdentificationPatientType,
+                    PatientConsumptionMethods = new PatientConsumptionMethods()
                 };
 
                 resultIdentity = await _userManager.AddToRoleAsync(identityUser, PATIENT_ROLE);
@@ -82,7 +84,7 @@ namespace NoNicotine_Business.Handler
 
                 await _context.Patient.AddAsync(patient, cancellationToken);
 
-                var result = await _context.SaveChangesAsync();
+                var result = await _context.SaveChangesAsync(cancellationToken);
 
                 if (result <= 0)
                 {

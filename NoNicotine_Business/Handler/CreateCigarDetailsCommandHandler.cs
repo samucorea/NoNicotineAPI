@@ -25,83 +25,93 @@ namespace NoNicotine_Business.Handler
 
         public async Task<Response<CigarDetails>> Handle(CreateCigarDetailsCommand request, CancellationToken cancellationToken)
         {
-			try
-			{
-                // validation 
-                var isValidation = await ValidationRequest(request);
-                if (isValidation is not null)
-                {
-                    return isValidation;
-                }
-                var isPatientConsumption = await _context.PatientConsumptionMethods.FindAsync(request.PatientConsumptionMethodsId);
+            var response = ValidateRequest(request);
+            if (response != null)
+            {
+                return response;
+            }
 
-                var isCigarDetails = new CigarDetails()
-                {
-                    unitsPerBox = request.unitsPerBox,
-                    unitsPerDay = request.unitsPerDay,
-                    boxPrice = request.boxPrice,
-                    daysPerWeek = request.daysPerWeek,
-                    PatientConsumptionMethodsId = request.PatientConsumptionMethodsId
-                };
-
-                await _context.CigarDetails.AddAsync(isCigarDetails);
-                var result = await _context.SaveChangesAsync();
-
-                if (result < 1)
-                {
-                    return new Response<CigarDetails>()
-                    {
-                        Succeeded = false,
-                        Message = "Something went wrong"
-                    };
-                }
-
-                // updates relationship with patient comsumption method
-                isPatientConsumption.CigarDetailsId = isCigarDetails.ID;
-                _context.PatientConsumptionMethods.Update(isPatientConsumption);
-                await _context.SaveChangesAsync();
+            // check if patient consumption method ID exists
+            var patientConsumtionMethods = await _context.PatientConsumptionMethods.FindAsync(request.PatientConsumptionMethodsId);
+            if (patientConsumtionMethods is null)
+            {
                 return new Response<CigarDetails>()
                 {
-                    Succeeded = true,
-                    Data = isCigarDetails
+                    Succeeded = false,
+                    Message = "Invalid patient consumption method Id"
                 };
-
             }
-			catch (Exception ex)
-			{
-                _logger.LogError($"Error when creating a cigar detail : {ex.Message}");
+
+            var cigarDetails = new CigarDetails()
+            {
+                unitsPerBox = request.unitsPerBox,
+                unitsPerDay = request.unitsPerDay,
+                boxPrice = request.boxPrice,
+                daysPerWeek = request.daysPerWeek,
+                PatientConsumptionMethodsId = request.PatientConsumptionMethodsId
+            };
+
+            await _context.CigarDetails.AddAsync(cigarDetails);
+            var result = await _context.SaveChangesAsync(cancellationToken);
+
+            if (result < 1)
+            {
                 return new Response<CigarDetails>()
                 {
                     Succeeded = false,
                     Message = "Something went wrong"
                 };
             }
+
+            // updates relationship with patient comsumption method
+            patientConsumtionMethods.CigarDetailsId = cigarDetails.ID;
+            _context.PatientConsumptionMethods.Update(patientConsumtionMethods);
+            await _context.SaveChangesAsync(cancellationToken);
+            return new Response<CigarDetails>()
+            {
+                Succeeded = true,
+                Data = cigarDetails
+            };
         }
 
-        private async Task<Response<CigarDetails>> ValidationRequest(CreateCigarDetailsCommand request)
+        private static Response<CigarDetails>? ValidateRequest(CreateCigarDetailsCommand request)
         {
-			try
-			{
-                // check if patient consumption method ID exists
-                var isPatientConsumption = await _context.PatientConsumptionMethods.FindAsync(request.PatientConsumptionMethodsId);
-                if (isPatientConsumption is null)
-                {
-                    return new Response<CigarDetails>()
-                    {
-                        Succeeded = false,
-                        Message = "Invalid patient consumption method Id"
-                    };
-                }
-			}
-			catch (Exception ex)
-			{
-                _logger.LogError($"Error when validating a cigar detail request : {ex.Message}");
+            if(request.unitsPerDay <= 0)
+            {
                 return new Response<CigarDetails>()
                 {
                     Succeeded = false,
-                    Message = "Somenthing went wrong"
+                    Message = "Units per day must be greater than 0"
                 };
             }
+
+            if(request.daysPerWeek <= 0)
+            {
+                return new Response<CigarDetails>()
+                {
+                    Succeeded = false,
+                    Message = "Days per week must be greater than 0"
+                };
+            }
+
+            if(request.unitsPerBox <= 0)
+            {
+                return new Response<CigarDetails>()
+                {
+                    Succeeded = false,
+                    Message = "Units per box must be greater than 0"
+                };
+            }
+
+            if(request.boxPrice <= 0)
+            {
+                return new Response<CigarDetails>()
+                {
+                    Succeeded = false,
+                    Message = "Box price must be greater than 0"
+                };
+            }
+
             return null;
         }
     }
