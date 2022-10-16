@@ -11,6 +11,8 @@ namespace NoNicotine_Business.Repositories
     {
         public Task<Entry?> GetPatientEntryByIdAsync(string patientId, string entryId, CancellationToken cancellationToken);
 
+        public Task<List<Entry>> GetPatientEntriesAsync(string patientId, CancellationToken cancellationToken);
+
         public Task<bool> CreateEntryAsync(Entry patient, CancellationToken cancellationToken);
     }
 }
