@@ -41,5 +41,7 @@ namespace NoNicotine_Business.Repositories
 
             return entries;
         }
+
+     
     }
 }

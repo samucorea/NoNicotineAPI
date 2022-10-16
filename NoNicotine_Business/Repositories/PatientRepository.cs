@@ -33,5 +33,12 @@ namespace NoNicotine_Business.Repositories
 
             return patient;
         }
+
+        public async Task<bool> CreateEmptyPatientConsumptionMethods(string patientId, CancellationToken cancellationToken)
+        {
+            await _context.PatientConsumptionMethods.AddAsync(new PatientConsumptionMethods { PatientId = patientId });
+
+            return await _context.SaveChangesAsync(cancellationToken) == 1;
+        }
     }
 }

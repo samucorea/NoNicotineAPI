@@ -68,7 +68,8 @@ namespace NoNicotine_Business.Handler
                     Sex = request.Sex,
                     IdentityUserId = identityUser.Id,
                     Identification = request.Identification,
-                    IdentificationType = request.IdentificationPatientType
+                    IdentificationType = request.IdentificationPatientType,
+                    StartTime= DateTime.Now,
                 };
 
                 resultIdentity = await _userManager.AddToRoleAsync(identityUser, PATIENT_ROLE);
@@ -92,6 +93,18 @@ namespace NoNicotine_Business.Handler
                     {
                         Succeeded = false,
                         Message = "Something went wrong"
+                    };
+                }
+
+                var succeeded = await _patientRepository.CreateEmptyPatientConsumptionMethods(patient.ID, cancellationToken);
+                if(!succeeded)
+                {
+                    transaction.Rollback();
+
+                    return new Response<Patient>()
+                    {
+                        Succeeded = false,
+                        Message = "Could not create empty patient consumption methods"
                     };
                 }
 

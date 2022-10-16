@@ -12,7 +12,7 @@ namespace NoNicotineAPI.Controllers
     [ApiController]
     [Authorize(Roles = "patient")]
     public class PatientConsumptionMethodsController : Controller
-    { 
+    {
 
         public PatientConsumptionMethodsController(IMediator mediator)
         {
@@ -20,36 +20,11 @@ namespace NoNicotineAPI.Controllers
         }
         private readonly IMediator _mediator;
 
-        [HttpPost]
-        public async Task<IActionResult> CreatePatientConsumptionMethod(CreatePatientConsumptionMethodCommand request)
-        {
-
-            var result = await _mediator.Send(request);
-            if (result.Succeeded)
-            {
-                return Ok(result);
-            }
-
-            return BadRequest(result);
-        }
 
         [HttpGet]
         public async Task<IActionResult> GetPatientConsumptionMethod(GetPatientConsumptionMethodQuery request)
         {
 
-            var result = await _mediator.Send(request);
-            if (result.Succeeded)
-            {
-                return Ok(result);
-            }
-
-            return BadRequest(result);
-        }
-
-
-        [HttpPut]
-        public async Task<IActionResult> UpdatePatientConsumptionMethod(UpdatePatientConsumptionMethodCommand request)
-        {
             var result = await _mediator.Send(request);
             if (result.Succeeded)
             {
