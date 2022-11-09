@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace NoNicotine_Business.Queries
 {
-    public class GetElectronicCigaretteDetailQuery : IRequest<Response<ElectronicCigaretteDetails>>
+    public class GetElectronicCigaretteDetailsQuery : IRequest<Response<ElectronicCigaretteDetails>>
     {
         public string PatientConsumptionId { get; set; } = string.Empty;
     }

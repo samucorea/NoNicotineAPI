@@ -13,16 +13,16 @@ using System.Threading.Tasks;
 
 namespace NoNicotine_Business.Handler
 {
-    public class GetElectronicCigaretteDetailQueryHandler : IRequestHandler<GetElectronicCigaretteDetailQuery, Response<ElectronicCigaretteDetails>>
+    public class GetElectronicCigaretteDetailsQueryHandler : IRequestHandler<GetElectronicCigaretteDetailsQuery, Response<ElectronicCigaretteDetails>>
     {
         private readonly AppDbContext _context;
-        private readonly ILogger<GetElectronicCigaretteDetailQueryHandler> _logger;
-        public GetElectronicCigaretteDetailQueryHandler(AppDbContext context, ILogger<GetElectronicCigaretteDetailQueryHandler> logger)
+        private readonly ILogger<GetElectronicCigaretteDetailsQueryHandler> _logger;
+        public GetElectronicCigaretteDetailsQueryHandler(AppDbContext context, ILogger<GetElectronicCigaretteDetailsQueryHandler> logger)
         {
             _context = context;
             _logger = logger;
         }
-        public async Task<Response<ElectronicCigaretteDetails>> Handle(GetElectronicCigaretteDetailQuery request, CancellationToken cancellationToken)
+        public async Task<Response<ElectronicCigaretteDetails>> Handle(GetElectronicCigaretteDetailsQuery request, CancellationToken cancellationToken)
         {
             try
             {

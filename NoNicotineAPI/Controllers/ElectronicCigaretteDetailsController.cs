@@ -36,7 +36,7 @@ namespace NoNicotineAPI.Controllers
         public async Task<IActionResult> GetElectronicCigaretteDetail(string patientConsumptionId)
         {
 
-            var result = await _mediator.Send(new GetElectronicCigaretteDetailQuery() { PatientConsumptionId = patientConsumptionId });
+            var result = await _mediator.Send(new GetElectronicCigaretteDetailsQuery() { PatientConsumptionId = patientConsumptionId });
             if (result.Succeeded)
             {
                 return Ok(result);
