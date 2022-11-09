@@ -14,6 +14,6 @@ namespace NoNicotine_Business.Commands
         public short? cartridgeLifespan { get; set; }
         public short? unitsPerBox { get; set; }
         public decimal? boxPrice { get; set; }
-        public string PatientConsumptionMethodsId { get; set; }
+        public string patientConsumptionId { get; set; }
     }
 }

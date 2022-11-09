@@ -24,34 +24,41 @@ namespace NoNicotine_Business.Handler
         }
         public async Task<Response<ElectronicCigaretteDetails>> Handle(GetElectronicCigaretteDetailsQuery request, CancellationToken cancellationToken)
         {
-            try
+            var response = ValidateRequest(request);
+            if (response != null)
             {
-                // gets the patient consumption method
-                var isElectronicCigaretteDetail = await _context.ElectronicCigaretteDetails.Where(x => x.PatientConsumptionMethodsId == request.PatientConsumptionId).FirstOrDefaultAsync();
-                if (isElectronicCigaretteDetail is null)
-                {
-                    return new Response<ElectronicCigaretteDetails>
-                    {
-                        Succeeded = false,
-                        Message = "Could not find electronic cigar detail with specified id"
-                    };
-                }
-
-                return new Response<ElectronicCigaretteDetails>
-                {
-                    Succeeded = true,
-                    Data = isElectronicCigaretteDetail
-                };
+                return response;
             }
-            catch (Exception ex)
+
+            var patientElectronicCigaretteDetail = await _context.ElectronicCigaretteDetails.Where(x => x.PatientConsumptionMethodsId == request.PatientConsumptionId).FirstOrDefaultAsync(cancellationToken);
+            if (patientElectronicCigaretteDetail is null)
             {
-                _logger.LogError("Error while getting electronic cigar detail detail: {errMessage}", ex.Message);
                 return new Response<ElectronicCigaretteDetails>
                 {
                     Succeeded = false,
-                    Message = "Something went wrong"
+                    Message = "Could not find electronic cigarette detail with specified id"
                 };
             }
+
+            return new Response<ElectronicCigaretteDetails>
+            {
+                Succeeded = true,
+                Data = patientElectronicCigaretteDetail
+            };
+        }
+
+        private static Response<ElectronicCigaretteDetails>? ValidateRequest(GetElectronicCigaretteDetailsQuery request)
+        {
+            if (request.PatientConsumptionId == string.Empty)
+            {
+                return new Response<ElectronicCigaretteDetails>
+                {
+                    Succeeded = false,
+                    Message = "A patient consumption id must be specified"
+                };
+            }
+
+            return null;
         }
     }
 }

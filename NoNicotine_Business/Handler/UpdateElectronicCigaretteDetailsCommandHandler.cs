@@ -26,66 +26,41 @@ namespace NoNicotine_Business.Handler
 
         public async Task<Response<ElectronicCigaretteDetails>> Handle(UpdateElectronicCigaretteDetailsCommand request, CancellationToken cancellationToken)
         {
-            try
+            var currentElectronicCigaretteDetail = await _context.ElectronicCigaretteDetails.Where(x => x.PatientConsumptionMethodsId == request.patientConsumptionId).FirstOrDefaultAsync();
+            if (currentElectronicCigaretteDetail == null)
             {
-                var response = await ValidateRequest(request);
-                if (request is not null)
-                {
-                    return response;
-                }
-
-                var isElectronicCigarette = await _context.ElectronicCigaretteDetails.Where(x => x.PatientConsumptionMethodsId == request.PatientConsumptionMethodsId).FirstOrDefaultAsync();
-                
-                if (request.unitsPerBox is not null)
-                    isElectronicCigarette.unitsPerBox = (short)request.unitsPerBox;
-                if (request.boxPrice is not null)
-                    isElectronicCigarette.boxPrice = (decimal)request.boxPrice;
-                if (request.cartridgeLifespan is not null)
-                    isElectronicCigarette.cartridgeLifespan = (short)request.cartridgeLifespan;
-               
-
-                _context.ElectronicCigaretteDetails.Update(isElectronicCigarette);
-                var result = await _context.SaveChangesAsync();
-
-                if (result < 1)
-                {
-                    return new Response<ElectronicCigaretteDetails>()
-                    {
-                        Succeeded = false,
-                        Message = "Something went wrong"
-                    };
-                }
-
-                _logger.LogInformation($"Electronic cigarette Detail with ID {isElectronicCigarette.ID} updated");
                 return new Response<ElectronicCigaretteDetails>()
                 {
-                    Succeeded = true,
-                    Data = isElectronicCigarette
+                    Succeeded = false,
+                    Message = "Electronic Cigarette Detail not found with specified id"
                 };
             }
-            catch (Exception ex)
+
+            if (request.unitsPerBox is not null)
+                currentElectronicCigaretteDetail.unitsPerBox = (short)request.unitsPerBox;
+            if (request.boxPrice is not null)
+                currentElectronicCigaretteDetail.boxPrice = (decimal)request.boxPrice;
+            if (request.cartridgeLifespan is not null)
+                currentElectronicCigaretteDetail.cartridgeLifespan = (short)request.cartridgeLifespan;
+
+            _context.ElectronicCigaretteDetails.Update(currentElectronicCigaretteDetail);
+            var result = await _context.SaveChangesAsync();
+
+            if (result < 1)
             {
-                _logger.LogError("Error updating Electronic cigarette detail: {errMessage}", ex.Message);
-                return new Response<ElectronicCigaretteDetails>
+                return new Response<ElectronicCigaretteDetails>()
                 {
                     Succeeded = false,
                     Message = "Something went wrong"
                 };
             }
-        }
 
-        private async Task<Response<ElectronicCigaretteDetails>>? ValidateRequest(UpdateElectronicCigaretteDetailsCommand request)
-        {
-            var isElectronicCigarette = await _context.ElectronicCigaretteDetails.Where(x => x.PatientConsumptionMethodsId == request.PatientConsumptionMethodsId).FirstOrDefaultAsync();
-            if (isElectronicCigarette is null)
+            _logger.LogInformation("Electronic Cigarette Detail with ID {electronicCigaretteDetailId} updated", currentElectronicCigaretteDetail.ID);
+            return new Response<ElectronicCigaretteDetails>()
             {
-                return new Response<ElectronicCigaretteDetails>()
-                {
-                    Succeeded = false,
-                    Message = "Electronic cigarette Detail not found with specified id"
-                };
-            }
-            return null;
+                Succeeded = true,
+                Data = currentElectronicCigaretteDetail
+            };
         }
     }
 }
