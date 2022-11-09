@@ -1,4 +1,7 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Logging;
+using NoNicotine_Business.Handler;
+using NoNicotine_Data.Context;
 using NoNicotine_Data.Entities;
 using NoNicotineAPI.Models;
 using System;
@@ -9,11 +12,12 @@ using System.Threading.Tasks;
 
 namespace NoNicotine_Business.Commands
 {
-    public class UpdateElectronicCigarreteDetailsCommand : IRequest<Response<ElectronicCigaretteDetails>>
+    public  class UpdateCigaretteDetailsCommand : IRequest<Response<CigaretteDetails>>
     {
-        public short? cartridgeLifespan { get; set; }
+        public string PatientMethodId { get; set; }
+        public short? unitsPerDay { get; set; }
+        public short? daysPerWeek { get; set; }
         public short? unitsPerBox { get; set; }
         public decimal? boxPrice { get; set; }
-        public string PatientConsumptionMethodsId { get; set; }
     }
 }

@@ -13,18 +13,18 @@ using System.Threading.Tasks;
 
 namespace NoNicotine_Business.Handler
 {
-    public class UpdateElectronicCigarreteDetailsCommandHandler : IRequestHandler<UpdateElectronicCigarreteDetailsCommand, Response<ElectronicCigaretteDetails>>
+    public class UpdateElectronicCigaretteDetailsCommandHandler : IRequestHandler<UpdateElectronicCigaretteDetailsCommand, Response<ElectronicCigaretteDetails>>
     {
-        private readonly ILogger<UpdateElectronicCigarreteDetailsCommandHandler> _logger;
+        private readonly ILogger<UpdateElectronicCigaretteDetailsCommandHandler> _logger;
         private readonly AppDbContext _context;
 
-        public UpdateElectronicCigarreteDetailsCommandHandler(ILogger<UpdateElectronicCigarreteDetailsCommandHandler> logger, AppDbContext dbContext)
+        public UpdateElectronicCigaretteDetailsCommandHandler(ILogger<UpdateElectronicCigaretteDetailsCommandHandler> logger, AppDbContext dbContext)
         {
             _logger = logger;
             _context = dbContext;
         }
 
-        public async Task<Response<ElectronicCigaretteDetails>> Handle(UpdateElectronicCigarreteDetailsCommand request, CancellationToken cancellationToken)
+        public async Task<Response<ElectronicCigaretteDetails>> Handle(UpdateElectronicCigaretteDetailsCommand request, CancellationToken cancellationToken)
         {
             try
             {
@@ -34,17 +34,17 @@ namespace NoNicotine_Business.Handler
                     return response;
                 }
 
-                var isElectronicCigarrete = await _context.ElectronicCigaretteDetails.Where(x => x.PatientConsumptionMethodsId == request.PatientConsumptionMethodsId).FirstOrDefaultAsync();
+                var isElectronicCigarette = await _context.ElectronicCigaretteDetails.Where(x => x.PatientConsumptionMethodsId == request.PatientConsumptionMethodsId).FirstOrDefaultAsync();
                 
                 if (request.unitsPerBox is not null)
-                    isElectronicCigarrete.unitsPerBox = (short)request.unitsPerBox;
+                    isElectronicCigarette.unitsPerBox = (short)request.unitsPerBox;
                 if (request.boxPrice is not null)
-                    isElectronicCigarrete.boxPrice = (decimal)request.boxPrice;
+                    isElectronicCigarette.boxPrice = (decimal)request.boxPrice;
                 if (request.cartridgeLifespan is not null)
-                    isElectronicCigarrete.cartridgeLifespan = (short)request.cartridgeLifespan;
+                    isElectronicCigarette.cartridgeLifespan = (short)request.cartridgeLifespan;
                
 
-                _context.ElectronicCigaretteDetails.Update(isElectronicCigarrete);
+                _context.ElectronicCigaretteDetails.Update(isElectronicCigarette);
                 var result = await _context.SaveChangesAsync();
 
                 if (result < 1)
@@ -56,16 +56,16 @@ namespace NoNicotine_Business.Handler
                     };
                 }
 
-                _logger.LogInformation($"Electronic cigarrete Detail with ID {isElectronicCigarrete.ID} updated");
+                _logger.LogInformation($"Electronic cigarette Detail with ID {isElectronicCigarette.ID} updated");
                 return new Response<ElectronicCigaretteDetails>()
                 {
                     Succeeded = true,
-                    Data = isElectronicCigarrete
+                    Data = isElectronicCigarette
                 };
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error updating Electronic cigarrete detail: {errMessage}", ex.Message);
+                _logger.LogError("Error updating Electronic cigarette detail: {errMessage}", ex.Message);
                 return new Response<ElectronicCigaretteDetails>
                 {
                     Succeeded = false,
@@ -74,15 +74,15 @@ namespace NoNicotine_Business.Handler
             }
         }
 
-        private async Task<Response<ElectronicCigaretteDetails>>? ValidateRequest(UpdateElectronicCigarreteDetailsCommand request)
+        private async Task<Response<ElectronicCigaretteDetails>>? ValidateRequest(UpdateElectronicCigaretteDetailsCommand request)
         {
-            var isElectronicCigarrete = await _context.ElectronicCigaretteDetails.Where(x => x.PatientConsumptionMethodsId == request.PatientConsumptionMethodsId).FirstOrDefaultAsync();
-            if (isElectronicCigarrete is null)
+            var isElectronicCigarette = await _context.ElectronicCigaretteDetails.Where(x => x.PatientConsumptionMethodsId == request.PatientConsumptionMethodsId).FirstOrDefaultAsync();
+            if (isElectronicCigarette is null)
             {
                 return new Response<ElectronicCigaretteDetails>()
                 {
                     Succeeded = false,
-                    Message = "Electronic cigarrete Detail not found with specified id"
+                    Message = "Electronic cigarette Detail not found with specified id"
                 };
             }
             return null;

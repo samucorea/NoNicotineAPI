@@ -26,7 +26,7 @@ namespace NoNicotine_Business.Handler
 			try
 			{
                 // gets the patient consumption method
-                var isPatientConsumption = await _context.PatientConsumptionMethods.FindAsync(request.PatientConsumtionId);
+                var isPatientConsumption = await _context.PatientConsumptionMethods.FindAsync(request.PatientConsumptionId);
                 if (isPatientConsumption is null)
                 {
                     return new Response<PatientConsumptionMethods>

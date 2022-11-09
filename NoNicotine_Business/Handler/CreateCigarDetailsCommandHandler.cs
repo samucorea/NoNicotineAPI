@@ -32,8 +32,8 @@ namespace NoNicotine_Business.Handler
             }
 
             // check if patient consumption method ID exists
-            var patientConsumtionMethods = await _context.PatientConsumptionMethods.FindAsync(request.PatientConsumptionMethodsId);
-            if (patientConsumtionMethods is null)
+            var patientConsumptionMethods = await _context.PatientConsumptionMethods.FindAsync(request.PatientConsumptionMethodsId);
+            if (patientConsumptionMethods is null)
             {
                 return new Response<CigarDetails>()
                 {
@@ -64,8 +64,8 @@ namespace NoNicotine_Business.Handler
             }
 
             // updates relationship with patient comsumption method
-            patientConsumtionMethods.CigarDetailsId = cigarDetails.ID;
-            _context.PatientConsumptionMethods.Update(patientConsumtionMethods);
+            patientConsumptionMethods.CigarDetailsId = cigarDetails.ID;
+            _context.PatientConsumptionMethods.Update(patientConsumptionMethods);
             await _context.SaveChangesAsync(cancellationToken);
             return new Response<CigarDetails>()
             {

@@ -13,16 +13,16 @@ using System.Threading.Tasks;
 
 namespace NoNicotine_Business.Handler
 {
-    internal class UpdateCigarreteDetailsCommandHandler : IRequestHandler<UpdateCigarreteDetailsCommand, Response<CigaretteDetails>>
+    internal class UpdateCigaretteDetailsCommandHandler : IRequestHandler<UpdateCigaretteDetailsCommand, Response<CigaretteDetails>>
     {
         private readonly AppDbContext _context;
-        private readonly ILogger<UpdateCigarreteDetailsCommandHandler> _logger;
-        public UpdateCigarreteDetailsCommandHandler(AppDbContext context, ILogger<UpdateCigarreteDetailsCommandHandler> logger)
+        private readonly ILogger<UpdateCigaretteDetailsCommandHandler> _logger;
+        public UpdateCigaretteDetailsCommandHandler(AppDbContext context, ILogger<UpdateCigaretteDetailsCommandHandler> logger)
         {
             _context = context;
             _logger = logger;
         }
-        public async Task<Response<CigaretteDetails>> Handle(UpdateCigarreteDetailsCommand request, CancellationToken cancellationToken)
+        public async Task<Response<CigaretteDetails>> Handle(UpdateCigaretteDetailsCommand request, CancellationToken cancellationToken)
         {
             try
             {
@@ -31,18 +31,18 @@ namespace NoNicotine_Business.Handler
                 {
                     return response;
                 }
-                var isCigarreteDetail = await _context.CigaretteDetails.Where(x => x.PatientConsumptionMethodsId == request.PatientMethodId).FirstOrDefaultAsync(); ;
+                var isCigaretteDetail = await _context.CigaretteDetails.Where(x => x.PatientConsumptionMethodsId == request.PatientMethodId).FirstOrDefaultAsync(); ;
 
                 if (request.unitsPerDay is not null)
-                    isCigarreteDetail.unitsPerDay = (short)request.unitsPerDay;
+                    isCigaretteDetail.unitsPerDay = (short)request.unitsPerDay;
                 if (request.daysPerWeek is not null)
-                    isCigarreteDetail.daysPerWeek = (short)request.daysPerWeek;
+                    isCigaretteDetail.daysPerWeek = (short)request.daysPerWeek;
                 if (request.unitsPerBox is not null)
-                    isCigarreteDetail.unitsPerBox = (short)request.unitsPerBox;
+                    isCigaretteDetail.unitsPerBox = (short)request.unitsPerBox;
                 if (request.boxPrice is not null)
-                    isCigarreteDetail.boxPrice = (short)request.boxPrice;
+                    isCigaretteDetail.boxPrice = (short)request.boxPrice;
 
-                _context.CigaretteDetails.Update(isCigarreteDetail);
+                _context.CigaretteDetails.Update(isCigaretteDetail);
                 var result = await _context.SaveChangesAsync();
 
                 if (result < 1)
@@ -54,16 +54,16 @@ namespace NoNicotine_Business.Handler
                     };
                 }
 
-                _logger.LogInformation($"Cigarrete Detail with ID {isCigarreteDetail.ID} updated");
+                _logger.LogInformation($"Cigarette Detail with ID {isCigaretteDetail.ID} updated");
                 return new Response<CigaretteDetails>()
                 {
                     Succeeded = true,
-                    Data = isCigarreteDetail
+                    Data = isCigaretteDetail
                 };
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error updating cigarrete detail: {errMessage}", ex.Message);
+                _logger.LogError("Error updating cigarette detail: {errMessage}", ex.Message);
                 return new Response<CigaretteDetails>
                 {
                     Succeeded = false,
@@ -72,15 +72,15 @@ namespace NoNicotine_Business.Handler
             }
         }
 
-        private async Task<Response<CigaretteDetails>>? ValidateRequest(UpdateCigarreteDetailsCommand request)
+        private async Task<Response<CigaretteDetails>>? ValidateRequest(UpdateCigaretteDetailsCommand request)
         {
-            var isCigarreteDetail = await _context.CigaretteDetails.Where( x=>x.PatientConsumptionMethodsId == request.PatientMethodId).FirstOrDefaultAsync();
-            if (isCigarreteDetail is null)
+            var isCigaretteDetail = await _context.CigaretteDetails.Where( x=>x.PatientConsumptionMethodsId == request.PatientMethodId).FirstOrDefaultAsync();
+            if (isCigaretteDetail is null)
             {
                 return new Response<CigaretteDetails>()
                 {
                     Succeeded = false,
-                    Message = "Cigarrete Detail not found with specified id"
+                    Message = "Cigarette Detail not found with specified id"
                 };
             }
             return null;

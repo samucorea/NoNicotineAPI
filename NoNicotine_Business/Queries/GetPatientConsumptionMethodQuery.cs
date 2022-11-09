@@ -11,6 +11,6 @@ namespace NoNicotine_Business.Queries
 {
     public class GetPatientConsumptionMethodQuery : IRequest<Response<PatientConsumptionMethods>>
     {
-        public string PatientConsumtionId { get; set; }
+        public string PatientConsumptionId { get; set; }
     }
 }

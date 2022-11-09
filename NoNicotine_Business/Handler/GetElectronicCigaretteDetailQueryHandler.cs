@@ -13,22 +13,22 @@ using System.Threading.Tasks;
 
 namespace NoNicotine_Business.Handler
 {
-    public class GetElectronicCigarreteDetailQueryHandler : IRequestHandler<GetElectronicCigarreteDetailQuery, Response<ElectronicCigaretteDetails>>
+    public class GetElectronicCigaretteDetailQueryHandler : IRequestHandler<GetElectronicCigaretteDetailQuery, Response<ElectronicCigaretteDetails>>
     {
         private readonly AppDbContext _context;
-        private readonly ILogger<GetElectronicCigarreteDetailQueryHandler> _logger;
-        public GetElectronicCigarreteDetailQueryHandler(AppDbContext context, ILogger<GetElectronicCigarreteDetailQueryHandler> logger)
+        private readonly ILogger<GetElectronicCigaretteDetailQueryHandler> _logger;
+        public GetElectronicCigaretteDetailQueryHandler(AppDbContext context, ILogger<GetElectronicCigaretteDetailQueryHandler> logger)
         {
             _context = context;
             _logger = logger;
         }
-        public async Task<Response<ElectronicCigaretteDetails>> Handle(GetElectronicCigarreteDetailQuery request, CancellationToken cancellationToken)
+        public async Task<Response<ElectronicCigaretteDetails>> Handle(GetElectronicCigaretteDetailQuery request, CancellationToken cancellationToken)
         {
             try
             {
                 // gets the patient consumption method
-                var isElectronicCigarreteDetail = await _context.ElectronicCigaretteDetails.Where(x => x.PatientConsumptionMethodsId == request.PatientConsumtionId).FirstOrDefaultAsync();
-                if (isElectronicCigarreteDetail is null)
+                var isElectronicCigaretteDetail = await _context.ElectronicCigaretteDetails.Where(x => x.PatientConsumptionMethodsId == request.PatientConsumptionId).FirstOrDefaultAsync();
+                if (isElectronicCigaretteDetail is null)
                 {
                     return new Response<ElectronicCigaretteDetails>
                     {
@@ -40,7 +40,7 @@ namespace NoNicotine_Business.Handler
                 return new Response<ElectronicCigaretteDetails>
                 {
                     Succeeded = true,
-                    Data = isElectronicCigarreteDetail
+                    Data = isElectronicCigaretteDetail
                 };
             }
             catch (Exception ex)

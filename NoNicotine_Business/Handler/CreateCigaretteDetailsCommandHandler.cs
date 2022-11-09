@@ -12,17 +12,17 @@ using System.Threading.Tasks;
 
 namespace NoNicotine_Business.Handler
 {
-    public class CreateCigarreteDetailsCommandHandler : IRequestHandler<CreateCigarreteDetailsCommand, Response<CigaretteDetails>>
+    public class CreateCigaretteDetailsCommandHandler : IRequestHandler<CreateCigaretteDetailsCommand, Response<CigaretteDetails>>
     {
         private readonly AppDbContext _context;
-        private readonly ILogger<CreateCigarreteDetailsCommandHandler> _logger;
-        public CreateCigarreteDetailsCommandHandler(AppDbContext context, ILogger<CreateCigarreteDetailsCommandHandler> logger)
+        private readonly ILogger<CreateCigaretteDetailsCommandHandler> _logger;
+        public CreateCigaretteDetailsCommandHandler(AppDbContext context, ILogger<CreateCigaretteDetailsCommandHandler> logger)
         {
             _context = context;
             _logger = logger;
         }
 
-        public async Task<Response<CigaretteDetails>> Handle(CreateCigarreteDetailsCommand request, CancellationToken cancellationToken)
+        public async Task<Response<CigaretteDetails>> Handle(CreateCigaretteDetailsCommand request, CancellationToken cancellationToken)
         {
             try
             {
@@ -37,7 +37,7 @@ namespace NoNicotine_Business.Handler
                 var isPatientConsumption = await _context.PatientConsumptionMethods.FindAsync(request.PatientConsumptionMethodsId);
 
 
-                var isCigarreteDetails = new CigaretteDetails()
+                var isCigaretteDetails = new CigaretteDetails()
                 {
                     unitsPerBox = request.unitsPerBox,
                     unitsPerDay = request.unitsPerDay,
@@ -46,7 +46,7 @@ namespace NoNicotine_Business.Handler
                     PatientConsumptionMethodsId = request.PatientConsumptionMethodsId
                 };
 
-                await _context.CigaretteDetails.AddAsync(isCigarreteDetails);
+                await _context.CigaretteDetails.AddAsync(isCigaretteDetails);
                 var result = await _context.SaveChangesAsync();
 
                 if (result < 1)
@@ -58,14 +58,14 @@ namespace NoNicotine_Business.Handler
                     };
                 }
 
-                isPatientConsumption.CigaretteDetailsId = isCigarreteDetails.ID;
+                isPatientConsumption.CigaretteDetailsId = isCigaretteDetails.ID;
                 _context.PatientConsumptionMethods.Update(isPatientConsumption);
                 await _context.SaveChangesAsync();
 
                 return new Response<CigaretteDetails>()
                 {
                     Succeeded = true,
-                    Data = isCigarreteDetails
+                    Data = isCigaretteDetails
                 };
 
             }
@@ -80,7 +80,7 @@ namespace NoNicotine_Business.Handler
             }
         }
 
-        private async Task<Response<CigaretteDetails>> ValidationRequest(CreateCigarreteDetailsCommand request)
+        private async Task<Response<CigaretteDetails>> ValidationRequest(CreateCigaretteDetailsCommand request)
         {
             try
             {

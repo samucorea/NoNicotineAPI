@@ -13,27 +13,28 @@ using System.Threading.Tasks;
 
 namespace NoNicotine_Business.Handler
 {
-    public class GetCigarreteDetailsQueryHandler : IRequestHandler<GetCigarreteDetailsQuery, Response<CigaretteDetails>>
+    public class GetCigaretteDetailsQueryHandler : IRequestHandler<GetCigaretteDetailsQuery, Response<CigaretteDetails>>
     {
         private readonly AppDbContext _context;
-        private readonly ILogger<GetCigarreteDetailsQueryHandler> _logger;
-        public GetCigarreteDetailsQueryHandler(AppDbContext context, ILogger<GetCigarreteDetailsQueryHandler> logger)
+        private readonly ILogger<GetCigaretteDetailsQueryHandler> _logger;
+        public GetCigaretteDetailsQueryHandler(AppDbContext context, ILogger<GetCigaretteDetailsQueryHandler> logger)
         {
             _context = context;
             _logger = logger;
         }
-        public async Task<Response<CigaretteDetails>> Handle(GetCigarreteDetailsQuery request, CancellationToken cancellationToken)
+        public async Task<Response<CigaretteDetails>> Handle(GetCigaretteDetailsQuery request, CancellationToken cancellationToken)
         {
             try
             {
                 // gets the Cigarette Details
-                var isCigarDetail = await _context.CigaretteDetails.Where(x => x.PatientConsumptionMethodsId == request.PatientConsumtionId).FirstOrDefaultAsync();
+                var isCigarDetail = await _context.CigaretteDetails.Where(x => x.PatientConsumptionMethodsId == request.
+                ).FirstOrDefaultAsync();
                 if (isCigarDetail is null)
                 {
                     return new Response<CigaretteDetails>
                     {
                         Succeeded = false,
-                        Message = "Could not find cigarrete detail with specified id"
+                        Message = "Could not find cigarette detail with specified id"
                     };
                 }
 
@@ -45,7 +46,7 @@ namespace NoNicotine_Business.Handler
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error while getting cigarrete detail: {errMessage}", ex.Message);
+                _logger.LogError("Error while getting cigarette detail: {errMessage}", ex.Message);
                 return new Response<CigaretteDetails>
                 {
                     Succeeded = false,

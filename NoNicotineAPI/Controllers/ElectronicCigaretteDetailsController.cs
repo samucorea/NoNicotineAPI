@@ -10,17 +10,17 @@ namespace NoNicotineAPI.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(Roles = "patient")]
-    public class CigarreteDetailsController : Controller
+    public class ElectronicElectronicCigaretteDetailsController : Controller
     {
 
-        public CigarreteDetailsController(IMediator mediator)
+        public ElectronicElectronicCigaretteDetailsController(IMediator mediator)
         {
             _mediator = mediator;
         }
         private readonly IMediator _mediator;
 
         [HttpPost]
-        public async Task<IActionResult> CreateCigarreteDetail(CreateCigarreteDetailsCommand request)
+        public async Task<IActionResult> CreateElectronicCigaretteDetail(CreateElectronicCigaretteDetailsCommand request)
         {
 
             var result = await _mediator.Send(request);
@@ -33,7 +33,7 @@ namespace NoNicotineAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetCigarreteDetail(GetCigarreteDetailsQuery request)
+        public async Task<IActionResult> GetElectronicCigaretteDetail(GetElectronicCigaretteDetailQuery request)
         {
 
             var result = await _mediator.Send(request);
@@ -47,7 +47,7 @@ namespace NoNicotineAPI.Controllers
 
 
         [HttpPut]
-        public async Task<IActionResult> UpdateCigarreteDetail(UpdateCigarreteDetailsCommand request)
+        public async Task<IActionResult> UpdateElectronicCigaretteDetail(UpdateElectronicCigaretteDetailsCommand request)
         {
             var result = await _mediator.Send(request);
             if (result.Succeeded)
@@ -59,4 +59,3 @@ namespace NoNicotineAPI.Controllers
         }
     }
 }
-

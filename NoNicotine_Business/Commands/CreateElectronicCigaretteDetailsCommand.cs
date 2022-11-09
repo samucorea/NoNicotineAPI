@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace NoNicotine_Business.Commands
 {
-    public class CreateElectronicCigarreteDetailsCommand : IRequest<Response<ElectronicCigaretteDetails>>
+    public class CreateElectronicCigaretteDetailsCommand : IRequest<Response<ElectronicCigaretteDetails>>
     {
         public short cartridgeLifespan { get; set; }
         public short unitsPerBox { get; set; }

@@ -86,25 +86,25 @@ namespace NoNicotine_Business.Handler
             {
                 if (request.CigaretteDetailsId is not null)
                 {
-                    var isCigarreteDetails = await _context.CigaretteDetails.FindAsync(request.CigaretteDetailsId);
-                    if (isCigarreteDetails is null)
+                    var isCigaretteDetails = await _context.CigaretteDetails.FindAsync(request.CigaretteDetailsId);
+                    if (isCigaretteDetails is null)
                     {
                         return new Response<PatientConsumptionMethods>()
                         {
                             Succeeded = false,
-                            Message = "Invalid Cigarrete Details Id"
+                            Message = "Invalid cigarette Details Id"
                         };
                     }
                 }
                 if (request.ElectronicCigaretteDetailsId is not null)
                 {
-                    var isElectronicCigarrete = await _context.ElectronicCigaretteDetails.FindAsync(request.ElectronicCigaretteDetailsId);
-                    if (isElectronicCigarrete is null)
+                    var isElectronicCigarette = await _context.ElectronicCigaretteDetails.FindAsync(request.ElectronicCigaretteDetailsId);
+                    if (isElectronicCigarette is null)
                     {
                         return new Response<PatientConsumptionMethods>()
                         {
                             Succeeded = false,
-                            Message = "Invalid Electronic Cigarrete Details Id"
+                            Message = "Invalid Electronic cigarette Details Id"
                         };
                     }
                 }

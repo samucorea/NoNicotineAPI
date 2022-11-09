@@ -12,16 +12,16 @@ using System.Threading.Tasks;
 
 namespace NoNicotine_Business.Handler
 {
-    public class CreateElectronicCigarreteDetailsCommandHandler : IRequestHandler<CreateElectronicCigarreteDetailsCommand, Response<ElectronicCigaretteDetails>>
+    public class CreateElectronicCigaretteDetailsCommandHandler : IRequestHandler<CreateElectronicCigaretteDetailsCommand, Response<ElectronicCigaretteDetails>>
     {
         private readonly AppDbContext _context;
-        private readonly ILogger<CreateElectronicCigarreteDetailsCommandHandler> _logger;
-        public CreateElectronicCigarreteDetailsCommandHandler(AppDbContext context, ILogger<CreateElectronicCigarreteDetailsCommandHandler> logger)
+        private readonly ILogger<CreateElectronicCigaretteDetailsCommandHandler> _logger;
+        public CreateElectronicCigaretteDetailsCommandHandler(AppDbContext context, ILogger<CreateElectronicCigaretteDetailsCommandHandler> logger)
         {
             _context = context;
             _logger = logger;
         }
-        public async Task<Response<ElectronicCigaretteDetails>> Handle(CreateElectronicCigarreteDetailsCommand request, CancellationToken cancellationToken)
+        public async Task<Response<ElectronicCigaretteDetails>> Handle(CreateElectronicCigaretteDetailsCommand request, CancellationToken cancellationToken)
         {
             try
             {
@@ -76,7 +76,7 @@ namespace NoNicotine_Business.Handler
             }
         }
 
-        private async Task<Response<ElectronicCigaretteDetails>> ValidationRequest(CreateElectronicCigarreteDetailsCommand request)
+        private async Task<Response<ElectronicCigaretteDetails>> ValidationRequest(CreateElectronicCigaretteDetailsCommand request)
         {
             try
             {

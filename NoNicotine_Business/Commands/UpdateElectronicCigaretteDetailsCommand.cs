@@ -9,12 +9,11 @@ using System.Threading.Tasks;
 
 namespace NoNicotine_Business.Commands
 {
-    public class CreateCigarreteDetailsCommand :IRequest<Response<CigaretteDetails>>
+    public class UpdateElectronicCigaretteDetailsCommand : IRequest<Response<ElectronicCigaretteDetails>>
     {
-        public short unitsPerDay { get; set; }
-        public short daysPerWeek { get; set; }
-        public short unitsPerBox { get; set; }
-        public decimal boxPrice { get; set; }
+        public short? cartridgeLifespan { get; set; }
+        public short? unitsPerBox { get; set; }
+        public decimal? boxPrice { get; set; }
         public string PatientConsumptionMethodsId { get; set; }
     }
 }

@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace NoNicotine_Business.Queries
 {
-    public class GetElectronicCigarreteDetailQuery : IRequest<Response<ElectronicCigaretteDetails>>
+    public class GetElectronicCigaretteDetailQuery : IRequest<Response<ElectronicCigaretteDetails>>
     {
-        public string PatientConsumtionId { get; set; }
+        public string PatientConsumptionId { get; set; }
     }
 
 }
