@@ -15,12 +15,15 @@ using Serilog.Sinks.MSSqlServer;
 using System.Configuration;
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddNewtonsoftJson(options =>
+    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+); ;
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -34,10 +37,15 @@ if (assembly != null)
     builder.Services.AddMediatR(assembly);
 }
 
-string sqlServerConnectionString = builder.Configuration.GetConnectionString("local");
+var connectionStringKey = builder.Environment.IsDevelopment() ? "local" : "AZURE_SQL_CONNECTIONSTRING";
+
+string sqlServerConnectionString = builder.Configuration.GetConnectionString(connectionStringKey);
 
 builder.Services.AddDbContext<AppDbContext>(opts =>
-    opts.UseSqlServer(sqlServerConnectionString));
+{
+    opts.UseSqlServer(sqlServerConnectionString);
+});
+  
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
                                        options.SignIn.RequireConfirmedAccount = true)
@@ -59,6 +67,8 @@ builder.Services.Configure<IdentityOptions>(options =>
 });
 
 builder.Services.AddSingleton<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<IPatientRepository, PatientRepository>();
+builder.Services.AddScoped<IEntryRepository, EntryRepository>();
 
 
 builder.Services.AddCors(options =>
@@ -96,9 +106,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
     {
         ValidateIssuer = true,
         ValidateAudience = true,
-        ValidAudience = builder.Configuration["Jwt:Audience"],
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+        ValidAudience = builder.Configuration["Audience"],
+        ValidIssuer = builder.Configuration["Issuer"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Key"]))
     };
 });
 
@@ -111,13 +121,17 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+else if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/error");
+}
 
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseExceptionHandler("/error");
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

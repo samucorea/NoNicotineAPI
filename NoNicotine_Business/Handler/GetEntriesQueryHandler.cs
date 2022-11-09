@@ -1,9 +1,6 @@
 ﻿using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using NoNicotine_Business.Queries;
 using NoNicotine_Business.Repositories;
-using NoNicotine_Data.Context;
 using NoNicotine_Data.Entities;
 using NoNicotineAPI.Models;
 using System;
@@ -12,19 +9,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-
 namespace NoNicotine_Business.Handler
 {
-    public class GetPatientQueryHandler : IRequestHandler<GetPatientQuery, Response<Patient>>
+    internal class GetEntriesQueryHandler : IRequestHandler<GetEntriesQuery, Response<List<Entry>>>
     {
-
+        private readonly IEntryRepository _entryRepository;
         private readonly IPatientRepository _patientRepository;
-        public GetPatientQueryHandler(IPatientRepository patientRepository)
+        public GetEntriesQueryHandler(IEntryRepository entryRepository, IPatientRepository patientRepository)
         {
+            _entryRepository = entryRepository;
             _patientRepository = patientRepository;
         }
 
-        public async Task<Response<Patient>> Handle(GetPatientQuery request, CancellationToken cancellationToken)
+        public async Task<Response<List<Entry>>> Handle(GetEntriesQuery request, CancellationToken cancellationToken)
         {
 
             var response = ValidateRequest(request);
@@ -36,34 +33,35 @@ namespace NoNicotine_Business.Handler
             var patient = await _patientRepository.GetPatientByUserIdAsync(request.UserId, cancellationToken);
             if (patient == null)
             {
-                return new Response<Patient>
+                return new Response<List<Entry>>
                 {
                     Succeeded = false,
                     Message = "Could not find Patient with specified id"
                 };
             }
 
-            return new Response<Patient>
+            var entries = await _entryRepository.GetPatientEntriesAsync(request.UserId, cancellationToken);
+
+            return new Response<List<Entry>>
             {
                 Succeeded = true,
-                Data = patient
+                Data = entries
             };
 
         }
 
-        private static Response<Patient>? ValidateRequest(GetPatientQuery request)
+        private static Response<List<Entry>>? ValidateRequest(GetEntriesQuery request)
         {
             if (request.UserId == string.Empty)
             {
-                return new Response<Patient>
+                return new Response<List<Entry>>
                 {
                     Succeeded = false,
-                    Message = "Missing Patient Id"
+                    Message = "Missing Patient ID"
                 };
             }
 
             return null;
         }
-
     }
 }

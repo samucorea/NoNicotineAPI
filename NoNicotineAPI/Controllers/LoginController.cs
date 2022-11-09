@@ -1,9 +1,12 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using NoNicotine_Business.Commands;
 using NoNicotine_Business.Queries;
+using NoNicotine_Business.Services;
 using NoNicotine_Data.Context;
 using NoNicotine_Data.Entities;
 using NoNicotineAPI.Models;
@@ -18,10 +21,12 @@ namespace NoNicotineAPI.Controllers
     public class LoginController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly IAuthenticationService _authenticationService;
 
-        public LoginController(IMediator mediator)
+        public LoginController(IMediator mediator, IAuthenticationService authenticationService)
         {
             _mediator = mediator;
+            _authenticationService = authenticationService;
         }
 
         [HttpPost]
@@ -29,12 +34,7 @@ namespace NoNicotineAPI.Controllers
         {
             var result = await _mediator.Send(request);
 
-            if (result.Data == null)
-            {
-                return BadRequest("Something went wrong");
-            }
-
-            if (result.Succeeded)
+            if (result.Succeeded && result.Data != null)
             {
                 var cookieOptions = new CookieOptions()
                 {
@@ -59,24 +59,21 @@ namespace NoNicotineAPI.Controllers
 
         [HttpPost]
         [Route("RefreshToken")]
-        public async Task<IActionResult> RefreshToken(RefreshTokenQuery request)
+        public async Task<IActionResult> RefreshToken(CreateRefreshTokenCommand request)
         {
+
+
             string? requestRefreshToken = Request.Cookies["refreshToken"];
             if (string.IsNullOrEmpty(requestRefreshToken))
             {
                 return BadRequest("No refresh token found");
             }
 
-            request.Token = requestRefreshToken;
+            request.RefreshToken = requestRefreshToken;
 
             var result = await _mediator.Send(request);
-            if (result.Data == null)
-            {
-                return BadRequest("Something went wrong");
-            }
-
-
-            if (result.Succeeded)
+         
+            if (result.Succeeded && result.Data != null)
             {
                 var refreshToken = result.Data.RefreshToken;
                 var cookieOptions = new CookieOptions()
@@ -95,7 +92,7 @@ namespace NoNicotineAPI.Controllers
                 return Ok(response);
             }
 
-            return Unauthorized(result.Message);
+            return Unauthorized(result);
 
 
         }

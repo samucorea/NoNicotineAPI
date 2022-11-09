@@ -23,14 +23,16 @@ namespace NoNicotine_Business.Handler
 
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ILogger<CreatePatientCommandHandler> _logger;
+        private readonly IPatientRepository _patientRepository;
         private readonly AppDbContext _context;
         private const string PATIENT_ROLE = "patient";
-        public CreatePatientCommandHandler( UserManager<IdentityUser> userManager, 
-            ILogger<CreatePatientCommandHandler> logger, AppDbContext dbContext)
+        public CreatePatientCommandHandler( UserManager<IdentityUser> userManager,
+            ILogger<CreatePatientCommandHandler> logger, IPatientRepository patientRepository, AppDbContext context)
         {
             _userManager = userManager;
             _logger = logger;
-            _context = dbContext;
+            _patientRepository = patientRepository;
+            _context = context;
         }
 
         public async Task<Response<Patient>> Handle(CreatePatientCommand request, CancellationToken cancellationToken)
@@ -59,7 +61,7 @@ namespace NoNicotine_Business.Handler
                     };
                 }
 
-            
+                var patientConsumptionMethods = new PatientConsumptionMethods();
                 var patient = new Patient()
                 {
                     Name = request.Name,
@@ -68,8 +70,10 @@ namespace NoNicotine_Business.Handler
                     IdentityUserId = identityUser.Id,
                     Identification = request.Identification,
                     IdentificationType = request.IdentificationPatientType,
-                    PatientConsumptionMethods = new PatientConsumptionMethods()
+                    PatientConsumptionMethodsId = patientConsumptionMethods.ID
                 };
+
+                patientConsumptionMethods.PatientId = patient.ID;
 
                 resultIdentity = await _userManager.AddToRoleAsync(identityUser, PATIENT_ROLE);
                 if (!resultIdentity.Succeeded)
@@ -81,15 +85,23 @@ namespace NoNicotine_Business.Handler
                     };
                 }
 
-
-                await _context.Patient.AddAsync(patient, cancellationToken);
-
-                var result = await _context.SaveChangesAsync(cancellationToken);
-
+                var result = await _patientRepository.CreatePatientAsync(patient, cancellationToken);
                 if (result <= 0)
                 {
                     _logger.LogError("Saving changes when creating patient");
 
+                    return new Response<Patient>
+                    {
+                        Succeeded = false,
+                        Message = "Something went wrong"
+                    };
+                }
+
+                await _context.PatientConsumptionMethods.AddAsync(patientConsumptionMethods);
+
+                result = await _context.SaveChangesAsync(cancellationToken);
+                if(result <= 0)
+                {
                     return new Response<Patient>
                     {
                         Succeeded = false,
