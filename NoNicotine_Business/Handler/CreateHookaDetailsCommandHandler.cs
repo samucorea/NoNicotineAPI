@@ -25,82 +25,73 @@ namespace NoNicotine_Business.Handler
 
         public async Task<Response<HookahDetails>> Handle(CreateHookaDetailsCommand request, CancellationToken cancellationToken)
         {
-            try
+            // validation 
+            var response = ValidateRequest(request);
+            if (response is not null)
             {
-                // validation 
-                var isValidation = await ValidationRequest(request);
-                if (isValidation is not null)
-                {
-                    return isValidation;
-                }
-                // patient consumption method
-                var isPatientConsumption = await _context.PatientConsumptionMethods.FindAsync(request.PatientConsumptionMethodsId);
-
-                var isHookaDetails = new HookahDetails()
-                {
-                    setupPrice = request.setupPrice,
-                    daysPerWeek = request.daysPerWeek,
-                    PatientConsumptionMethodsId = request.PatientConsumptionMethodsId
-                };
-               
-                await _context.HookahDetails.AddAsync(isHookaDetails);
-                var result = await _context.SaveChangesAsync();
-
-                if (result < 1)
-                {
-                    return new Response<HookahDetails>()
-                    {
-                        Succeeded = false,
-                        Message = "Something went wrong"
-                    };
-                }
-
-                // updates relationship with patient comsumption method
-                isPatientConsumption.HookahDetailsId = isHookaDetails.ID;
-                _context.PatientConsumptionMethods.Update(isPatientConsumption);
-                await _context.SaveChangesAsync();
-
+                return response;
+            }
+            // patient consumption method
+            var patientConsumptionMethods = await _context.PatientConsumptionMethods.FindAsync(request.PatientConsumptionMethodsId);
+            if (patientConsumptionMethods == null)
+            {
                 return new Response<HookahDetails>()
                 {
-                    Succeeded = true,
-                    Data = isHookaDetails
+                    Succeeded = false,
+                    Message = "Patient consumption method not found"
                 };
             }
-            catch (Exception ex)
+
+            var hookahDetails = new HookahDetails()
             {
-                _logger.LogError($"Error when creating a hookah detail : {ex.Message}");
+                setupPrice = request.setupPrice,
+                daysPerWeek = request.daysPerWeek,
+                PatientConsumptionMethodsId = request.PatientConsumptionMethodsId
+            };
+
+            await _context.HookahDetails.AddAsync(hookahDetails);
+            var result = await _context.SaveChangesAsync(cancellationToken);
+
+            if (result < 1)
+            {
                 return new Response<HookahDetails>()
                 {
                     Succeeded = false,
                     Message = "Something went wrong"
                 };
             }
+
+            patientConsumptionMethods.HookahDetailsId = hookahDetails.ID;
+            _context.PatientConsumptionMethods.Update(patientConsumptionMethods);
+            await _context.SaveChangesAsync(cancellationToken);
+
+            return new Response<HookahDetails>()
+            {
+                Succeeded = true,
+                Data = hookahDetails
+            };
         }
 
-        private async Task<Response<HookahDetails>> ValidationRequest(CreateHookaDetailsCommand request)
+        private static Response<HookahDetails>? ValidateRequest(CreateHookaDetailsCommand request)
         {
-            try
+            if(request.daysPerWeek <= 0)
             {
-                // check if patient consumption method ID exists
-                var isPatientConsumption = await _context.PatientConsumptionMethods.FindAsync(request.PatientConsumptionMethodsId);
-                if (isPatientConsumption is null)
-                {
-                    return new Response<HookahDetails>()
-                    {
-                        Succeeded = false,
-                        Message = "Invalid patient consumption method Id"
-                    };
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error when validating a hooka detail request : {ex.Message}");
                 return new Response<HookahDetails>()
                 {
                     Succeeded = false,
-                    Message = "Somenthing went wrong"
+                    Message = "Days per week must be greater than 0"
                 };
             }
+
+            if(request.setupPrice <= 0)
+            {
+                return new Response<HookahDetails>()
+                {
+                    Succeeded = false,
+                    Message = "Setup price must be greater than 0"
+                };
+            }
+     
             return null;
         }
     }

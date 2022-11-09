@@ -38,7 +38,6 @@ namespace NoNicotineAPI.Controllers
         }
 
         [HttpGet]
-        [Route("GetPatient")]
         public async Task<IActionResult> GetPatient()
         {
 
@@ -62,11 +61,30 @@ namespace NoNicotineAPI.Controllers
             return BadRequest(result);
         }
 
+        [HttpGet]
+        [Route("consumptionExpenses/{patientConsumptionMethodsId}")]
+        public async Task<IActionResult> GetDailyConsumptionExpenses(string patientConsumptionMethodsId)
+        {
+
+            var request = new GetDailyConsumptionExpensesQuery()
+            {
+                PatientConsumptionMethodsId = patientConsumptionMethodsId
+            };
+
+            var result = await _mediator.Send(request);
+            if (!result.Succeeded)
+            {
+                return BadRequest();
+            }
+
+            return Ok(result.Data);
+        }
+
 
         [HttpPut]
         public async Task<IActionResult> UpdatePatient(UpdatePatientCommand request)
         {
-            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            ClaimsIdentity? identity = HttpContext.User.Identity as ClaimsIdentity;
 
             if (identity == null)
             {

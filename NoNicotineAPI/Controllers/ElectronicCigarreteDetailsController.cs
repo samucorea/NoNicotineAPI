@@ -22,7 +22,7 @@ namespace NoNicotineAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateElectronicCigarreteDetail(CreateElectronicCigarreteDetailsCommand request)
         {
-
+            var user = User.Identity.Name;
             var result = await _mediator.Send(request);
             if (result.Succeeded)
             {

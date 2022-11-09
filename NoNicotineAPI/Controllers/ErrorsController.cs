@@ -20,10 +20,10 @@ namespace NoNicotineAPI.Controllers
         public ErrorResponse Error()
         {
             var context = HttpContext.Features.Get<IExceptionHandlerFeature>();
-            var exception = context.Error;
+            var exception = context!.Error;
             var code = 500;
 
-            _logger.LogError(exception.Message, exception);
+            _logger.LogError("Error in {endpoint}: {errMessage}", context.Endpoint!.DisplayName, exception.Message);
 
             Response.StatusCode = code; 
 

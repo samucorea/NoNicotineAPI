@@ -24,34 +24,41 @@ namespace NoNicotine_Business.Handler
         }
         public async Task<Response<CigarDetails>> Handle(GetCigarDetailsQuery request, CancellationToken cancellationToken)
         {
-            try
+            var response = ValidateRequest(request);
+            if (response != null)
             {
-                // gets the patient consumption method
-                var isCigarDetail = await _context.CigarDetails.Where(x => x.PatientConsumptionMethodsId == request.PatientConsumtionId).FirstOrDefaultAsync();
-                if (isCigarDetail is null)
-                {
-                    return new Response<CigarDetails>
-                    {
-                        Succeeded = false,
-                        Message = "Could not find cigar detail with specified id"
-                    };
-                }
-
-                return new Response<CigarDetails>
-                {
-                    Succeeded = true,
-                    Data = isCigarDetail
-                };
+                return response;
             }
-            catch (Exception ex)
+
+            var patientCigarDetail = await _context.CigarDetails.Where(x => x.PatientConsumptionMethodsId == request.PatientConsumptionId).FirstOrDefaultAsync(cancellationToken);
+            if (patientCigarDetail is null)
             {
-                _logger.LogError("Error while getting cigar detail: {errMessage}", ex.Message);
                 return new Response<CigarDetails>
                 {
                     Succeeded = false,
-                    Message = "Something went wrong"
+                    Message = "Could not find cigar detail with specified id"
                 };
             }
+
+            return new Response<CigarDetails>
+            {
+                Succeeded = true,
+                Data = patientCigarDetail
+            };
+        }
+
+        private static Response<CigarDetails>? ValidateRequest(GetCigarDetailsQuery request)
+        {
+            if(request.PatientConsumptionId == string.Empty)
+            {
+                return new Response<CigarDetails>
+                {
+                    Succeeded = false,
+                    Message = "A patient consumption id must be specified"
+                };
+            }
+
+            return null;
         }
     }
 }

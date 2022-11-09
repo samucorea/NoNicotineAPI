@@ -24,34 +24,41 @@ namespace NoNicotine_Business.Handler
         }
         public async Task<Response<HookahDetails>> Handle(GetHookahDetailsQuery request, CancellationToken cancellationToken)
         {
-            try
+            var response = ValidateRequest(request);
+            if(response != null)
             {
-                // gets the Hookah Details
-                var isHookahDetail = await _context.HookahDetails.Where(x => x.PatientConsumptionMethodsId == request.PatientConsumtionId).FirstOrDefaultAsync();
-                if (isHookahDetail is null)
-                {
-                    return new Response<HookahDetails>
-                    {
-                        Succeeded = false,
-                        Message = "Could not find hookah detail with specified id"
-                    };
-                }
-
-                return new Response<HookahDetails>
-                {
-                    Succeeded = true,
-                    Data = isHookahDetail
-                };
+                return response;
             }
-            catch (Exception ex)
+
+            var isHookahDetail = await _context.HookahDetails.Where(x => x.PatientConsumptionMethodsId == request.PatientConsumptionId).FirstOrDefaultAsync();
+            if (isHookahDetail is null)
             {
-                _logger.LogError("Error while getting hookah detail: {errMessage}", ex.Message);
                 return new Response<HookahDetails>
                 {
                     Succeeded = false,
-                    Message = "Something went wrong"
+                    Message = "Could not find hookah detail with specified id"
                 };
             }
+
+            return new Response<HookahDetails>
+            {
+                Succeeded = true,
+                Data = isHookahDetail
+            };
+        }
+
+        private static Response<HookahDetails>? ValidateRequest(GetHookahDetailsQuery request)
+        {
+            if(request.PatientConsumptionId == string.Empty)
+            {
+                return new Response<HookahDetails>()
+                {
+                    Succeeded = false,
+                    Message = "You must specify a patient consumption id"
+                };
+            }
+
+            return null;
         }
     }
 }

@@ -26,61 +26,58 @@ namespace NoNicotine_Business.Handler
 
         public async Task<Response<HookahDetails>> Handle(UpdateHookaDetailsCommand request, CancellationToken cancellationToken)
         {
-            try
+            var response = ValidateRequest(request);
+            if (response != null)
             {
-                var response = await ValidateRequest(request);
-                if (request is not null)
-                {
-                    return response;
-                }
+                return response;
+            }
 
-                var isHookaDetails = await _context.HookahDetails.Where(x => x.PatientConsumptionMethodsId == request.PatientConsumptionMethodsId).FirstOrDefaultAsync(); ;
-                if (request.daysPerWeek is not null)
-                    isHookaDetails.daysPerWeek = (short)request.daysPerWeek;
-                if (request.setupPrice is not null)
-                    isHookaDetails.setupPrice = (short)request.setupPrice;
-
-                _context.HookahDetails.Update(isHookaDetails);
-                var result = await _context.SaveChangesAsync();
-
-                if (result < 1)
-                {
-                    return new Response<HookahDetails>()
-                    {
-                        Succeeded = false,
-                        Message = "Something went wrong"
-                    };
-                }
-
-                _logger.LogInformation($"Hookah Detail with ID {isHookaDetails.ID} updated");
+            var hookahDetails = await _context.HookahDetails.Where(x => x.PatientConsumptionMethodsId == request.PatientConsumptionMethodsId).FirstOrDefaultAsync(cancellationToken);
+            if (hookahDetails == null)
+            {
                 return new Response<HookahDetails>()
                 {
-                    Succeeded = true,
-                    Data = isHookaDetails
+                    Succeeded = false,
+                    Message = "Hookah details was not found on patient"
                 };
             }
-            catch (Exception ex)
+
+            if (request.daysPerWeek is not null)
+                hookahDetails.daysPerWeek = (short)request.daysPerWeek;
+            if (request.setupPrice is not null)
+                hookahDetails.setupPrice = (short)request.setupPrice;
+
+            _context.HookahDetails.Update(hookahDetails);
+            var result = await _context.SaveChangesAsync();
+
+            if (result < 1)
             {
-                _logger.LogError("Error updating hooka detail: {errMessage}", ex.Message);
-                return new Response<HookahDetails>
+                return new Response<HookahDetails>()
                 {
                     Succeeded = false,
                     Message = "Something went wrong"
                 };
             }
+
+            _logger.LogInformation($"Hookah Detail with ID {hookahDetails.ID} updated");
+            return new Response<HookahDetails>()
+            {
+                Succeeded = true,
+                Data = hookahDetails
+            };
         }
 
-        private async Task<Response<HookahDetails>>? ValidateRequest(UpdateHookaDetailsCommand request)
+        private static Response<HookahDetails>? ValidateRequest(UpdateHookaDetailsCommand request)
         {
-            var isHookaDetails = await _context.HookahDetails.Where(x => x.PatientConsumptionMethodsId == request.PatientConsumptionMethodsId).FirstOrDefaultAsync();
-            if (isHookaDetails is null)
+            if(request.PatientConsumptionMethodsId == string.Empty)
             {
                 return new Response<HookahDetails>()
                 {
                     Succeeded = false,
-                    Message = "Hookah Detail not found with specified id"
+                    Message = "You must specify a patient consumption methods id"
                 };
             }
+
             return null;
         }
     }

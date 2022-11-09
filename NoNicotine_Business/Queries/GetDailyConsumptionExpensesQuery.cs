@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using NoNicotine_Data.Entities;
+using NoNicotine_Business.Value_Objects;
 using NoNicotineAPI.Models;
 using System;
 using System.Collections.Generic;
@@ -7,12 +7,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NoNicotine_Business.Commands
+namespace NoNicotine_Business.Queries
 {
-    public class UpdateHookaDetailsCommand : IRequest<Response<HookahDetails>>
+    public class GetDailyConsumptionExpensesQuery : IRequest<Response<DailyConsumptionResponse>>
     {
-        public short? daysPerWeek { get; set; }
-        public decimal? setupPrice { get; set; }
         public string PatientConsumptionMethodsId { get; set; } = string.Empty;
     }
 }
