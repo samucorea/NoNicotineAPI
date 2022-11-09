@@ -45,6 +45,7 @@ builder.Services.AddDbContext<AppDbContext>(opts =>
 {
     opts.UseSqlServer(sqlServerConnectionString);
 });
+  
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
                                        options.SignIn.RequireConfirmedAccount = true)
