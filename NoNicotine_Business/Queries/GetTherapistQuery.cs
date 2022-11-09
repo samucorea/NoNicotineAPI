@@ -11,6 +11,6 @@ namespace NoNicotine_Business.Queries
 {
     public class GetTherapistQuery : IRequest<Response<Therapist>>
     {
-        public string Id { get; set; }
+        public string UserId { get; set; }
     }
 }

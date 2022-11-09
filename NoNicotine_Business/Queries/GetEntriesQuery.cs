@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace NoNicotine_Business.Queries
 {
-    public class GetPatientQuery : IRequest<Response<Patient>>
+    public class GetEntriesQuery : IRequest<Response<List<Entry>>>
     {
         public string UserId { get; set; } = string.Empty;
     }

@@ -1,4 +1,5 @@
-﻿using NoNicotine_Data.Context;
+﻿using Microsoft.EntityFrameworkCore;
+using NoNicotine_Data.Context;
 using NoNicotine_Data.Entities;
 using System;
 using System.Collections.Generic;
@@ -22,9 +23,9 @@ namespace NoNicotine_Business.Repositories
             return await _context.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task<Patient?> GetPatientByIdAsync(string id)
+        public async Task<Patient?> GetPatientByUserIdAsync(string userId, CancellationToken cancellationToken)
         {
-            var patient = await _context.Patient.FindAsync(id);
+            var patient = await _context.Patient.Include("PatientConsumptionMethods").Where(patient => patient.IdentityUserId == userId).FirstOrDefaultAsync(cancellationToken);
             if(patient == null)
             {
                 return null;

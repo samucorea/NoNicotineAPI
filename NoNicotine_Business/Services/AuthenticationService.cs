@@ -28,13 +28,13 @@ namespace NoNicotine_Business.Services
                 return "";
             }
 
-            var subject = _configuration["Jwt:Subject"];
+            var subject = _configuration["Subject"];
             if (subject == null)
             {
                 return "";
             }
 
-            var jwtKey = _configuration["Jwt:Key"];
+            var jwtKey = _configuration["Key"];
             if (jwtKey == null)
             {
                 return "";
@@ -61,8 +61,8 @@ namespace NoNicotine_Business.Services
             }
 
             var token = new JwtSecurityToken(
-                _configuration["Jwt:Issuer"],
-                _configuration["Jwt:Audience"],
+                _configuration["Issuer"],
+                _configuration["Audience"],
                 claims,
                 expires: DateTime.UtcNow.AddMinutes(10),
                 signingCredentials: signIn);
@@ -82,6 +82,17 @@ namespace NoNicotine_Business.Services
                 Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
                 ExpiresAt = DateTime.Now.AddDays(7)
             };
+        }
+
+        public string GetUserIdFromClaims(ClaimsIdentity claims)
+        { 
+            var patientUserIdClaim = claims.FindFirst("UserId");
+            if (patientUserIdClaim == null)
+            {
+                return "";
+            }
+
+            return patientUserIdClaim.Value;
         }
     }
 }
