@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace NoNicotine_Business.Commands
 {
-    public class UpdateHookaDetailsCommand : IRequest<Response<HookahDetails>>
+    public class UpdateHookahDetailsCommand : IRequest<Response<HookahDetails>>
     {
         public short? daysPerWeek { get; set; }
         public decimal? setupPrice { get; set; }

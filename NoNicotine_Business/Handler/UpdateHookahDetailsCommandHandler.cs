@@ -13,18 +13,18 @@ using System.Threading.Tasks;
 
 namespace NoNicotine_Business.Handler
 {
-    public class UpdateHookaDetailsCommandHandler : IRequestHandler<UpdateHookaDetailsCommand, Response<HookahDetails>>
+    public class UpdateHookahDetailsCommandHandler : IRequestHandler<UpdateHookahDetailsCommand, Response<HookahDetails>>
     {
-        private readonly ILogger<UpdateHookaDetailsCommandHandler> _logger;
+        private readonly ILogger<UpdateHookahDetailsCommandHandler> _logger;
         private readonly AppDbContext _context;
 
-        public UpdateHookaDetailsCommandHandler(ILogger<UpdateHookaDetailsCommandHandler> logger, AppDbContext dbContext)
+        public UpdateHookahDetailsCommandHandler(ILogger<UpdateHookahDetailsCommandHandler> logger, AppDbContext dbContext)
         {
             _logger = logger;
             _context = dbContext;
         }
 
-        public async Task<Response<HookahDetails>> Handle(UpdateHookaDetailsCommand request, CancellationToken cancellationToken)
+        public async Task<Response<HookahDetails>> Handle(UpdateHookahDetailsCommand request, CancellationToken cancellationToken)
         {
             var response = ValidateRequest(request);
             if (response != null)
@@ -67,7 +67,7 @@ namespace NoNicotine_Business.Handler
             };
         }
 
-        private static Response<HookahDetails>? ValidateRequest(UpdateHookaDetailsCommand request)
+        private static Response<HookahDetails>? ValidateRequest(UpdateHookahDetailsCommand request)
         {
             if(request.PatientConsumptionMethodsId == string.Empty)
             {

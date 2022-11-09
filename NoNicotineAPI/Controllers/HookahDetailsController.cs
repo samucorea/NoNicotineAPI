@@ -19,7 +19,7 @@ namespace NoNicotineAPI.Controllers
         private readonly IMediator _mediator;
 
         [HttpPost]
-        public async Task<IActionResult> CreateHookahDetail(CreateHookaDetailsCommand request)
+        public async Task<IActionResult> CreateHookahDetail(CreateHookahDetailsCommand request)
         {
 
             var result = await _mediator.Send(request);
@@ -47,7 +47,7 @@ namespace NoNicotineAPI.Controllers
 
 
         [HttpPut]
-        public async Task<IActionResult> UpdateHookahDetail(UpdateHookaDetailsCommand request)
+        public async Task<IActionResult> UpdateHookahDetail(UpdateHookahDetailsCommand request)
         {
             var result = await _mediator.Send(request);
             if (result.Succeeded)

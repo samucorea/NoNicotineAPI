@@ -13,17 +13,17 @@ using System.Threading.Tasks;
 
 namespace NoNicotine_Business.Handler
 {
-    public class CreateHookaDetailsCommandHandler : IRequestHandler<CreateHookaDetailsCommand, Response<HookahDetails>>
+    public class CreateHookahDetailsCommandHandler : IRequestHandler<CreateHookahDetailsCommand, Response<HookahDetails>>
     {
         private readonly AppDbContext _context;
-        private readonly ILogger<CreateHookaDetailsCommandHandler> _logger;
-        public CreateHookaDetailsCommandHandler(AppDbContext context, ILogger<CreateHookaDetailsCommandHandler> logger)
+        private readonly ILogger<CreateHookahDetailsCommandHandler> _logger;
+        public CreateHookahDetailsCommandHandler(AppDbContext context, ILogger<CreateHookahDetailsCommandHandler> logger)
         {
             _context = context;
             _logger = logger;
         }
 
-        public async Task<Response<HookahDetails>> Handle(CreateHookaDetailsCommand request, CancellationToken cancellationToken)
+        public async Task<Response<HookahDetails>> Handle(CreateHookahDetailsCommand request, CancellationToken cancellationToken)
         {
             // validation 
             var response = ValidateRequest(request);
@@ -72,7 +72,7 @@ namespace NoNicotine_Business.Handler
             };
         }
 
-        private static Response<HookahDetails>? ValidateRequest(CreateHookaDetailsCommand request)
+        private static Response<HookahDetails>? ValidateRequest(CreateHookahDetailsCommand request)
         {
             if(request.daysPerWeek <= 0)
             {
