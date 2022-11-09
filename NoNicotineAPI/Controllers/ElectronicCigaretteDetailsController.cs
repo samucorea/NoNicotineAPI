@@ -22,7 +22,6 @@ namespace NoNicotineAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateElectronicCigaretteDetail(CreateElectronicCigaretteDetailsCommand request)
         {
-            var user = User.Identity.Name;
             var result = await _mediator.Send(request);
             if (result.Succeeded)
             {
@@ -33,10 +32,11 @@ namespace NoNicotineAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetElectronicCigaretteDetail(GetElectronicCigaretteDetailQuery request)
+        [Route("{patientConsumptionId}")]
+        public async Task<IActionResult> GetElectronicCigaretteDetail(string patientConsumptionId)
         {
 
-            var result = await _mediator.Send(request);
+            var result = await _mediator.Send(new GetElectronicCigaretteDetailQuery() { PatientConsumptionId = patientConsumptionId });
             if (result.Succeeded)
             {
                 return Ok(result);
