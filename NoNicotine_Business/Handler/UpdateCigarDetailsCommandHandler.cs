@@ -62,7 +62,5 @@ namespace NoNicotine_Business.Handler
                 Data = currentCigarDetail
             };
         }
-
- 
     }
 }

@@ -24,86 +24,93 @@ namespace NoNicotine_Business.Handler
 
         public async Task<Response<CigaretteDetails>> Handle(CreateCigaretteDetailsCommand request, CancellationToken cancellationToken)
         {
-            try
+            var response = ValidateRequest(request);
+            if (response != null)
             {
-                // validation 
-                var isValidation = await ValidationRequest(request);
-                if (isValidation is not null)
-                {
-                    return isValidation;
-                }
+                return response;
+            }
 
-                // patient consumption method
-                var isPatientConsumption = await _context.PatientConsumptionMethods.FindAsync(request.PatientConsumptionMethodsId);
-
-
-                var isCigaretteDetails = new CigaretteDetails()
-                {
-                    unitsPerBox = request.unitsPerBox,
-                    unitsPerDay = request.unitsPerDay,
-                    boxPrice = request.boxPrice,
-                    daysPerWeek = request.daysPerWeek,
-                    PatientConsumptionMethodsId = request.PatientConsumptionMethodsId
-                };
-
-                await _context.CigaretteDetails.AddAsync(isCigaretteDetails);
-                var result = await _context.SaveChangesAsync();
-
-                if (result < 1)
-                {
-                    return new Response<CigaretteDetails>()
-                    {
-                        Succeeded = false,
-                        Message = "Something went wrong"
-                    };
-                }
-
-                isPatientConsumption.CigaretteDetailsId = isCigaretteDetails.ID;
-                _context.PatientConsumptionMethods.Update(isPatientConsumption);
-                await _context.SaveChangesAsync();
-
+            // check if patient consumption method ID exists
+            var patientConsumptionMethods = await _context.PatientConsumptionMethods.FindAsync(request.PatientConsumptionMethodsId);
+            if (patientConsumptionMethods is null)
+            {
                 return new Response<CigaretteDetails>()
                 {
-                    Succeeded = true,
-                    Data = isCigaretteDetails
+                    Succeeded = false,
+                    Message = "Invalid patient consumption method Id"
                 };
-
             }
-            catch (Exception ex)
+
+            var cigaretteDetails = new CigaretteDetails()
             {
-                _logger.LogError($"Error when creating a cigar detail : {ex.Message}");
+                unitsPerBox = request.unitsPerBox,
+                unitsPerDay = request.unitsPerDay,
+                boxPrice = request.boxPrice,
+                daysPerWeek = request.daysPerWeek,
+                PatientConsumptionMethodsId = request.PatientConsumptionMethodsId
+            };
+
+            await _context.CigaretteDetails.AddAsync(cigaretteDetails);
+            var result = await _context.SaveChangesAsync(cancellationToken);
+
+            if (result < 1)
+            {
                 return new Response<CigaretteDetails>()
                 {
                     Succeeded = false,
                     Message = "Something went wrong"
                 };
             }
+
+            // updates relationship with patient comsumption method
+            patientConsumptionMethods.CigaretteDetailsId = cigaretteDetails.ID;
+            _context.PatientConsumptionMethods.Update(patientConsumptionMethods);
+            await _context.SaveChangesAsync(cancellationToken);
+            return new Response<CigaretteDetails>()
+            {
+                Succeeded = true,
+                Data = cigaretteDetails
+            };
         }
 
-        private async Task<Response<CigaretteDetails>> ValidationRequest(CreateCigaretteDetailsCommand request)
+        private static Response<CigaretteDetails>? ValidateRequest(CreateCigaretteDetailsCommand request)
         {
-            try
+            if (request.unitsPerDay <= 0)
             {
-                // check if patient consumption method ID exists
-                var isPatientConsumption = await _context.PatientConsumptionMethods.FindAsync(request.PatientConsumptionMethodsId);
-                if (isPatientConsumption is null)
-                {
-                    return new Response<CigaretteDetails>()
-                    {
-                        Succeeded = false,
-                        Message = "Invalid patient consumption method Id"
-                    };
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error when validating a cigarette detail request : {ex.Message}");
                 return new Response<CigaretteDetails>()
                 {
                     Succeeded = false,
-                    Message = "Somenthing went wrong"
+                    Message = "Units per day must be greater than 0"
                 };
             }
+
+            if (request.daysPerWeek <= 0)
+            {
+                return new Response<CigaretteDetails>()
+                {
+                    Succeeded = false,
+                    Message = "Days per week must be greater than 0"
+                };
+            }
+
+            if (request.unitsPerBox <= 0)
+            {
+                return new Response<CigaretteDetails>()
+                {
+                    Succeeded = false,
+                    Message = "Units per box must be greater than 0"
+                };
+            }
+
+            if (request.boxPrice <= 0)
+            {
+                return new Response<CigaretteDetails>()
+                {
+                    Succeeded = false,
+                    Message = "Box price must be greater than 0"
+                };
+            }
+
             return null;
         }
     }
