@@ -17,9 +17,6 @@ namespace NoNicotine_Data.Context
         {
             
         }
-
-        public AppDbContext() { }
-
         public DbSet<Entry> Entry { get; set; }
         public DbSet<Habit> Habit { get; set; }
         public DbSet<LinkRequest> LinkRequest { get; set; }

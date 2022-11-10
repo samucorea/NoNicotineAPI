@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System.Text.Json.Serialization;
 
 namespace NoNicotineAPI.Models
 {
@@ -9,6 +10,7 @@ namespace NoNicotineAPI.Models
 
         public string? Message { get; set; }
 
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public T? Data { get; set; }
     }
 }

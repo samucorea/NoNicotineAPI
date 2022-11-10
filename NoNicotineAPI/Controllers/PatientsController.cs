@@ -106,5 +106,76 @@ namespace NoNicotineAPI.Controllers
 
             return BadRequest(result);
         }
+
+        [HttpPost]
+        [Route("Habit")]
+        public async Task<IActionResult> CreatePatientHabit(CreatePatientHabitCommand request)
+        {
+
+            if (HttpContext.User.Identity is not ClaimsIdentity identity)
+            {
+                return Unauthorized();
+            }
+            var patientUserId = _authenticationService.GetUserIdFromClaims(identity);
+
+            request.UserId = patientUserId;
+
+            var result = await _mediator.Send(request);
+            if (result.Succeeded && result.Data != null)
+            {
+                return Ok(result.Data);
+            }
+
+            return BadRequest(result);
+        }
+
+        [HttpPut]
+        [Route("Habit")]
+        public async Task<IActionResult> UpdatePatientHabit(UpdatePatientHabitCommand request)
+        {
+
+            if (HttpContext.User.Identity is not ClaimsIdentity identity)
+            {
+                return Unauthorized();
+            }
+            var patientUserId = _authenticationService.GetUserIdFromClaims(identity);
+
+            request.UserId = patientUserId;
+
+            var result = await _mediator.Send(request);
+            if (result.Succeeded && result.Data != null)
+            {
+                return Ok(result.Data);
+            }
+
+            return BadRequest(result);
+        }
+
+        [HttpGet]
+        [Route("Habits")]
+        public async Task<IActionResult> GetAllPatientHabits()
+        {
+
+            if (HttpContext.User.Identity is not ClaimsIdentity identity)
+            {
+                return Unauthorized();
+            }
+            var patientUserId = _authenticationService.GetUserIdFromClaims(identity);
+
+            var request = new GetAllPatientHabitsQuery()
+            {
+                UserId = patientUserId
+            };
+
+            var result = await _mediator.Send(request);
+            if (result.Succeeded && result.Data != null)
+            {
+                return Ok(result.Data);
+            }
+
+            return BadRequest(result);
+        }
+
+
     }
 }

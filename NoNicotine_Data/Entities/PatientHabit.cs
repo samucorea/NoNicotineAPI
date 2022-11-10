@@ -12,7 +12,6 @@ namespace NoNicotine_Data.Entities
     {        
         [ForeignKey("Patient")]
         public string PatientId { get; set; }
-        public Patient Patient { get; set; }
 
         [ForeignKey("Habit")]
         public string HabitId { get; set; }
