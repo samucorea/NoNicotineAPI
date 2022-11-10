@@ -46,7 +46,8 @@ namespace NoNicotineAPI.Controllers
 
                 var response = new AuthResponse()
                 {
-                    Token = result.Data.Token
+                    Token = result.Data.Token,
+                    RefreshToken = result.Data.RefreshToken.Token
                 };
                 return Ok(response);
             }
@@ -86,7 +87,8 @@ namespace NoNicotineAPI.Controllers
 
                 var response = new AuthResponse()
                 {
-                    Token = result.Data.Token
+                    Token = result.Data.Token,
+                    RefreshToken = result.Data.RefreshToken.Token
                 };
 
                 return Ok(response);

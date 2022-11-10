@@ -25,20 +25,35 @@ namespace NoNicotine_Business.Repositories
 
         public async Task<Patient?> GetPatientByUserIdAsync(string userId, CancellationToken cancellationToken)
         {
-            var patient = await _context.Patient.Include("PatientConsumptionMethods").Where(patient => patient.IdentityUserId == userId).FirstOrDefaultAsync(cancellationToken);
+            var patient = await _context.Patient.Where(patient => patient.IdentityUserId == userId).FirstOrDefaultAsync(cancellationToken);
             if(patient == null)
             {
                 return null;
             }
 
+            var patientConsumptionMethods = await _context.PatientConsumptionMethods.Where(pcm => pcm.PatientId == patient.ID).FirstOrDefaultAsync();
+            if(patientConsumptionMethods == null)
+            {
+                return null;
+            }
+
+            patient.PatientConsumptionMethodsId = patientConsumptionMethods.ID;
+
             return patient;
         }
 
-        public async Task<bool> CreateEmptyPatientConsumptionMethods(string patientId, CancellationToken cancellationToken)
+        public async Task<PatientConsumptionMethods?> CreateEmptyPatientConsumptionMethods(string patientId, CancellationToken cancellationToken)
         {
-            await _context.PatientConsumptionMethods.AddAsync(new PatientConsumptionMethods { PatientId = patientId });
+            var patientConsumptionMethods = new PatientConsumptionMethods { PatientId = patientId };
+            await _context.PatientConsumptionMethods.AddAsync(patientConsumptionMethods);
 
-            return await _context.SaveChangesAsync(cancellationToken) == 1;
+            var result =  await _context.SaveChangesAsync(cancellationToken);
+            if (result < 1)
+            {
+                return null;
+            }
+
+            return patientConsumptionMethods;
         }
     }
 }

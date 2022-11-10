@@ -94,8 +94,8 @@ namespace NoNicotine_Business.Handler
                     };
                 }
 
-                var succeeded = await _patientRepository.CreateEmptyPatientConsumptionMethods(patient.ID, cancellationToken);
-                if(!succeeded)
+                var patientConsumptionMethods = await _patientRepository.CreateEmptyPatientConsumptionMethods(patient.ID, cancellationToken);
+                if(patientConsumptionMethods == null)
                 {
                     transaction.Rollback();
 
@@ -107,6 +107,8 @@ namespace NoNicotine_Business.Handler
                 }
 
                 transaction.Commit();
+
+                patient.PatientConsumptionMethodsId = patientConsumptionMethods.ID;
 
                 return new Response<Patient>
                 {

@@ -29,7 +29,7 @@ namespace NoNicotineAPI.Controllers
             var result = await _mediator.Send(new GetPatientConsumptionMethodQuery() { PatientConsumtionId = patientConsumptionMethodsId});
             if (result.Succeeded)
             {
-                return Ok(result);
+                return Ok(result.Data);
             }
 
             return BadRequest(result);
