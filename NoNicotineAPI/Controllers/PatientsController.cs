@@ -79,8 +79,29 @@ namespace NoNicotineAPI.Controllers
 
             return Ok(result.Data);
         }
+        
+        [HttpPut]
+        [Route("indicateRelapse")]
+        public async Task<IActionResult> IndicateRelapse(IndicateRelapseCommand request)
+        {
 
+            if (HttpContext.User.Identity is not ClaimsIdentity identity)
+            {
+                return Unauthorized();
+            }
+            var patientUserId = _authenticationService.GetUserIdFromClaims(identity);
 
+            request.UserId = patientUserId;
+
+            var result = await _mediator.Send(request);
+            if (result.Succeeded && result.Data != null)
+            {
+                return Ok(result.Data);
+            }
+
+            return BadRequest(result);
+        }
+        
         [HttpPut]
         public async Task<IActionResult> UpdatePatient(UpdatePatientCommand request)
         {
@@ -108,7 +129,7 @@ namespace NoNicotineAPI.Controllers
         }
 
         [HttpPost]
-        [Route("Habit")]
+        [Route("Habits")]
         public async Task<IActionResult> CreatePatientHabit(CreatePatientHabitCommand request)
         {
 
@@ -130,7 +151,7 @@ namespace NoNicotineAPI.Controllers
         }
 
         [HttpPut]
-        [Route("Habit")]
+        [Route("Habits")]
         public async Task<IActionResult> UpdatePatientHabit(UpdatePatientHabitCommand request)
         {
 

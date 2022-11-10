@@ -61,7 +61,6 @@ namespace NoNicotine_Business.Handler
                     };
                 }
 
-                var patientConsumptionMethods = new PatientConsumptionMethods();
                 var patient = new Patient()
                 {
                     Name = request.Name,
@@ -70,11 +69,8 @@ namespace NoNicotine_Business.Handler
                     IdentityUserId = identityUser.Id,
                     Identification = request.Identification,
                     IdentificationType = request.IdentificationPatientType,
-                    PatientConsumptionMethodsId = patientConsumptionMethods.ID,
                     StartTime= DateTime.Now,
                 };
-
-                patientConsumptionMethods.PatientId = patient.ID;
 
                 resultIdentity = await _userManager.AddToRoleAsync(identityUser, PATIENT_ROLE);
                 if (!resultIdentity.Succeeded)
