@@ -14,5 +14,7 @@ namespace NoNicotine_Business.Repositories
         public Task<int> CreatePatientAsync(Patient patient, CancellationToken cancellationToken);
 
         public Task<PatientConsumptionMethods?> CreateEmptyPatientConsumptionMethods(string patientId, CancellationToken cancellationToken);
+
+        public Task<List<Patient>> GetTherapistPatientsAsync(string therapistId, CancellationToken cancellationToken);
     }
 }

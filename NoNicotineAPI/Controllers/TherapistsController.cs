@@ -80,5 +80,29 @@ namespace NoNicotineAPI.Controllers
 
             return BadRequest(result);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetPatients()
+        {
+            if (HttpContext.User.Identity is not ClaimsIdentity identity)
+            {
+                return Unauthorized();
+            }
+
+            var therapistUserId = _authenticationService.GetUserIdFromClaims(identity);
+
+            var request = new GetTherapistPatientsQuery()
+            {
+                UserId = therapistUserId
+            };
+
+            var result = await _mediator.Send(request);
+            if (result.Succeeded)
+            {
+                return Ok(result.Data);
+            }
+
+            return BadRequest(result);
+        }
     }
 }

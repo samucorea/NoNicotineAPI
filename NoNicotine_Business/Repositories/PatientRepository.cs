@@ -55,5 +55,12 @@ namespace NoNicotine_Business.Repositories
 
             return patientConsumptionMethods;
         }
+
+        public async Task<List<Patient>> GetTherapistPatientsAsync(string therapistId, CancellationToken cancellationToken)
+        {
+            var patients = await _context.Patient.Where(patient => patient.TherapistId == therapistId).ToListAsync(cancellationToken);
+
+            return patients;
+        }
     }
 }
