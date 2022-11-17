@@ -13,20 +13,25 @@ using NoNicotineAPI.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Web;
 
 namespace NoNicotineAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class LoginController : ControllerBase
+    public class LoginController : Controller
     {
         private readonly IMediator _mediator;
         private readonly IAuthenticationService _authenticationService;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly IEmailService _emailService;
 
-        public LoginController(IMediator mediator, IAuthenticationService authenticationService)
+        public LoginController(IMediator mediator, IAuthenticationService authenticationService, UserManager<IdentityUser> userManager, IEmailService emailService)
         {
             _mediator = mediator;
             _authenticationService = authenticationService;
+            _userManager = userManager;
+            _emailService = emailService;
         }
 
         [HttpPost]
@@ -97,6 +102,53 @@ namespace NoNicotineAPI.Controllers
             return Unauthorized(result);
 
 
+        }
+
+        [HttpPost]
+        [Route("PasswordReset")]
+        public async Task<IActionResult> PasswordReset(ForgotPasswordRequest request)
+        {
+            if (request.Email == string.Empty)
+            {
+                return BadRequest(new Response<int>
+                {
+                    Message = "You must specify an email to reset password"
+                });
+            }
+            var user = await _userManager.FindByEmailAsync(request.Email);
+            if(user == null)
+            {
+                return BadRequest(new Response<int>
+                {
+                    Message = "No user was found with specified email"
+                });
+            }
+
+            var forgotPasswordToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+            if(forgotPasswordToken == null)
+            {
+                return BadRequest(new Response<int>
+                {
+                    Message = "Something went wrong"
+                });
+            }
+
+            var forgotPasswordLink = Url.ActionLink("Index", "ForgotPassword", new { token = HttpUtility.UrlEncode(forgotPasswordToken), email = user.Email });
+            if (forgotPasswordLink == null)
+            {
+                return BadRequest(new Response<int>
+                {
+                    Message = "Something went wrong"
+                });
+                
+            }
+
+            _emailService.SendPasswordRecoveryEmail(user.Email, forgotPasswordLink);
+
+            return Ok(new Response<int>
+            {
+                Message = "Reset password email sent successfully"
+            });
         }
     }
 

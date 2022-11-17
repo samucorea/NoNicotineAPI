@@ -1,11 +1,14 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NoNicotine_Business.Commands;
 using NoNicotine_Business.Repositories;
+using NoNicotine_Business.Services;
+using NoNicotine_Business.Value_Objects;
 using NoNicotine_Data.Context;
 using NoNicotine_Data.Entities;
 using NoNicotineAPI.Models;
@@ -14,11 +17,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Web;
 
 namespace NoNicotine_Business.Handler
 {
-    public class CreatePatientCommandHandler : IRequestHandler<CreatePatientCommand, Response<Patient>>
+    public class CreatePatientCommandHandler : IRequestHandler<CreatePatientCommand, Response<CreatePatientResponse>>
     {
 
         private readonly UserManager<IdentityUser> _userManager;
@@ -27,7 +30,7 @@ namespace NoNicotine_Business.Handler
         private readonly AppDbContext _context;
         private const string PATIENT_ROLE = "patient";
         public CreatePatientCommandHandler( UserManager<IdentityUser> userManager,
-            ILogger<CreatePatientCommandHandler> logger, IPatientRepository patientRepository, AppDbContext context)
+            ILogger<CreatePatientCommandHandler> logger, IPatientRepository patientRepository, AppDbContext context, IEmailService emailService, SignInManager<IdentityUser> signInManager)
         {
             _userManager = userManager;
             _logger = logger;
@@ -35,7 +38,7 @@ namespace NoNicotine_Business.Handler
             _context = context;
         }
 
-        public async Task<Response<Patient>> Handle(CreatePatientCommand request, CancellationToken cancellationToken)
+        public async Task<Response<CreatePatientResponse>> Handle(CreatePatientCommand request, CancellationToken cancellationToken)
         {
 
             using var transaction = _context.Database.BeginTransaction();
@@ -54,7 +57,8 @@ namespace NoNicotine_Business.Handler
  
                 if (!resultIdentity.Succeeded)
                 {
-                    return new Response<Patient>
+                    transaction.Rollback();
+                    return new Response<CreatePatientResponse>
                     {
                         Succeeded = false,
                         Message = $"Could not create user: {resultIdentity.Errors.First().Description}"
@@ -75,7 +79,8 @@ namespace NoNicotine_Business.Handler
                 resultIdentity = await _userManager.AddToRoleAsync(identityUser, PATIENT_ROLE);
                 if (!resultIdentity.Succeeded)
                 {
-                    return new Response<Patient>()
+                    transaction.Rollback();
+                    return new Response<CreatePatientResponse>()
                     {
                         Succeeded = false,
                         Message = "Could not assign patient role to user",
@@ -85,9 +90,10 @@ namespace NoNicotine_Business.Handler
                 var result = await _patientRepository.CreatePatientAsync(patient, cancellationToken);
                 if (result <= 0)
                 {
+                    transaction.Rollback();
                     _logger.LogError("Saving changes when creating patient");
 
-                    return new Response<Patient>
+                    return new Response<CreatePatientResponse>
                     {
                         Succeeded = false,
                         Message = "Something went wrong"
@@ -99,7 +105,7 @@ namespace NoNicotine_Business.Handler
                 {
                     transaction.Rollback();
 
-                    return new Response<Patient>()
+                    return new Response<CreatePatientResponse>()
                     {
                         Succeeded = false,
                         Message = "Could not create empty patient consumption methods"
@@ -110,17 +116,22 @@ namespace NoNicotine_Business.Handler
 
                 patient.PatientConsumptionMethodsId = patientConsumptionMethods.ID;
 
-                return new Response<Patient>
+                return new Response<CreatePatientResponse>
                 {
                     Succeeded = true,
-                    Data = patient
+                    Data = new CreatePatientResponse
+                    {
+                        Patient=patient,
+                        ConfirmationToken=await GenerateEmailConfirmationUrlAsync(identityUser),
+                        Email= identityUser.Email
+                    }
                 };
             }
             catch (Exception ex)
             {
                 _logger.LogError("Error creating patient: {errMessage}", ex.Message);
                 transaction.Rollback();
-                return new Response<Patient>
+                return new Response<CreatePatientResponse>
                 {
                     Succeeded = false,
                     Message = "Something went wrong"
@@ -131,12 +142,12 @@ namespace NoNicotine_Business.Handler
 
         }
 
-        private Response<Patient>? ValidateRequest(CreatePatientCommand request)
+        private Response<CreatePatientResponse>? ValidateRequest(CreatePatientCommand request)
         {
 
             if (request.Email == string.Empty)
             {
-                return new Response<Patient>
+                return new Response<CreatePatientResponse>
                 {
                     Message = "You must specify a valid email",
                     Succeeded = false
@@ -145,7 +156,7 @@ namespace NoNicotine_Business.Handler
 
             if (request.Password == string.Empty)
             {
-                return new Response<Patient>
+                return new Response<CreatePatientResponse>
                 {
                     Message = "You must specify a password",
                     Succeeded = false
@@ -154,7 +165,7 @@ namespace NoNicotine_Business.Handler
 
             if (_userManager.FindByEmailAsync(request.Email).Result is not null)
             {
-                return new Response<Patient>
+                return new Response<CreatePatientResponse>
                 {
                     Message = "Email already taken",
                     Succeeded = false
@@ -163,7 +174,7 @@ namespace NoNicotine_Business.Handler
 
             if (request.Name == string.Empty)
             {
-                return new Response<Patient>
+                return new Response<CreatePatientResponse>
                 {
                     Message = "You must specify a patient name",
                     Succeeded = false
@@ -172,7 +183,7 @@ namespace NoNicotine_Business.Handler
 
             if (request.Sex == ' ')
             {
-                return new Response<Patient>
+                return new Response<CreatePatientResponse>
                 {
                     Message = "You must specify the patient sex",
                     Succeeded = false
@@ -182,7 +193,7 @@ namespace NoNicotine_Business.Handler
             if (request.BirthDate.AddYears(18) > DateTime.Now)
             {
 
-                return new Response<Patient>
+                return new Response<CreatePatientResponse>
                 {
                     Message = "You must be 18 years old or greater to register",
                     Succeeded = false
@@ -191,7 +202,7 @@ namespace NoNicotine_Business.Handler
 
             if (request.Identification == string.Empty)
             {
-                return new Response<Patient>
+                return new Response<CreatePatientResponse>
                 {
                     Message = "You must specify the patient identification number",
                     Succeeded = false
@@ -200,7 +211,7 @@ namespace NoNicotine_Business.Handler
 
             if (request.IdentificationPatientType == string.Empty)
             {
-                return new Response<Patient>
+                return new Response<CreatePatientResponse>
                 {
                     Message = "You must specify the identification type",
                     Succeeded = false
@@ -211,5 +222,12 @@ namespace NoNicotine_Business.Handler
             return null;
         }
 
+        private async Task<string> GenerateEmailConfirmationUrlAsync(IdentityUser user)
+        {
+            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            return HttpUtility.UrlEncode(code);
+        }
     }
+
 }
+

@@ -1,0 +1,60 @@
+﻿@{
+    ViewBag.Title = "Forgot password";
+    Layout = "_Layout";
+}
+
+<div class="w-1/5 mt-5 mx-auto">
+     <form onsubmit="return handleSubmit(event)" method="post" action="@Url.Action("Reset","ForgotPassword", new {token = Context.Request.Query["token"], email=Context.Request.Query["email"]})">
+     <h1 class="mb-5">Enter new password</h1>
+           Password: <input required id="password1" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" name="password1" />
+            <div class="mt-5">
+                <span>Confirm password</span>
+                <input required id="password2" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"  type="text" name="password2" />
+            </div>
+            <input class="mt-5 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit" value="Submit" />
+        </form>
+
+        <div class="text-red-500 hidden error">
+            <div>Both passwords should be the same</div>
+            <div>New password needs digits</div>
+        </div>
+</div>
+
+        <script>
+            const passwordForm = document.querySelector('form')
+            const errorMessage = document.querySelector('.error')
+            const passwordInput1 = document.querySelector('#password1')
+            const passwordInput2 = document.querySelector('#password2')
+            function containsNumbers(str) {
+                return /\d/.test(str);
+            }
+
+
+            function handleSubmit(ev) {
+                
+                if (passwordInput1.value !== passwordInput2.value) {
+                    showError()
+                    ev.preventDefault()
+                    return false
+                }
+
+                if (!isValidPassword(passwordInput1.value)) {
+                    showError()
+                    ev.preventDefault()
+                    return false
+                }
+               return true
+            }
+
+            function showError(){
+                errorMessage.classList.remove('hidden')
+
+                setTimeout(() => {
+                    errorMessage.classList.add('hidden')
+                }, 10000)
+            }
+
+            function isValidPassword(password){
+                return containsNumbers(password) && password.length > 5
+            }
+        </script>
