@@ -7,8 +7,7 @@ using System.Data;
 namespace NoNicotineAPI.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
-    [Authorize(Roles = "patient")]
+    [ApiController]    
     public class LinkController : Controller
     {
         public LinkController(IMediator mediator)
@@ -18,6 +17,7 @@ namespace NoNicotineAPI.Controllers
         private readonly IMediator _mediator;
 
         [HttpPut]
+        [Authorize(Roles = "patient")]
         public async Task<IActionResult> AcceptDenyLinkRequest(UpdateAcceptDenyLinkrequestCommand request)
         {
 
@@ -31,6 +31,7 @@ namespace NoNicotineAPI.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "patient,therapist")]
         public async Task<IActionResult> UnrelatePatientLink(UpdateUnrelatePatientTherapistCommand request)
         {
 
