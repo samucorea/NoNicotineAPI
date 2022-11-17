@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NoNicotine_Business.Commands;
 using NoNicotine_Data.Context;
-using NoNicotine_Data.Entities;
 using NoNicotineAPI.Models;
 using System;
 using System.Collections.Generic;
@@ -13,39 +12,45 @@ using System.Threading.Tasks;
 
 namespace NoNicotine_Business.Handler
 {
-    public class UpdateUnrelatePatientPatientCommadHandler : IRequestHandler<UpdateUnrelatePatientTherapistCommand, Response<bool>>
+    public class UpdateAcceptDenyLinkrequestCommandHandler : IRequestHandler<UpdateAcceptDenyLinkrequestCommand, Response<bool>>
     {
         private readonly AppDbContext _context;
-        private readonly ILogger<UpdateUnrelatePatientPatientCommadHandler> _logger;
-        public UpdateUnrelatePatientPatientCommadHandler(AppDbContext context, ILogger<UpdateUnrelatePatientPatientCommadHandler> logger)
+        private readonly ILogger<UpdateAcceptDenyLinkrequestCommandHandler> _logger;
+        public UpdateAcceptDenyLinkrequestCommandHandler(AppDbContext context, ILogger<UpdateAcceptDenyLinkrequestCommandHandler> logger)
         {
             _context = context;
             _logger = logger;
         }
-        public async Task<Response<bool>> Handle(UpdateUnrelatePatientTherapistCommand request, CancellationToken cancellationToken)
+        public async Task<Response<bool>> Handle(UpdateAcceptDenyLinkrequestCommand request, CancellationToken cancellationToken)
         {
-			try
-			{
+            try
+            {
                 var response = ValidateRequest(request);
                 if (response != null)
                 {
                     return response;
                 }
 
-                var isPatient = await _context.Patient.Where(x => x.ID == request.PatientId).FirstOrDefaultAsync(cancellationToken);
-                if (isPatient == null)
+                var isLinkRequest = await _context.LinkRequest.Where(x => x.ID == request.LinkrequestID).FirstOrDefaultAsync(cancellationToken);
+                if (isLinkRequest == null)
                 {
                     return new Response<bool>()
                     {
                         Succeeded = false,
-                        Message = "Patient not found with specified id",
+                        Message = "Link request not found with specified id",
                         Data = false
                     };
                 }
 
-                isPatient.TherapistId = null;
+                isLinkRequest.RequestAccepted = request.Approval;
 
-                _context.Patient.Update(isPatient);
+                if (request.Approval)
+                {
+                     isLinkRequest.Patient.TherapistId = isLinkRequest.TherapistId;
+                    _context.Patient.Update(isLinkRequest.Patient);
+                }
+
+                _context.LinkRequest.Update(isLinkRequest);
 
                 var result = await _context.SaveChangesAsync();
 
@@ -55,11 +60,11 @@ namespace NoNicotine_Business.Handler
                     {
                         Succeeded = false,
                         Message = "Something went wrong",
-                        Data  =false
+                        Data = false
                     };
                 }
 
-                _logger.LogInformation($"Patient with ID {request.PatientId} updated");
+                _logger.LogInformation($"Link request with ID {request.LinkrequestID} updated");
 
                 return new Response<bool>()
                 {
@@ -68,8 +73,8 @@ namespace NoNicotine_Business.Handler
                 };
 
             }
-            catch (Exception )
-			{
+            catch (Exception)
+            {
                 return new Response<bool>
                 {
                     Succeeded = false,
@@ -79,19 +84,18 @@ namespace NoNicotine_Business.Handler
             }
         }
 
-        private static Response<bool>? ValidateRequest(UpdateUnrelatePatientTherapistCommand request)
+        private static Response<bool>? ValidateRequest(UpdateAcceptDenyLinkrequestCommand request)
         {
-            if (request == null || request.PatientId == string.Empty)
+            if (request == null || request.LinkrequestID == string.Empty)
             {
                 return new Response<bool>()
                 {
                     Succeeded = false,
-                    Message = "You must specify a user Id to update",
+                    Message = "You must specify a valid id to update",
                     Data = false
                 };
             }
             return null;
         }
-
     }
 }

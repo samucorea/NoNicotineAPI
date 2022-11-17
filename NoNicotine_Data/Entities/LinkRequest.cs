@@ -11,6 +11,8 @@ namespace NoNicotine_Data.Entities
     {
         public DateTime DateAcceptedOrDeclined { get; set; }
 
+        public bool? RequestAccepted { get; set; }
+
         [ForeignKey("Therapist")]
         public string? TherapistId { get; set; }
         public Therapist? Therapist { get; set; }
