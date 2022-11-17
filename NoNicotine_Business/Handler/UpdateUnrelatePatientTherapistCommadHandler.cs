@@ -38,7 +38,7 @@ namespace NoNicotine_Business.Handler
                     return new Response<bool>()
                     {
                         Succeeded = false,
-                        Message = "Patient not found with specified id",
+                        Message = "Patient with specified ID not found",
                         Data = false
                     };
                 }
@@ -86,7 +86,7 @@ namespace NoNicotine_Business.Handler
                 return new Response<bool>()
                 {
                     Succeeded = false,
-                    Message = "You must specify a user Id to update",
+                    Message = "You must specify a user ID to update",
                     Data = false
                 };
             }
