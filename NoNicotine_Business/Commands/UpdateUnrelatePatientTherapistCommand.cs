@@ -11,6 +11,7 @@ namespace NoNicotine_Business.Commands
 {
     public class UpdateUnrelatePatientTherapistCommand : IRequest<Response<bool>>
     {
-        public string PatientId { get; set; }
+        public string UserId { get; set; } = string.Empty;
+        public string PatientId { get; set; } = string.Empty;
     }
 }

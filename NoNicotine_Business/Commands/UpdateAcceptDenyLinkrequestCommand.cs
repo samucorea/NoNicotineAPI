@@ -10,7 +10,8 @@ namespace NoNicotine_Business.Commands
 {
     public class UpdateAcceptDenyLinkrequestCommand : IRequest<Response<bool>>
     {
-        public string LinkrequestID { get; set; }
+        public string UserId { get; set; } = string.Empty;
+        public string LinkRequestId { get; set; } = string.Empty;
         public bool Approval { get; set; }
     }
 }

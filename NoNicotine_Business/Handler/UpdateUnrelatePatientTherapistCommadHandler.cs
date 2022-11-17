@@ -32,7 +32,7 @@ namespace NoNicotine_Business.Handler
                     return response;
                 }
 
-                var isPatient = await _context.Patient.Where(x => x.ID == request.PatientId).FirstOrDefaultAsync(cancellationToken);
+                var isPatient = await _context.Patient.Where(x => x.ID == request.PatientId && x.IdentityUserId == request.UserId).FirstOrDefaultAsync(cancellationToken);
                 if (isPatient == null)
                 {
                     return new Response<bool>()
@@ -81,7 +81,7 @@ namespace NoNicotine_Business.Handler
 
         private static Response<bool>? ValidateRequest(UpdateUnrelatePatientTherapistCommand request)
         {
-            if (request == null || request.PatientId == string.Empty)
+            if (request == null || request.PatientId == string.Empty || request.UserId == string.Empty)
             {
                 return new Response<bool>()
                 {
