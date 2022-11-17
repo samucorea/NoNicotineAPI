@@ -8,6 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\Assets\EmailTemplates\EmailConfirmationTemplate.Mustache" />
+    <Content Remove="wwwroot\Assets\EmailTemplates\ForgotPasswordTemplate.Mustache" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Azure.Communication.Email" Version="1.0.0-beta.1" />
     <PackageReference Include="MediatR" Version="10.0.1" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
@@ -42,6 +47,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="wwwroot\Assets\EmailTemplates\EmailConfirmationTemplate.Mustache" />
+    <None Include="wwwroot\Assets\EmailTemplates\ForgotPasswordTemplate.Mustache" />
     <None Include="wwwroot\Assets\nonicotine.jpg" />
   </ItemGroup>
 

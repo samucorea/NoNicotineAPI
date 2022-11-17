@@ -22,7 +22,7 @@ namespace NoNicotine_Data.Entities
         public string IdentityUserId { get; set; } = string.Empty;
 
         [ForeignKey("Therapist")]
-        public string TherapistId { get; set; } = string.Empty;
+        public string? TherapistId { get; set; }
         public Therapist? Therapist { get; set; }
 
         [ForeignKey("PatientConsumptionMethods")]

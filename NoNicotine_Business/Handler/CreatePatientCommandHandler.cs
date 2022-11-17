@@ -57,6 +57,7 @@ namespace NoNicotine_Business.Handler
  
                 if (!resultIdentity.Succeeded)
                 {
+                    transaction.Rollback();
                     return new Response<CreatePatientResponse>
                     {
                         Succeeded = false,
@@ -78,6 +79,7 @@ namespace NoNicotine_Business.Handler
                 resultIdentity = await _userManager.AddToRoleAsync(identityUser, PATIENT_ROLE);
                 if (!resultIdentity.Succeeded)
                 {
+                    transaction.Rollback();
                     return new Response<CreatePatientResponse>()
                     {
                         Succeeded = false,
@@ -88,6 +90,7 @@ namespace NoNicotine_Business.Handler
                 var result = await _patientRepository.CreatePatientAsync(patient, cancellationToken);
                 if (result <= 0)
                 {
+                    transaction.Rollback();
                     _logger.LogError("Saving changes when creating patient");
 
                     return new Response<CreatePatientResponse>
