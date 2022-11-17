@@ -13,7 +13,6 @@ namespace NoNicotineAPI.Controllers
         }
         public async Task<IActionResult> Index(string confirmationToken, string email)
         {
-            return View("ConfirmEmail");
             var user = await _userManager.FindByEmailAsync(email);
             var result = await _userManager.ConfirmEmailAsync(user, HttpUtility.UrlDecode(confirmationToken));
             if (result.Succeeded)
