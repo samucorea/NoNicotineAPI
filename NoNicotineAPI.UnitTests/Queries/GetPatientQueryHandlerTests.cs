@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Moq;
-using NoNicotine_Business.Handler;
+using NoNicotine_Business.Handler.Get;
 using NoNicotine_Business.Queries;
 using NoNicotine_Business.Repositories;
 using NoNicotine_Data.Context;
