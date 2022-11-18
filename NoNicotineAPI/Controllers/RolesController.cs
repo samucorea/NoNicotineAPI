@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NoNicotine_Business.Commands;
+using NoNicotine_Business.Commands.Create;
 
 namespace NoNicotineAPI.Controllers
 {

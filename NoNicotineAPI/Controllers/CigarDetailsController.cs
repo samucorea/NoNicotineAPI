@@ -1,13 +1,14 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NoNicotine_Business.Commands;
+using NoNicotine_Business.Commands.Create;
+using NoNicotine_Business.Commands.Update;
 using NoNicotine_Business.Queries;
 using System.Data;
 
 namespace NoNicotineAPI.Controllers
 {
-    
+
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(Roles = "patient")]

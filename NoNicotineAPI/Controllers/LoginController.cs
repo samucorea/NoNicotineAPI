@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using NoNicotine_Business.Commands;
+using NoNicotine_Business.Commands.Create;
 using NoNicotine_Business.Queries;
 using NoNicotine_Business.Services;
 using NoNicotine_Data.Context;
