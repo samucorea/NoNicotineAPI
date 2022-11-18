@@ -82,18 +82,6 @@ namespace NoNicotine_Business.Handler.Get
 
             var role = roles.FirstOrDefault();
 
-            if (role == null)
-            {
-                _logger.LogError("Could not find roles in user", user);
-                return new Response<AuthenticationData>
-                {
-                    Succeeded = false,
-                    Message = "Something went wrong"
-                };
-            }
-
-
-
             var tokenString = _authenticationService.CreateToken(user, role);
             if (tokenString == "")
             {
