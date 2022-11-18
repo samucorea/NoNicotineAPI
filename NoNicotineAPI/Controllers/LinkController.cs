@@ -18,6 +18,7 @@ namespace NoNicotineAPI.Controllers
 
         [HttpPut]
         [Authorize(Roles = "patient")]
+        [Route("acceptDenyLinkRequest")]
         public async Task<IActionResult> AcceptDenyLinkRequest(UpdateAcceptDenyLinkrequestCommand request)
         {
 
@@ -32,6 +33,7 @@ namespace NoNicotineAPI.Controllers
 
         [HttpPut]
         [Authorize(Roles = "patient,therapist")]
+        [Route("unrelatePatientLink")]
         public async Task<IActionResult> UnrelatePatientLink(UpdateUnrelatePatientTherapistCommand request)
         {
 
