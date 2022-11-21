@@ -69,6 +69,16 @@ namespace NoNicotine_Business.Handler.Get
 
             }
 
+            bool isEmailConfirmed = await _userManager.IsEmailConfirmedAsync(user);
+            if (!isEmailConfirmed)
+            {
+                return new Response<AuthenticationData>
+                {
+                    Succeeded = false,
+                    Message = "User email is not yet confirmed"
+                };
+            }
+
             var roles = await _userManager.GetRolesAsync(user);
             if (roles == null || roles.Count < 1)
             {
