@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using NoNicotine_Business.Value_Objects;
 using NoNicotine_Data.Context;
 using NoNicotine_Data.Entities;
 using System;
@@ -56,11 +57,30 @@ namespace NoNicotine_Business.Repositories
             return patientConsumptionMethods;
         }
 
-        public async Task<List<Patient>> GetTherapistPatientsAsync(string therapistId, CancellationToken cancellationToken)
+        public async Task<List<TherapistPatient>> GetTherapistPatientsAsync(string therapistId, CancellationToken cancellationToken)
         {
             var patients = await _context.Patient.Where(patient => patient.TherapistId == therapistId).ToListAsync(cancellationToken);
+            
+            List<TherapistPatient> therapistPatients = new List<TherapistPatient>();
+            foreach (var patient in patients)
+            {
+                TherapistPatient therapistPatient = new()
+                {
+                    Name = patient.Name,
+                    Sex = patient.Sex,
+                    BirthDate = patient.BirthDate,
+                    StartTime = patient.StartTime,
+                    Active = patient.Active,
+                    TherapistId = patient.TherapistId,
+                    PatientConsumptionMethodsId = patient.PatientConsumptionMethodsId,
+                    PatientConsumptionMethods = patient.PatientConsumptionMethods,
+                    ID = patient.ID,
+                    CreatedAt = patient.CreatedAt
+                };
+                therapistPatients.Add(therapistPatient);
+            }
 
-            return patients;
+            return therapistPatients;
         }
     }
 }

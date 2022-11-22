@@ -8,6 +8,7 @@ using NoNicotine_Business.Commands.Update;
 using NoNicotine_Business.Queries;
 using NoNicotine_Business.Services;
 using System.Security.Claims;
+using System.Web;
 
 namespace NoNicotineAPI.Controllers
 {
@@ -17,10 +18,12 @@ namespace NoNicotineAPI.Controllers
     public class PatientsController : Controller
     {
         private readonly IAuthenticationService _authenticationService;
-        public PatientsController(IMediator mediator, IAuthenticationService authenticationService)
+        private readonly IEmailService _emailService;
+        public PatientsController(IMediator mediator, IAuthenticationService authenticationService, IEmailService emailService)
         {
             _mediator = mediator;
             _authenticationService = authenticationService;
+            _emailService = emailService;
         }
         private readonly IMediator _mediator;
 
@@ -30,12 +33,21 @@ namespace NoNicotineAPI.Controllers
         {
 
             var result = await _mediator.Send(request);
-            if (result.Succeeded)
+            
+            if (!result.Succeeded)
             {
-                return Ok(result.Data);
+                return BadRequest(result);
+            }
+            var confirmationToken = result.Data.ConfirmationToken;
+
+            var actionLink = Url.Action("Index","EmailConfirmation", new { confirmationToken, email=result.Data.Email },Request.Scheme);
+            if(actionLink == null)
+            {
+                return BadRequest("Something went wrong");
             }
 
-            return BadRequest(result);
+            _emailService.SendEmailConfirmation(result.Data.Email, actionLink);
+            return Ok(result.Data.Patient);
         }
 
         [HttpGet]
@@ -197,6 +209,8 @@ namespace NoNicotineAPI.Controllers
 
             return BadRequest(result);
         }
+
+ 
 
 
     }

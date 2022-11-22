@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using NoNicotine_Business.Queries;
 using NoNicotine_Business.Repositories;
+using NoNicotine_Business.Value_Objects;
 using NoNicotine_Data.Context;
 using NoNicotine_Data.Entities;
 using NoNicotineAPI.Models;
@@ -13,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace NoNicotine_Business.Handler.Get
 {
-    internal class GetTherapistPatientsQueryHandler : IRequestHandler<GetTherapistPatientsQuery, Response<List<Patient>>>
+    internal class GetTherapistPatientsQueryHandler : IRequestHandler<GetTherapistPatientsQuery, Response<List<TherapistPatient>>>
     {
         private readonly IPatientRepository _patientRepository;
         private readonly AppDbContext _context;
@@ -23,7 +24,7 @@ namespace NoNicotine_Business.Handler.Get
             _patientRepository = patientRepository;
         }
 
-        public async Task<Response<List<Patient>>> Handle(GetTherapistPatientsQuery request, CancellationToken cancellationToken)
+        public async Task<Response<List<TherapistPatient>>> Handle(GetTherapistPatientsQuery request, CancellationToken cancellationToken)
         {
 
             var response = ValidateRequest(request);
@@ -35,16 +36,16 @@ namespace NoNicotine_Business.Handler.Get
             var therapist = await _context.Therapist.Where(therapist => therapist.IdentityUserId == request.UserId).FirstOrDefaultAsync(cancellationToken);
             if (therapist == null)
             {
-                return new Response<List<Patient>>
+                return new Response<List<TherapistPatient>>
                 {
                     Succeeded = false,
                     Message = "Could not find Therapist with specified id"
                 };
             }
 
-            var patients = await _patientRepository.GetTherapistPatientsAsync(request.UserId, cancellationToken);
+            var patients = await _patientRepository.GetTherapistPatientsAsync(therapist.ID, cancellationToken);
 
-            return new Response<List<Patient>>
+            return new Response<List<TherapistPatient>>
             {
                 Succeeded = true,
                 Data = patients
@@ -52,11 +53,11 @@ namespace NoNicotine_Business.Handler.Get
 
         }
 
-        private static Response<List<Patient>>? ValidateRequest(GetTherapistPatientsQuery request)
+        private static Response<List<TherapistPatient>>? ValidateRequest(GetTherapistPatientsQuery request)
         {
             if (request.UserId == string.Empty)
             {
-                return new Response<List<Patient>>
+                return new Response<List<TherapistPatient>>
                 {
                     Succeeded = false,
                     Message = "Missing Therapist ID"

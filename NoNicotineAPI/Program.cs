@@ -69,6 +69,7 @@ builder.Services.Configure<IdentityOptions>(options =>
 builder.Services.AddSingleton<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IEntryRepository, EntryRepository>();
+builder.Services.AddSingleton<IEmailService, EmailService>();
 
 
 builder.Services.AddCors(options =>
@@ -83,6 +84,7 @@ builder.Services.AddCors(options =>
                 .WithHeaders("*");
         });
 });
+
 
 var logger = new LoggerConfiguration()
                 .WriteTo.MSSqlServer(
@@ -130,6 +132,8 @@ app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseStaticFiles();
 
 
 app.MapControllerRoute(

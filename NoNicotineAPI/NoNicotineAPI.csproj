@@ -8,12 +8,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\Assets\EmailTemplates\EmailConfirmationTemplate.Mustache" />
+    <Content Remove="wwwroot\Assets\EmailTemplates\ForgotPasswordTemplate.Mustache" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Azure.Communication.Email" Version="1.0.0-beta.1" />
     <PackageReference Include="MediatR" Version="10.0.1" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.9" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.8" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.10" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.11" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.8">
       <PrivateAssets>all</PrivateAssets>
@@ -24,14 +30,26 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.10" />
     <PackageReference Include="Serilog.AspNetCore" Version="6.0.1" />
     <PackageReference Include="Serilog.Sinks.MSSqlServer" Version="5.7.1" />
+    <PackageReference Include="Stubble.Core" Version="1.10.8" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\NoNicotine_Data\NoNicotine_Data.csproj" />
     <ProjectReference Include="..\NoNicotine_Business\NoNicotine_Business.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Assets\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\Assets\EmailTemplates\EmailConfirmationTemplate.Mustache" />
+    <None Include="wwwroot\Assets\EmailTemplates\ForgotPasswordTemplate.Mustache" />
+    <None Include="wwwroot\Assets\nonicotine.jpg" />
   </ItemGroup>
 
 </Project>
