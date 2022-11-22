@@ -42,7 +42,7 @@ namespace NoNicotine_Business.Handler
                 };
             }
 
-            var patients = await _patientRepository.GetTherapistPatientsAsync(request.UserId, cancellationToken);
+            var patients = await _patientRepository.GetTherapistPatientsAsync(therapist.ID, cancellationToken);
 
             return new Response<List<Patient>>
             {
