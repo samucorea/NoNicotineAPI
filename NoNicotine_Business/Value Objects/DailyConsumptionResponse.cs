@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NoNicotine_Business.Value_Objects
 {
-    public class DailyConsumptionResponse
+    public class ConsumptionExpensesResponse
     {
         public int Value { get; set; }
     }

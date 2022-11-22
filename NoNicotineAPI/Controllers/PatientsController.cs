@@ -76,10 +76,10 @@ namespace NoNicotineAPI.Controllers
 
         [HttpGet]
         [Route("consumptionExpenses/{patientConsumptionMethodsId}")]
-        public async Task<IActionResult> GetDailyConsumptionExpenses(string patientConsumptionMethodsId)
+        public async Task<IActionResult> GetConsumptionExpenses(string patientConsumptionMethodsId)
         {
 
-            var request = new GetDailyConsumptionExpensesQuery()
+            var request = new GetConsumptionExpensesQuery()
             {
                 PatientConsumptionMethodsId = patientConsumptionMethodsId
             };

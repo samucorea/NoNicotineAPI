@@ -14,16 +14,16 @@ using System.Threading.Tasks;
 
 namespace NoNicotine_Business.Handler.Get
 {
-    public class GetDailyConsumptionExpensesQueryHandler : IRequestHandler<GetDailyConsumptionExpensesQuery, Response<DailyConsumptionResponse>>
+    public class GetConsumptionExpensesQueryHandler : IRequestHandler<GetConsumptionExpensesQuery, Response<ConsumptionExpensesResponse>>
     {
         private readonly AppDbContext _context;
-        public GetDailyConsumptionExpensesQueryHandler(AppDbContext context)
+        public GetConsumptionExpensesQueryHandler(AppDbContext context)
         {
             _context = context;
         }
 
 
-        public async Task<Response<DailyConsumptionResponse>> Handle(GetDailyConsumptionExpensesQuery request, CancellationToken cancellationToken)
+        public async Task<Response<ConsumptionExpensesResponse>> Handle(GetConsumptionExpensesQuery request, CancellationToken cancellationToken)
         {
 
             var patientConsumptionMethods = await _context.PatientConsumptionMethods
@@ -34,7 +34,7 @@ namespace NoNicotine_Business.Handler.Get
                 .Where(p => p.ID == request.PatientConsumptionMethodsId).FirstOrDefaultAsync(cancellationToken);
             if (patientConsumptionMethods == null)
             {
-                return new Response<DailyConsumptionResponse>()
+                return new Response<ConsumptionExpensesResponse>()
                 {
                     Succeeded = false,
                     Message = "Something went wrong"
@@ -48,10 +48,10 @@ namespace NoNicotine_Business.Handler.Get
 
             int total = cigaretteExpenses + cigarExpenses + electronicCigaretteExpenses + hookahExpenses;
 
-            return new Response<DailyConsumptionResponse>()
+            return new Response<ConsumptionExpensesResponse>()
             {
                 Succeeded = true,
-                Data = new DailyConsumptionResponse()
+                Data = new ConsumptionExpensesResponse()
                 {
                     Value = total
                 }
