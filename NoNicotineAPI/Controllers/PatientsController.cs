@@ -38,16 +38,16 @@ namespace NoNicotineAPI.Controllers
             {
                 return BadRequest(result);
             }
-            var confirmationToken = result.Data.ConfirmationToken;
+            var confirmationToken = result.Data?.ConfirmationToken;
 
-            var actionLink = Url.Action("Index","EmailConfirmation", new { confirmationToken, email=result.Data.Email },Request.Scheme);
+            var actionLink = Url.Action("Index","EmailConfirmation", new { confirmationToken, email=result.Data?.Email },Request.Scheme);
             if(actionLink == null)
             {
                 return BadRequest("Something went wrong");
             }
 
-            _emailService.SendEmailConfirmation(result.Data.Email, actionLink);
-            return Ok(result.Data.Patient);
+            _emailService.SendEmailConfirmation(result.Data?.Email!, actionLink);
+            return Ok(result.Data?.Patient);
         }
 
         [HttpGet]
@@ -97,7 +97,6 @@ namespace NoNicotineAPI.Controllers
         [Route("indicateRelapse")]
         public async Task<IActionResult> IndicateRelapse(IndicateRelapseCommand request)
         {
-
             if (HttpContext.User.Identity is not ClaimsIdentity identity)
             {
                 return Unauthorized();
