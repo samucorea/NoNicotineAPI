@@ -1,6 +1,8 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using NoNicotine_Business.Queries;
@@ -28,13 +30,16 @@ namespace NoNicotine_Business.Handler.Get
         private readonly ILogger<AuthenticateQueryHandler> _logger;
         private readonly IAuthenticationService _authenticationService;
 
-        public AuthenticateQueryHandler(UserManager<IdentityUser> userManager, IConfiguration configuration, AppDbContext context, ILogger<AuthenticateQueryHandler> logger, IAuthenticationService authenticationService)
+        private readonly IWebHostEnvironment _env;
+
+        public AuthenticateQueryHandler(UserManager<IdentityUser> userManager, IConfiguration configuration, AppDbContext context, ILogger<AuthenticateQueryHandler> logger, IAuthenticationService authenticationService, IWebHostEnvironment env)
         {
             _userManager = userManager;
             _configuration = configuration;
             _context = context;
             _logger = logger;
             _authenticationService = authenticationService;
+            _env = env;
         }
 
         public async Task<Response<AuthenticationData>> Handle(AuthenticateQuery request, CancellationToken cancellationToken)
@@ -70,7 +75,7 @@ namespace NoNicotine_Business.Handler.Get
             }
 
             bool isEmailConfirmed = await _userManager.IsEmailConfirmedAsync(user);
-            if (!isEmailConfirmed)
+            if (!isEmailConfirmed && !(_env.IsDevelopment()))
             {
                 return new Response<AuthenticationData>
                 {

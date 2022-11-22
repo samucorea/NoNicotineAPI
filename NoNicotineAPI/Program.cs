@@ -71,6 +71,13 @@ builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IEntryRepository, EntryRepository>();
 builder.Services.AddSingleton<IEmailService, EmailService>();
 
+if(builder.Environment.IsDevelopment()){
+    builder.Services.AddSingleton<IEmailService, DummyEmailService>();
+}
+else {
+    builder.Services.AddSingleton<IEmailService, EmailService>();
+}
+
 
 builder.Services.AddCors(options =>
 {
@@ -121,7 +128,7 @@ app.UseSwaggerUI();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
- 
+
 }
 else if (!app.Environment.IsDevelopment())
 {
