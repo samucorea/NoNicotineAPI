@@ -31,7 +31,7 @@ namespace NoNicotine_Business.Handler.Update
                     return response;
                 }
 
-                var isLinkRequest = await _context.LinkRequest.Where(x => x.ID == request.LinkrequestID).FirstOrDefaultAsync(cancellationToken);
+                var isLinkRequest = await _context.LinkRequest.Where(x => x.ID == request.LinkRequestId && x.Patient.IdentityUserId == request.UserId).FirstOrDefaultAsync(cancellationToken);
                 if (isLinkRequest == null)
                 {
                     return new Response<bool>()
@@ -64,7 +64,7 @@ namespace NoNicotine_Business.Handler.Update
                     };
                 }
 
-                _logger.LogInformation($"Link request with ID {request.LinkrequestID} updated");
+                _logger.LogInformation($"Link request with ID {request.LinkRequestId} updated");
 
                 return new Response<bool>()
                 {
@@ -86,7 +86,7 @@ namespace NoNicotine_Business.Handler.Update
 
         private static Response<bool>? ValidateRequest(UpdateAcceptDenyLinkrequestCommand request)
         {
-            if (request == null || request.LinkrequestID == string.Empty)
+            if (request == null || request.LinkRequestId == string.Empty || request.UserId == string.Empty)
             {
                 return new Response<bool>()
                 {
