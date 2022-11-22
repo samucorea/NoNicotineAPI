@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using NoNicotine_Business.Value_Objects;
 using NoNicotine_Data.Entities;
 using NoNicotineAPI.Models;
 using System;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace NoNicotine_Business.Queries
 {
-    public class GetTherapistPatientsQuery : IRequest<Response<List<Patient>>>
+    public class GetTherapistPatientsQuery : IRequest<Response<List<TherapistPatient>>>
     {
         public string UserId { get; set; } = string.Empty;
     }
