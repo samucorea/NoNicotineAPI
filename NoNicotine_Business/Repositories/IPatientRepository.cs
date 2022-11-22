@@ -1,4 +1,5 @@
-﻿using NoNicotine_Data.Entities;
+﻿using NoNicotine_Business.Value_Objects;
+using NoNicotine_Data.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,6 @@ namespace NoNicotine_Business.Repositories
 
         public Task<PatientConsumptionMethods?> CreateEmptyPatientConsumptionMethods(string patientId, CancellationToken cancellationToken);
 
-        public Task<List<Patient>> GetTherapistPatientsAsync(string therapistId, CancellationToken cancellationToken);
+        public Task<List<TherapistPatient>> GetTherapistPatientsAsync(string therapistId, CancellationToken cancellationToken);
     }
 }
