@@ -80,7 +80,7 @@ namespace NoNicotine_Business.Handler.Create
                     StartTime = DateTime.Now,
                 };
 
-                patient.PatientConsumptionMethods = new PatientConsumptionMethods();
+                patient.PatientConsumptionMethods = new PatientConsumptionMethods {};
 
                 resultIdentity = await _userManager.AddToRoleAsync(identityUser, PATIENT_ROLE);
                 if (!resultIdentity.Succeeded)
@@ -106,21 +106,8 @@ namespace NoNicotine_Business.Handler.Create
                     };
                 }
 
-                var patientConsumptionMethods = await _patientRepository.CreateEmptyPatientConsumptionMethods(patient.ID, cancellationToken);
-                if (patientConsumptionMethods == null)
-                {
-                    transaction.Rollback();
-
-                    return new Response<CreatePatientResponse>()
-                    {
-                        Succeeded = false,
-                        Message = "Could not create empty patient consumption methods"
-                    };
-                }
-
+             
                 transaction.Commit();
-
-                patient.PatientConsumptionMethodsId = patientConsumptionMethods.ID;
 
                 return new Response<CreatePatientResponse>
                 {

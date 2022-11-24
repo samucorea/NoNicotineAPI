@@ -33,7 +33,6 @@ namespace NoNicotine_Business.Handler.Create
                 {
                     var isPatientMethod = new PatientConsumptionMethods()
                     {
-                        PatientId = request.PatientId
                     };
                     await _context.PatientConsumptionMethods.AddAsync(isPatientMethod);
                     var result = await _context.SaveChangesAsync();
