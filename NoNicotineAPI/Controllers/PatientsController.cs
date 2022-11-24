@@ -75,13 +75,18 @@ namespace NoNicotineAPI.Controllers
         }
 
         [HttpGet]
-        [Route("consumptionExpenses/{patientConsumptionMethodsId}")]
-        public async Task<IActionResult> GetConsumptionExpenses(string patientConsumptionMethodsId)
+        [Route("consumptionExpenses")]
+        public async Task<IActionResult> GetConsumptionExpenses()
         {
+            if (HttpContext.User.Identity is not ClaimsIdentity identity)
+            {
+                return Unauthorized();
+            }
+            var patientUserId = _authenticationService.GetUserIdFromClaims(identity);
 
             var request = new GetConsumptionExpensesQuery()
             {
-                PatientConsumptionMethodsId = patientConsumptionMethodsId
+                UserId = patientUserId,
             };
 
             var result = await _mediator.Send(request);

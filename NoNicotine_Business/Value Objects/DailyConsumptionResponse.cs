@@ -8,6 +8,10 @@ namespace NoNicotine_Business.Value_Objects
 {
     public class ConsumptionExpensesResponse
     {
-        public int Value { get; set; }
+        public int Total { get; set; }
+        public int CigaretteTotal { get; set; }
+        public int ElectronicCigaretteTotal { get; set; }
+        public int CigarTotal { get; set; }
+        public int HookahTotal { get; set; }
     }
 }

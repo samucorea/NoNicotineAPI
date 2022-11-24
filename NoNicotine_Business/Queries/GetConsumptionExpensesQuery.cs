@@ -11,6 +11,6 @@ namespace NoNicotine_Business.Queries
 {
     public class GetConsumptionExpensesQuery : IRequest<Response<ConsumptionExpensesResponse>>
     {
-        public string PatientConsumptionMethodsId { get; set; } = string.Empty;
+        public string UserId { get; set; } = string.Empty;
     }
 }
