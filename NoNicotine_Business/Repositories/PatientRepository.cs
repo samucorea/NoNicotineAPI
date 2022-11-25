@@ -32,29 +32,7 @@ namespace NoNicotine_Business.Repositories
                 return null;
             }
 
-            var patientConsumptionMethods = await _context.PatientConsumptionMethods.Where(pcm => pcm.PatientId == patient.ID).FirstOrDefaultAsync();
-            if(patientConsumptionMethods == null)
-            {
-                return null;
-            }
-
-            patient.PatientConsumptionMethodsId = patientConsumptionMethods.ID;
-
             return patient;
-        }
-
-        public async Task<PatientConsumptionMethods?> CreateEmptyPatientConsumptionMethods(string patientId, CancellationToken cancellationToken)
-        {
-            var patientConsumptionMethods = new PatientConsumptionMethods { PatientId = patientId };
-            await _context.PatientConsumptionMethods.AddAsync(patientConsumptionMethods);
-
-            var result =  await _context.SaveChangesAsync(cancellationToken);
-            if (result < 1)
-            {
-                return null;
-            }
-
-            return patientConsumptionMethods;
         }
 
         public async Task<List<TherapistPatient>> GetTherapistPatientsAsync(string therapistId, CancellationToken cancellationToken)

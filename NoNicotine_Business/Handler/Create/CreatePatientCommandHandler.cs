@@ -27,16 +27,19 @@ namespace NoNicotine_Business.Handler.Create
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ILogger<CreatePatientCommandHandler> _logger;
         private readonly IPatientRepository _patientRepository;
+
+        private readonly IAuthenticationService _authenticationService;
         private readonly AppDbContext _context;
         private const string PATIENT_ROLE = "patient";
 
         public CreatePatientCommandHandler(UserManager<IdentityUser> userManager,
-            ILogger<CreatePatientCommandHandler> logger, IPatientRepository patientRepository, AppDbContext context)
+            ILogger<CreatePatientCommandHandler> logger, IPatientRepository patientRepository, AppDbContext context, IAuthenticationService authenticationService)
         {
             _userManager = userManager;
             _logger = logger;
             _patientRepository = patientRepository;
             _context = context;
+            _authenticationService = authenticationService;
         }
 
         public async Task<Response<CreatePatientResponse>> Handle(CreatePatientCommand request, CancellationToken cancellationToken)
@@ -77,6 +80,8 @@ namespace NoNicotine_Business.Handler.Create
                     StartTime = DateTime.Now,
                 };
 
+                patient.PatientConsumptionMethods = new PatientConsumptionMethods {};
+
                 resultIdentity = await _userManager.AddToRoleAsync(identityUser, PATIENT_ROLE);
                 if (!resultIdentity.Succeeded)
                 {
@@ -101,21 +106,8 @@ namespace NoNicotine_Business.Handler.Create
                     };
                 }
 
-                var patientConsumptionMethods = await _patientRepository.CreateEmptyPatientConsumptionMethods(patient.ID, cancellationToken);
-                if (patientConsumptionMethods == null)
-                {
-                    transaction.Rollback();
-
-                    return new Response<CreatePatientResponse>()
-                    {
-                        Succeeded = false,
-                        Message = "Could not create empty patient consumption methods"
-                    };
-                }
-
+             
                 transaction.Commit();
-
-                patient.PatientConsumptionMethodsId = patientConsumptionMethods.ID;
 
                 return new Response<CreatePatientResponse>
                 {
@@ -123,7 +115,7 @@ namespace NoNicotine_Business.Handler.Create
                     Data = new CreatePatientResponse
                     {
                         Patient=patient,
-                        ConfirmationToken=await GenerateEmailConfirmationUrlAsync(identityUser),
+                        ConfirmationToken=await _authenticationService.GenerateEmailConfirmationUrlTokenAsync(identityUser),
                         Email= identityUser.Email
                     }
                 };
@@ -221,12 +213,6 @@ namespace NoNicotine_Business.Handler.Create
 
 
             return null;
-        }
-
-        private async Task<string> GenerateEmailConfirmationUrlAsync(IdentityUser user)
-        {
-            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            return HttpUtility.UrlEncode(code);
         }
     }
 

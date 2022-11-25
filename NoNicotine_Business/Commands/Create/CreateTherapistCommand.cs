@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace NoNicotine_Business.Commands.Create
 {
-    public class CreateTherapistCommand : IRequest<Response<Therapist>>
+    public class CreateTherapistCommand : IRequest<Response<CreateTherapistResponse>>
     {
         public string Name { get; set; } = string.Empty;
         public char Sex { get; set; } = ' ';

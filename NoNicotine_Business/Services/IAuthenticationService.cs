@@ -16,5 +16,7 @@ namespace NoNicotine_Business.Services
         public RefreshToken GenerateRefreshToken(string userId);
 
         public string GetUserIdFromClaims(ClaimsIdentity claims);
+
+        public Task<string> GenerateEmailConfirmationUrlTokenAsync(IdentityUser user);
     }
 }

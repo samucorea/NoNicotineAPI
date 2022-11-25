@@ -9,8 +9,6 @@ namespace NoNicotine_Data.Entities
 {
     public class PatientConsumptionMethods : BaseEntity
     {
-        [ForeignKey("Patient")]
-        public string PatientId { get; set; }
         public Patient Patient { get; set; }
 
         [ForeignKey("CigaretteDetails")]

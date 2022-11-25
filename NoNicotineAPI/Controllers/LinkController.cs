@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NoNicotine_Business.Commands.Create;
 using NoNicotine_Business.Commands.Update;
 using System.Data;
 
@@ -55,7 +56,29 @@ namespace NoNicotineAPI.Controllers
             var result = await _mediator.Send(request);
             if (result.Succeeded)
             {
-                return Ok(result);
+                return Ok(result.Data);
+            }
+
+            return BadRequest(result);
+        }
+
+        [HttpPost]
+        [Route("Request")]
+        [Authorize(Roles = "therapist")]
+        public async Task<IActionResult> CreateLinkRequest(CreateLinkRequestCommand request)
+        {
+            var userId = User.FindFirst("UserId")?.Value;
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            request.TherapistUserId = userId;
+
+            var result = await _mediator.Send(request);
+            if (result.Succeeded)
+            {
+                return Ok(result.Data);
             }
 
             return BadRequest(result);

@@ -68,15 +68,6 @@ namespace NoNicotineAPI.Controllers
         public async Task<IActionResult> RefreshToken(CreateRefreshTokenCommand request)
         {
 
-
-            string? requestRefreshToken = Request.Cookies["refreshToken"];
-            if (string.IsNullOrEmpty(requestRefreshToken))
-            {
-                return BadRequest("No refresh token found");
-            }
-
-            request.RefreshToken = requestRefreshToken;
-
             var result = await _mediator.Send(request);
          
             if (result.Succeeded && result.Data != null)
@@ -100,8 +91,6 @@ namespace NoNicotineAPI.Controllers
             }
 
             return Unauthorized(result);
-
-
         }
 
         [HttpPost]
