@@ -15,10 +15,12 @@ namespace NoNicotineAPI.Controllers
     public class TherapistsController : Controller
     {
         private readonly IAuthenticationService _authenticationService;
-        public TherapistsController(IMediator mediator, IAuthenticationService authenticationService)
+        private readonly IEmailService _emailService;
+        public TherapistsController(IMediator mediator, IAuthenticationService authenticationService, IEmailService emailService)
         {
             _mediator = mediator;
             _authenticationService = authenticationService;
+            _emailService = emailService;
         }
         private readonly IMediator _mediator;
 
@@ -27,16 +29,24 @@ namespace NoNicotineAPI.Controllers
         public async Task<IActionResult> CreateTherapist(CreateTherapistCommand request)
         {
             var result = await _mediator.Send(request);
-            if (result.Succeeded)
+            if (!result.Succeeded)
             {
-                return Ok(result.Data);
+                return BadRequest(result);
             }
 
-            return BadRequest(result);
+            var confirmationToken = result.Data?.ConfirmationToken;
+
+            var actionLink = Url.Action("Index","EmailConfirmation", new { confirmationToken, email=result.Data?.Email },Request.Scheme);
+            if(actionLink == null)
+            {
+                return BadRequest("Something went wrong");
+            }
+
+            _emailService.SendEmailConfirmation(result.Data?.Email!, actionLink);
+            return Ok(result.Data?.Therapist);
         }
 
         [HttpGet]
-        [Route("GetTherapist")]
         public async Task<IActionResult> GetTherapist()
         {
             if (HttpContext.User.Identity is not ClaimsIdentity identity)
