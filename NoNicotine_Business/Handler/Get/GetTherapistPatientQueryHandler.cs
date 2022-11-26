@@ -4,7 +4,6 @@ using NoNicotine_Business.Queries;
 using NoNicotine_Business.Repositories;
 using NoNicotine_Business.Value_Objects;
 using NoNicotine_Data.Context;
-using NoNicotine_Data.Entities;
 using NoNicotineAPI.Models;
 using System;
 using System.Collections.Generic;
@@ -14,17 +13,17 @@ using System.Threading.Tasks;
 
 namespace NoNicotine_Business.Handler.Get
 {
-    internal class GetTherapistPatientsQueryHandler : IRequestHandler<GetTherapistPatientsQuery, Response<List<TherapistPatient>>>
+    internal class GetTherapistPatientQueryHandler : IRequestHandler<GetTherapistPatientQuery, Response<TherapistPatient>>
     {
         private readonly IPatientRepository _patientRepository;
         private readonly AppDbContext _context;
-        public GetTherapistPatientsQueryHandler(AppDbContext context, IPatientRepository patientRepository)
+        public GetTherapistPatientQueryHandler(AppDbContext context, IPatientRepository patientRepository)
         {
             _context = context;
             _patientRepository = patientRepository;
         }
 
-        public async Task<Response<List<TherapistPatient>>> Handle(GetTherapistPatientsQuery request, CancellationToken cancellationToken)
+        public async Task<Response<TherapistPatient>> Handle(GetTherapistPatientQuery request, CancellationToken cancellationToken)
         {
 
             var response = ValidateRequest(request);
@@ -36,39 +35,47 @@ namespace NoNicotine_Business.Handler.Get
             var therapist = await _context.Therapist.Where(therapist => therapist.IdentityUserId == request.UserId).FirstOrDefaultAsync(cancellationToken);
             if (therapist == null)
             {
-                return new Response<List<TherapistPatient>>
+                return new Response<TherapistPatient>
                 {
                     Succeeded = false,
                     Message = "Could not find Therapist with specified id"
                 };
             }
 
-            var patients = await _patientRepository.GetTherapistPatientsAsync(therapist.ID, cancellationToken);
-            if (patients == null)
+            var patient = await _patientRepository.GetTherapistPatientAsync(therapist.ID, request.PatientId, cancellationToken);
+            if (patient == null)
             {
-                return new Response<List<TherapistPatient>>
+                return new Response<TherapistPatient>
                 {
                     Succeeded = false,
-                    Message = "Could not find Therapist's patients"
+                    Message = "Could not find Therapist's patient"
                 };
             }
 
-            return new Response<List<TherapistPatient>>
+            return new Response<TherapistPatient>
             {
                 Succeeded = true,
-                Data = patients
+                Data = patient
             };
-
         }
 
-        private static Response<List<TherapistPatient>>? ValidateRequest(GetTherapistPatientsQuery request)
+        private static Response<TherapistPatient>? ValidateRequest(GetTherapistPatientQuery request)
         {
             if (request.UserId == string.Empty)
             {
-                return new Response<List<TherapistPatient>>
+                return new Response<TherapistPatient>
                 {
                     Succeeded = false,
                     Message = "Missing Therapist ID"
+                };
+            }
+
+            if(request.PatientId == string.Empty)
+            {
+                return new Response<TherapistPatient>
+                {
+                    Succeeded = false,
+                    Message = "Missing Patient ID"
                 };
             }
 

@@ -57,11 +57,43 @@ namespace NoNicotine_Business.Repositories
             return patientConsumptionMethods;
         }
 
-        public async Task<List<TherapistPatient>> GetTherapistPatientsAsync(string therapistId, CancellationToken cancellationToken)
+        public async Task<TherapistPatient?> GetTherapistPatientAsync(string therapistId, string patientId, CancellationToken cancellationToken)
+        {
+            var patient = await _context.Patient.Where(patient => patient.IdentityUserId == patientId && patient.TherapistId == therapistId).FirstOrDefaultAsync(cancellationToken);
+
+            if (patient == null)
+            {
+                return null;
+            }
+
+            TherapistPatient therapistPatient = new()
+            {
+                Name = patient.Name,
+                Sex = patient.Sex,
+                BirthDate = patient.BirthDate,
+                StartTime = patient.StartTime,
+                Active = patient.Active,
+                TherapistId = patient.TherapistId,
+                PatientConsumptionMethodsId = patient.PatientConsumptionMethodsId,
+                PatientConsumptionMethods = patient.PatientConsumptionMethods,
+                ID = patient.ID,
+                CreatedAt = patient.CreatedAt
+            };
+
+            return therapistPatient;
+        }
+
+        public async Task<List<TherapistPatient>?> GetTherapistPatientsAsync(string therapistId, CancellationToken cancellationToken)
         {
             var patients = await _context.Patient.Where(patient => patient.TherapistId == therapistId).ToListAsync(cancellationToken);
             
             List<TherapistPatient> therapistPatients = new List<TherapistPatient>();
+            
+            if (therapistPatients.Count < 1)
+            {
+                return null;
+            }
+
             foreach (var patient in patients)
             {
                 TherapistPatient therapistPatient = new()
