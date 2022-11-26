@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using NoNicotine_Business.Value_Objects;
 using NoNicotine_Data.Context;
 using NoNicotine_Data.Entities;
 using System;
@@ -41,15 +42,33 @@ namespace NoNicotine_Business.Repositories
 
             return entries;
         }
-        public async Task<List<Entry>?> GetPatientSharedEntriesAsync(string patiendId, CancellationToken cancellationToken)
+        public async Task<List<SharedEntry>?> GetPatientSharedEntriesAsync(string patiendId, CancellationToken cancellationToken)
         {
             var entries = await _context.Entry.Where(entry => entry.PatientId == patiendId && entry.TherapistAllowed == true).ToListAsync(cancellationToken);
+            
             if (entries.Count < 1)
             {
                 return null;
             }
 
-            return entries;
+            List<SharedEntry> sharedEntries = new List<SharedEntry>();
+
+            foreach (var entry in entries)
+            {
+                SharedEntry sharedEntry = new()
+                {
+                    Message = entry.Message,
+                    TherapistAllowed = entry.TherapistAllowed,
+                    PatientId = entry.PatientId,
+                    Symptoms = entry.Symptoms,
+                    Feelings = entry.Feelings,
+                    ID = entry.ID,
+                    CreatedAt = entry.CreatedAt,
+                };
+                sharedEntries.Add(sharedEntry);
+            }
+
+            return sharedEntries;
         }
     }
 }

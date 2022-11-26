@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using NoNicotine_Business.Queries;
 using NoNicotine_Business.Repositories;
+using NoNicotine_Business.Value_Objects;
 using NoNicotine_Data.Context;
 using NoNicotine_Data.Entities;
 using NoNicotineAPI.Models;
@@ -13,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace NoNicotine_Business.Handler.Get
 {
-    internal class GetPatientSharedEntriesQueryHandler : IRequestHandler<GetPatientSharedEntriesQuery, Response<List<Entry>>>
+    internal class GetPatientSharedEntriesQueryHandler : IRequestHandler<GetPatientSharedEntriesQuery, Response<List<SharedEntry>>>
     {
         private readonly IEntryRepository _entryRepository;
         private readonly IPatientRepository _patientRepository;
@@ -25,7 +26,7 @@ namespace NoNicotine_Business.Handler.Get
             _context = appDbContext;
         }
 
-        public async Task<Response<List<Entry>>> Handle(GetPatientSharedEntriesQuery request, CancellationToken cancellationToken)
+        public async Task<Response<List<SharedEntry>>> Handle(GetPatientSharedEntriesQuery request, CancellationToken cancellationToken)
         {
 
             var response = ValidateRequest(request);
@@ -37,7 +38,7 @@ namespace NoNicotine_Business.Handler.Get
             var therapist = await _context.Therapist.Where(therapist => therapist.IdentityUserId == request.UserId).FirstOrDefaultAsync(cancellationToken);
             if (therapist == null)
             {
-                return new Response<List<Entry>>
+                return new Response<List<SharedEntry>>
                 {
                     Succeeded = false,
                     Message = "Could not find Therapist with specified id"
@@ -47,7 +48,7 @@ namespace NoNicotine_Business.Handler.Get
             var patient = await _patientRepository.GetTherapistPatientAsync(therapist.ID, request.PatientId, cancellationToken);
             if (patient == null)
             {
-                return new Response<List<Entry>>
+                return new Response<List<SharedEntry>>
                 {
                     Succeeded = false,
                     Message = "Could not find Therapist's patient"
@@ -57,14 +58,14 @@ namespace NoNicotine_Business.Handler.Get
             var entries = await _entryRepository.GetPatientSharedEntriesAsync(request.PatientId, cancellationToken);
             if (entries == null)
             {
-                return new Response<List<Entry>>
+                return new Response<List<SharedEntry>>
                 {
                     Succeeded = false,
                     Message = "Could not find Patient's entries"
                 };
             }
 
-            return new Response<List<Entry>>
+            return new Response<List<SharedEntry>>
             {
                 Succeeded = true,
                 Data = entries
@@ -72,11 +73,11 @@ namespace NoNicotine_Business.Handler.Get
 
         }
 
-        private static Response<List<Entry>>? ValidateRequest(GetPatientSharedEntriesQuery request)
+        private static Response<List<SharedEntry>>? ValidateRequest(GetPatientSharedEntriesQuery request)
         {
             if (request.UserId == string.Empty)
             {
-                return new Response<List<Entry>>
+                return new Response<List<SharedEntry>>
                 {
                     Succeeded = false,
                     Message = "Missing Therapist ID"
@@ -85,7 +86,7 @@ namespace NoNicotine_Business.Handler.Get
 
             if (request.PatientId == string.Empty)
             {
-                return new Response<List<Entry>>
+                return new Response<List<SharedEntry>>
                 {
                     Succeeded = false,
                     Message = "Missing Patient ID"

@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using NoNicotine_Data.Entities;
+using NoNicotine_Business.Value_Objects;
 using NoNicotineAPI.Models;
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace NoNicotine_Business.Queries
 {
-    public class GetPatientSharedEntriesQuery : IRequest<Response<List<Entry>>>
+    public class GetPatientSharedEntriesQuery : IRequest<Response<List<SharedEntry>>>
     {
         public string UserId { get; set; } = string.Empty;
         public string PatientId { get; set; } = string.Empty;
