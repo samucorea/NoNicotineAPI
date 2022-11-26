@@ -37,7 +37,7 @@ namespace NoNicotine_Business.Repositories
 
         public async Task<TherapistPatient?> GetTherapistPatientAsync(string therapistId, string patientId, CancellationToken cancellationToken)
         {
-            var patient = await _context.Patient.Where(patient => patient.IdentityUserId == patientId && patient.TherapistId == therapistId).FirstOrDefaultAsync(cancellationToken);
+            var patient = await _context.Patient.Where(patient => patient.ID == patientId && patient.TherapistId == therapistId).FirstOrDefaultAsync(cancellationToken);
 
             if (patient == null)
             {
@@ -63,14 +63,14 @@ namespace NoNicotine_Business.Repositories
 
         public async Task<List<TherapistPatient>?> GetTherapistPatientsAsync(string therapistId, CancellationToken cancellationToken)
         {
-            var patients = await _context.Patient.Where(patient => patient.TherapistId == therapistId).ToListAsync(cancellationToken);
+            var patients = await _context.Patient.Where(patient => patient.TherapistId == therapistId).ToListAsync(cancellationToken);                    
             
-            List<TherapistPatient> therapistPatients = new List<TherapistPatient>();
-            
-            if (therapistPatients.Count < 1)
+            if (patients.Count < 1)
             {
                 return null;
             }
+
+            List<TherapistPatient> therapistPatients = new List<TherapistPatient>();
 
             foreach (var patient in patients)
             {
