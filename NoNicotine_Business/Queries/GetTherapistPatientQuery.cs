@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using NoNicotine_Business.Value_Objects;
+using NoNicotineAPI.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
