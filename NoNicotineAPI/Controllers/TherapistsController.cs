@@ -142,5 +142,31 @@ namespace NoNicotineAPI.Controllers
 
             return BadRequest(result);
         }
+
+        [HttpGet]
+        [Route("GetPatientEntries/{patientId}")]
+        public async Task<IActionResult> GetPatientEntries(string patientId)
+        {
+            if (HttpContext.User.Identity is not ClaimsIdentity identity)
+            {
+                return Unauthorized();
+            }
+
+            var therapistUserId = _authenticationService.GetUserIdFromClaims(identity);
+
+            var request = new GetPatientSharedEntriesQuery()
+            {
+                UserId = therapistUserId,
+                PatientId = patientId
+            };
+
+            var result = await _mediator.Send(request);
+            if (result.Succeeded)
+            {
+                return Ok(result.Data);
+            }
+
+            return BadRequest(result);
+        }
     }
 }
