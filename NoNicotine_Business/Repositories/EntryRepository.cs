@@ -44,7 +44,7 @@ namespace NoNicotine_Business.Repositories
         }
         public async Task<List<SharedEntry>?> GetPatientSharedEntriesAsync(string patiendId, CancellationToken cancellationToken)
         {
-            var entries = await _context.Entry.Where(entry => entry.PatientId == patiendId && entry.TherapistAllowed == true).ToListAsync(cancellationToken);
+            var entries = await _context.Entry.Where(entry => entry.PatientId == patiendId && entry.TherapistAllowed).ToListAsync(cancellationToken);
             
             if (entries.Count < 1)
             {

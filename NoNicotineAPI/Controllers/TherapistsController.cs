@@ -144,7 +144,7 @@ namespace NoNicotineAPI.Controllers
         }
 
         [HttpGet]
-        [Route("GetPatientEntries/{patientId}")]
+        [Route("Patient/{patientId}/Entries")]
         public async Task<IActionResult> GetPatientEntries(string patientId)
         {
             if (HttpContext.User.Identity is not ClaimsIdentity identity)
