@@ -93,7 +93,7 @@ namespace NoNicotineAPI.Controllers
         }
 
         [HttpGet]
-        [Route("GetTherapistPatient/{patientId}")]
+        [Route("Patient/{patientId}")]
         public async Task<IActionResult> GetPatient(string patientId)
         {
             if (HttpContext.User.Identity is not ClaimsIdentity identity)
@@ -119,7 +119,7 @@ namespace NoNicotineAPI.Controllers
         }
 
         [HttpGet]
-        [Route("GetTherapistPatients")]
+        [Route("Patients")]
         public async Task<IActionResult> GetPatients()
         {
             if (HttpContext.User.Identity is not ClaimsIdentity identity)
