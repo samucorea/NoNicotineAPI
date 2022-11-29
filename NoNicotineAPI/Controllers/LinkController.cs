@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NoNicotine_Business.Commands.Create;
 using NoNicotine_Business.Commands.Update;
+using NoNicotine_Business.Queries;
 using System.Data;
 
 namespace NoNicotineAPI.Controllers
@@ -20,7 +21,7 @@ namespace NoNicotineAPI.Controllers
 
         [HttpPut]
         [Authorize(Roles = "patient")]
-        [Route("acceptDenyLinkRequest")]
+        [Route("Request")]
         public async Task<IActionResult> AcceptDenyLinkRequest(UpdateAcceptDenyLinkrequestCommand request)
         {
             var userId = User.FindFirst("UserId")?.Value;
@@ -42,7 +43,6 @@ namespace NoNicotineAPI.Controllers
 
         [HttpPut]
         [Authorize(Roles = "patient,therapist")]
-        [Route("unrelatePatientLink")]
         public async Task<IActionResult> UnrelatePatientLink(UpdateUnrelatePatientTherapistCommand request)
         {
             var userId = User.FindFirst("UserId")?.Value;
@@ -74,6 +74,30 @@ namespace NoNicotineAPI.Controllers
             }
 
             request.TherapistUserId = userId;
+
+            var result = await _mediator.Send(request);
+            if (result.Succeeded)
+            {
+                return Ok(result.Data);
+            }
+
+            return BadRequest(result);
+        }
+
+        [HttpGet]
+        [Route("Request")]
+        [Authorize(Roles = "patient")]
+        public async Task<IActionResult> GetMostRecentLinkRequest()
+        {
+            var userId = User.FindFirst("UserId")?.Value;
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var request = new GetMostRecentLinkRequestQuery();
+
+            request.UserId = userId;
 
             var result = await _mediator.Send(request);
             if (result.Succeeded)
