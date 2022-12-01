@@ -63,7 +63,7 @@ namespace NoNicotine_Business.Handler.Delete
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error when deleting hookah cigar detail : {ex.Message}");
+                _logger.LogError($"Error when deleting hookah detail : {ex.Message}");
                 return new Response<bool>
                 {
                     Succeeded = false,

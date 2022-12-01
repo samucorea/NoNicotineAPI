@@ -30,7 +30,7 @@ namespace NoNicotine_Business.Handler.Delete
                     return new Response<bool>()
                     {
                         Succeeded = false,
-                        Message = "You must specify a valid id to update  || No electronic cigarrete detail related",
+                        Message = "You must specify a valid id to update  || No electronic cigarrette detail related",
                         Data = false
                     };
                 }
@@ -56,14 +56,14 @@ namespace NoNicotine_Business.Handler.Delete
                 return new Response<bool>
                 {
                     Succeeded = true,
-                    Message = "Electronic cigarrete detail removed",
+                    Message = "Electronic cigarrette detail removed",
                     Data = true
                 };
 
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error when deleting electronic cigar detail : {ex.Message}");
+                _logger.LogError($"Error when deleting electronic cigarrette detail : {ex.Message}");
                 return new Response<bool>
                 {
                     Succeeded = false,
