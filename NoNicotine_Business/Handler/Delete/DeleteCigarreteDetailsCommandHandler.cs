@@ -61,8 +61,9 @@ namespace NoNicotine_Business.Handler.Delete
                 };
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError($"Error when creating cigarrette detail : {ex.Message}");
                 return new Response<bool>
                 {
                     Succeeded = false,
