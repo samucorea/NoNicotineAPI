@@ -5,28 +5,33 @@ using NoNicotine_Business.Commands.Create;
 using NoNicotine_Data.Context;
 using NoNicotine_Data.Entities;
 using NoNicotineAPI.Models;
+using NoNicotine_Business.Value_Objects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NoNicotine_Business.Services;
 
 namespace NoNicotine_Business.Handler.Create
 {
-    public class CreateTherapistCommandHandler : IRequestHandler<CreateTherapistCommand, Response<Therapist>>
+    public class CreateTherapistCommandHandler : IRequestHandler<CreateTherapistCommand, Response<CreateTherapistResponse>>
     {
         private readonly AppDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ILogger<CreateTherapistCommandHandler> _logger;
         private const string THERAPIST_ROLE = "therapist";
-        public CreateTherapistCommandHandler(AppDbContext context, UserManager<IdentityUser> userManager, ILogger<CreateTherapistCommandHandler> logger)
+
+        private readonly IAuthenticationService _authenticationService;
+        public CreateTherapistCommandHandler(AppDbContext context, UserManager<IdentityUser> userManager, ILogger<CreateTherapistCommandHandler> logger, IAuthenticationService authenticationService)
         {
             _context = context;
             _userManager = userManager;
+            _authenticationService = authenticationService;
             _logger = logger;
         }
 
-        public async Task<Response<Therapist>> Handle(CreateTherapistCommand request, CancellationToken cancellationToken)
+        public async Task<Response<CreateTherapistResponse>> Handle(CreateTherapistCommand request, CancellationToken cancellationToken)
         {
             using var transaction = _context.Database.BeginTransaction();
             try
@@ -42,7 +47,7 @@ namespace NoNicotine_Business.Handler.Create
                 var resultIdentity = await _userManager.CreateAsync(identityUser, request.Password);
                 if (!resultIdentity.Succeeded)
                 {
-                    return new Response<Therapist>
+                    return new Response<CreateTherapistResponse>
                     {
                         Succeeded = false,
                         Message = "Could not create user"
@@ -52,7 +57,7 @@ namespace NoNicotine_Business.Handler.Create
                 var tempIdentityUser = await _userManager.FindByEmailAsync(request.Email);
                 if (tempIdentityUser == null)
                 {
-                    return new Response<Therapist>
+                    return new Response<CreateTherapistResponse>
                     {
                         Succeeded = false,
                         Message = "Something went wrong"
@@ -71,7 +76,7 @@ namespace NoNicotine_Business.Handler.Create
                 resultIdentity = await _userManager.AddToRoleAsync(tempIdentityUser, THERAPIST_ROLE);
                 if (!resultIdentity.Succeeded)
                 {
-                    return new Response<Therapist>()
+                    return new Response<CreateTherapistResponse>()
                     {
                         Succeeded = false,
                         Message = "Could not assign therapist role to user",
@@ -85,7 +90,7 @@ namespace NoNicotine_Business.Handler.Create
                 {
                     _logger.LogError("Saving changes when creating therapist");
 
-                    return new Response<Therapist>
+                    return new Response<CreateTherapistResponse>
                     {
                         Succeeded = false,
                         Message = "Something went wrong"
@@ -94,17 +99,21 @@ namespace NoNicotine_Business.Handler.Create
 
                 transaction.Commit();
 
-                return new Response<Therapist>
+                return new Response<CreateTherapistResponse>
                 {
                     Succeeded = true,
-                    Data = therapist
+                    Data = new CreateTherapistResponse {
+                        Therapist = therapist,
+                        ConfirmationToken = await _authenticationService.GenerateEmailConfirmationUrlTokenAsync(identityUser),
+                        Email =identityUser.Email
+                    }
                 };
             }
             catch (Exception ex)
             {
                 _logger.LogError("Error creating therapist: {errMessage}", ex.Message);
                 transaction.Rollback();
-                return new Response<Therapist>
+                return new Response<CreateTherapistResponse>
                 {
                     Succeeded = false,
                     Message = "Something went wrong"
@@ -113,11 +122,11 @@ namespace NoNicotine_Business.Handler.Create
 
         }
 
-        private Response<Therapist>? ValidateRequest(CreateTherapistCommand request)
+        private Response<CreateTherapistResponse>? ValidateRequest(CreateTherapistCommand request)
         {
             if (request.Email == string.Empty)
             {
-                return new Response<Therapist>
+                return new Response<CreateTherapistResponse>
                 {
                     Message = "You must specify a valid email",
                     Succeeded = false
@@ -126,7 +135,7 @@ namespace NoNicotine_Business.Handler.Create
 
             if (request.Password == string.Empty)
             {
-                return new Response<Therapist>
+                return new Response<CreateTherapistResponse>
                 {
                     Message = "You must specify a password",
                     Succeeded = false
@@ -135,7 +144,7 @@ namespace NoNicotine_Business.Handler.Create
 
             if (_userManager.FindByEmailAsync(request.Email).Result is not null)
             {
-                return new Response<Therapist>
+                return new Response<CreateTherapistResponse>
                 {
                     Message = "Email already taken",
                     Succeeded = false
@@ -144,7 +153,7 @@ namespace NoNicotine_Business.Handler.Create
 
             if (request.Name == string.Empty)
             {
-                return new Response<Therapist>
+                return new Response<CreateTherapistResponse>
                 {
                     Message = "You must specify a therapist name",
                     Succeeded = false
@@ -153,7 +162,7 @@ namespace NoNicotine_Business.Handler.Create
 
             if (request.Sex == ' ')
             {
-                return new Response<Therapist>
+                return new Response<CreateTherapistResponse>
                 {
                     Message = "You must specify the therapist sex",
                     Succeeded = false
@@ -162,7 +171,7 @@ namespace NoNicotine_Business.Handler.Create
 
             if (request.BirthDate.AddYears(18) > DateTime.Now)
             {
-                return new Response<Therapist>
+                return new Response<CreateTherapistResponse>
                 {
                     Message = "You must be 18 years old or greater to register",
                     Succeeded = false
@@ -171,7 +180,7 @@ namespace NoNicotine_Business.Handler.Create
 
             if (request.Identification == string.Empty)
             {
-                return new Response<Therapist>
+                return new Response<CreateTherapistResponse>
                 {
                     Message = "You must specify the therapist identification number",
                     Succeeded = false
@@ -180,7 +189,7 @@ namespace NoNicotine_Business.Handler.Create
 
             if (request.IdentificationTherapistType == string.Empty)
             {
-                return new Response<Therapist>
+                return new Response<CreateTherapistResponse>
                 {
                     Message = "You must specify the identification type",
                     Succeeded = false
@@ -189,7 +198,7 @@ namespace NoNicotine_Business.Handler.Create
 
             if (request.Email == string.Empty)
             {
-                return new Response<Therapist>
+                return new Response<CreateTherapistResponse>
                 {
                     Message = "You must specify a valid email",
                     Succeeded = false
@@ -198,7 +207,7 @@ namespace NoNicotine_Business.Handler.Create
 
             if (request.Password == string.Empty)
             {
-                return new Response<Therapist>
+                return new Response<CreateTherapistResponse>
                 {
                     Message = "You must specify a password",
                     Succeeded = false

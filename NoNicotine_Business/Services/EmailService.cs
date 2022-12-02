@@ -55,13 +55,13 @@ namespace NoNicotine_Business.Services
 
         public string SendEmailConfirmation(string recipientEmail, string confirmationLink)
         {
-            string emailConfirmationTemplate = File.ReadAllText($"wwwroot/Assets/EmailTemplates/EmailConfirmationTemplate.Mustache");
+            string emailConfirmationTemplate = File.ReadAllText($"wwwroot/Assets/EmailConfirmationTemplate.Mustache");
             return SendEmail(emailConfirmationSubject, new string[] { recipientEmail }, emailConfirmationTemplate, new { ConfirmationLink = confirmationLink });
         }
 
         public string SendPasswordRecoveryEmail(string recipientEmail, string resetPasswordLink)
         {
-            string forgotPasswordTemplate = File.ReadAllText($"wwwroot/Assets/EmailTemplates/ForgotPasswordTemplate.Mustache");
+            string forgotPasswordTemplate = File.ReadAllText($"wwwroot/Assets/ForgotPasswordTemplate.Mustache");
             return SendEmail(forgotPasswordSubject, new string[] { recipientEmail }, forgotPasswordTemplate, new { ForgotPasswordLink = resetPasswordLink });
         }
     }

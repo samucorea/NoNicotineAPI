@@ -38,16 +38,16 @@ namespace NoNicotineAPI.Controllers
             {
                 return BadRequest(result);
             }
-            var confirmationToken = result.Data.ConfirmationToken;
+            var confirmationToken = result.Data?.ConfirmationToken;
 
-            var actionLink = Url.Action("Index","EmailConfirmation", new { confirmationToken, email=result.Data.Email },Request.Scheme);
+            var actionLink = Url.Action("Index","EmailConfirmation", new { confirmationToken, email=result.Data?.Email },Request.Scheme);
             if(actionLink == null)
             {
                 return BadRequest("Something went wrong");
             }
 
-            _emailService.SendEmailConfirmation(result.Data.Email, actionLink);
-            return Ok(result.Data.Patient);
+            _emailService.SendEmailConfirmation(result.Data?.Email!, actionLink);
+            return Ok(result.Data?.Patient);
         }
 
         [HttpGet]
@@ -75,13 +75,18 @@ namespace NoNicotineAPI.Controllers
         }
 
         [HttpGet]
-        [Route("consumptionExpenses/{patientConsumptionMethodsId}")]
-        public async Task<IActionResult> GetDailyConsumptionExpenses(string patientConsumptionMethodsId)
+        [Route("consumptionExpenses")]
+        public async Task<IActionResult> GetConsumptionExpenses()
         {
-
-            var request = new GetDailyConsumptionExpensesQuery()
+            if (HttpContext.User.Identity is not ClaimsIdentity identity)
             {
-                PatientConsumptionMethodsId = patientConsumptionMethodsId
+                return Unauthorized();
+            }
+            var patientUserId = _authenticationService.GetUserIdFromClaims(identity);
+
+            var request = new GetConsumptionExpensesQuery()
+            {
+                UserId = patientUserId,
             };
 
             var result = await _mediator.Send(request);
@@ -97,7 +102,6 @@ namespace NoNicotineAPI.Controllers
         [Route("indicateRelapse")]
         public async Task<IActionResult> IndicateRelapse(IndicateRelapseCommand request)
         {
-
             if (HttpContext.User.Identity is not ClaimsIdentity identity)
             {
                 return Unauthorized();

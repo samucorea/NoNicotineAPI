@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NoNicotine_Business.Queries;
+using NoNicotine_Business.Repositories;
 using NoNicotine_Business.Value_Objects;
 using NoNicotine_Data.Context;
 using NoNicotine_Data.Entities;
@@ -14,27 +15,39 @@ using System.Threading.Tasks;
 
 namespace NoNicotine_Business.Handler.Get
 {
-    public class GetDailyConsumptionExpensesQueryHandler : IRequestHandler<GetDailyConsumptionExpensesQuery, Response<DailyConsumptionResponse>>
+    public class GetConsumptionExpensesQueryHandler : IRequestHandler<GetConsumptionExpensesQuery, Response<ConsumptionExpensesResponse>>
     {
         private readonly AppDbContext _context;
-        public GetDailyConsumptionExpensesQueryHandler(AppDbContext context)
+        private readonly IPatientRepository _patientRepository;
+        public GetConsumptionExpensesQueryHandler(AppDbContext context, IPatientRepository patientRepository)
         {
             _context = context;
+            _patientRepository = patientRepository;
         }
 
-
-        public async Task<Response<DailyConsumptionResponse>> Handle(GetDailyConsumptionExpensesQuery request, CancellationToken cancellationToken)
+        public async Task<Response<ConsumptionExpensesResponse>> Handle(GetConsumptionExpensesQuery request, CancellationToken cancellationToken)
         {
+
+            var patient = await _patientRepository.GetPatientByUserIdAsync(request.UserId, cancellationToken);
+
+            if (patient == null)
+            {
+                return new Response<ConsumptionExpensesResponse>()
+                {
+                    Succeeded = false,
+                    Message = "Patient not found with specified id"
+                };
+            }
 
             var patientConsumptionMethods = await _context.PatientConsumptionMethods
                 .Include("ElectronicCigaretteDetails")
                 .Include("CigarDetails")
                 .Include("CigaretteDetails")
                 .Include("HookahDetails")
-                .Where(p => p.ID == request.PatientConsumptionMethodsId).FirstOrDefaultAsync(cancellationToken);
+                .Where(p => p.ID == patient.PatientConsumptionMethodsId).FirstOrDefaultAsync(cancellationToken);
             if (patientConsumptionMethods == null)
             {
-                return new Response<DailyConsumptionResponse>()
+                return new Response<ConsumptionExpensesResponse>()
                 {
                     Succeeded = false,
                     Message = "Something went wrong"
@@ -44,16 +57,21 @@ namespace NoNicotine_Business.Handler.Get
             int cigarExpenses = CalculateCigarConsumptionExpense(patientConsumptionMethods.CigarDetails);
             int cigaretteExpenses = CalculateCigaretteConsumptionExpense(patientConsumptionMethods.CigaretteDetails);
             int electronicCigaretteExpenses = CalculateElectronicCigaretteConsumptionExpense(patientConsumptionMethods.ElectronicCigaretteDetails);
-            int hookahExpenses = CalculateHookahConsumptionExpense(patientConsumptionMethods.HookahDetails);
+            int hookahExpenses = CalculateHookahConsumptionExpense(patientConsumptionMethods.HookahDetails);           
 
-            int total = cigaretteExpenses + cigarExpenses + electronicCigaretteExpenses + hookahExpenses;
+            int dailySavings = cigaretteExpenses + cigarExpenses + electronicCigaretteExpenses + hookahExpenses;
+            int multiplier = (int)(DateTime.Now - patient.StartTime).TotalDays;
 
-            return new Response<DailyConsumptionResponse>()
+            return new Response<ConsumptionExpensesResponse>()
             {
                 Succeeded = true,
-                Data = new DailyConsumptionResponse()
+                Data = new ConsumptionExpensesResponse()
                 {
-                    Value = total
+                    Total = dailySavings * multiplier,
+                    CigaretteTotal = cigaretteExpenses * multiplier,
+                    ElectronicCigaretteTotal = electronicCigaretteExpenses * multiplier,
+                    CigarTotal = cigarExpenses * multiplier,
+                    HookahTotal = hookahExpenses * multiplier,
                 }
             };
         }

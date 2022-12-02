@@ -32,36 +32,46 @@ namespace NoNicotine_Business.Repositories
                 return null;
             }
 
-            var patientConsumptionMethods = await _context.PatientConsumptionMethods.Where(pcm => pcm.PatientId == patient.ID).FirstOrDefaultAsync();
-            if(patientConsumptionMethods == null)
-            {
-                return null;
-            }
-
-            patient.PatientConsumptionMethodsId = patientConsumptionMethods.ID;
-
             return patient;
         }
 
-        public async Task<PatientConsumptionMethods?> CreateEmptyPatientConsumptionMethods(string patientId, CancellationToken cancellationToken)
+        public async Task<TherapistPatient?> GetTherapistPatientAsync(string therapistId, string patientId, CancellationToken cancellationToken)
         {
-            var patientConsumptionMethods = new PatientConsumptionMethods { PatientId = patientId };
-            await _context.PatientConsumptionMethods.AddAsync(patientConsumptionMethods);
+            var patient = await _context.Patient.Where(patient => patient.ID == patientId && patient.TherapistId == therapistId).FirstOrDefaultAsync(cancellationToken);
 
-            var result =  await _context.SaveChangesAsync(cancellationToken);
-            if (result < 1)
+            if (patient == null)
             {
                 return null;
             }
 
-            return patientConsumptionMethods;
+            TherapistPatient therapistPatient = new()
+            {
+                Name = patient.Name,
+                Sex = patient.Sex,
+                BirthDate = patient.BirthDate,
+                StartTime = patient.StartTime,
+                Active = patient.Active,
+                TherapistId = patient.TherapistId,
+                PatientConsumptionMethodsId = patient.PatientConsumptionMethodsId,
+                PatientConsumptionMethods = patient.PatientConsumptionMethods,
+                ID = patient.ID,
+                CreatedAt = patient.CreatedAt
+            };
+
+            return therapistPatient;
         }
 
-        public async Task<List<TherapistPatient>> GetTherapistPatientsAsync(string therapistId, CancellationToken cancellationToken)
+        public async Task<List<TherapistPatient>?> GetTherapistPatientsAsync(string therapistId, CancellationToken cancellationToken)
         {
-            var patients = await _context.Patient.Where(patient => patient.TherapistId == therapistId).ToListAsync(cancellationToken);
+            var patients = await _context.Patient.Where(patient => patient.TherapistId == therapistId).ToListAsync(cancellationToken);                    
             
+            if (patients.Count < 1)
+            {
+                return null;
+            }
+
             List<TherapistPatient> therapistPatients = new List<TherapistPatient>();
+
             foreach (var patient in patients)
             {
                 TherapistPatient therapistPatient = new()

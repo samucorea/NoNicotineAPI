@@ -26,7 +26,7 @@ namespace NoNicotine_Data.Entities
         public Therapist? Therapist { get; set; }
 
         [ForeignKey("PatientConsumptionMethods")]
-        public string? PatientConsumptionMethodsId { get; set; } = string.Empty;
+        public string PatientConsumptionMethodsId { get; set; } = string.Empty;
         public PatientConsumptionMethods? PatientConsumptionMethods { get; set; }
 
         public List<Entry>? Entries { get; set; }

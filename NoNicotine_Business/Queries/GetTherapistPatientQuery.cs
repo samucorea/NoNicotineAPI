@@ -9,8 +9,9 @@ using System.Threading.Tasks;
 
 namespace NoNicotine_Business.Queries
 {
-    public class GetDailyConsumptionExpensesQuery : IRequest<Response<DailyConsumptionResponse>>
+    public class GetTherapistPatientQuery : IRequest<Response<TherapistPatient>>
     {
-        public string PatientConsumptionMethodsId { get; set; } = string.Empty;
+        public string UserId { get; set; } = string.Empty;
+        public string PatientId { get; set; } = string.Empty;
     }
 }
