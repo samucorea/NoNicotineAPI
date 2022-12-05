@@ -40,7 +40,7 @@ namespace NoNicotine_Business.Handler.Get
                 };
             }
 
-            var entries = await _entryRepository.GetPatientEntriesAsync(request.UserId, cancellationToken);
+            var entries = await _entryRepository.GetPatientEntriesAsync(patient.ID, cancellationToken);
 
             return new Response<List<Entry>>
             {
