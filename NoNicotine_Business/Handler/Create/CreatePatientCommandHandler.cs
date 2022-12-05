@@ -76,7 +76,7 @@ namespace NoNicotine_Business.Handler.Create
                     Sex = request.Sex,
                     IdentityUserId = identityUser.Id,
                     Identification = request.Identification,
-                    IdentificationType = request.IdentificationPatientType,
+                    IdentificationType = request.IdentificationType,
                     StartTime = DateTime.Now,
                 };
 
@@ -202,7 +202,7 @@ namespace NoNicotine_Business.Handler.Create
                 };
             }
 
-            if (request.IdentificationPatientType == string.Empty)
+            if (request.IdentificationType == string.Empty)
             {
                 return new Response<CreatePatientResponse>
                 {

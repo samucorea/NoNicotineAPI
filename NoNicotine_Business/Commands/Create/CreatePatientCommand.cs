@@ -22,7 +22,7 @@ namespace NoNicotine_Business.Commands.Create
 
         public string Identification { get; set; } = string.Empty;
 
-        public string IdentificationPatientType { get; set; } = string.Empty;
+        public string IdentificationType { get; set; } = string.Empty;
 
     }
 }
