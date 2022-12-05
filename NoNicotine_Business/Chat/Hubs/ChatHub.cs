@@ -20,7 +20,30 @@ namespace NoNicotine_Business.Chat.Hubs
 
     }
     private static readonly Dictionary<string, string> connections = new Dictionary<string, string>();
+
+    private static readonly Dictionary<string, List<Message>> messageQueue = new Dictionary<string, List<Message>>();
     private static readonly Dictionary<string, string> entities = new Dictionary<string, string>();
+
+    public  override Task OnConnectedAsync(){
+      var userId = Context?.User?.FindFirst("UserId")?.Value!;
+      if (userId == null)
+      {
+        return Task.CompletedTask;
+      }
+      var missingMessages = messageQueue.TryGetValue(userId, out var userMessageQueue);
+      if(!missingMessages || userMessageQueue == null){
+        messageQueue.Add(userId, new List<Message>());
+        return Task.CompletedTask;
+      }
+
+      userMessageQueue.ForEach(async message => {
+        await Clients.User(userId).SendAsync("ReceiveMessage", message);
+        Thread.Sleep(50);
+      });
+
+
+      return Task.CompletedTask;
+    }
     public void Subscribe(string recieverUserId)
     {
       var userId = Context?.User?.FindFirst("UserId")?.Value!;
@@ -42,6 +65,20 @@ namespace NoNicotine_Business.Chat.Hubs
       || (connection.Key == recieverEntityId && connection.Value == senderEntityId));
     }
 
+    public void AckMessage(string messageId)
+    {
+      var userId = Context?.User?.FindFirst("UserId")?.Value!;
+      if (userId == null)
+      {
+        return;
+      }
+
+      messageQueue.TryGetValue(userId, out var userMessageQueue);
+
+      userMessageQueue?.RemoveAll(message => message.ID == messageId);
+
+    }
+
     public Task SendPrivateMessage(string user, string message)
     {
       string senderUserId = Context.User?.FindFirst("UserId")?.Value!;
@@ -50,7 +87,19 @@ namespace NoNicotine_Business.Chat.Hubs
         return Task.CompletedTask;
       }
 
-      return Clients.User(user).SendAsync("ReceiveMessage", message);
+      var newMessage = new Message(message);
+
+      var hasMessageQueue = messageQueue.TryGetValue(user, out var userMessageQueue);
+      if(!hasMessageQueue || userMessageQueue == null){
+        messageQueue.Add(senderUserId, new List<Message>());
+        return Task.CompletedTask;
+      }
+
+      userMessageQueue.Add(newMessage);
+
+      return Clients.User(user).SendAsync("ReceiveMessage", newMessage);
     }
+
+
   }
 }
