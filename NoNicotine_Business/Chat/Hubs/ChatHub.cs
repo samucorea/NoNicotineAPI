@@ -6,37 +6,34 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using NoNicotine_Data.Context;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
+using NoNicotine_Business.Services;
 
 namespace NoNicotine_Business.Chat.Hubs
 {
   [Authorize(Roles = "patient,therapist")]
   public class ChatHub : Hub
   {
-    private readonly AppDbContext _dbContext;
-
-    public ChatHub(AppDbContext dbContext)
-    {
-      _dbContext = dbContext;
-
-    }
-    private static readonly Dictionary<string, string> connections = new Dictionary<string, string>();
+    private static readonly Dictionary<string, string> patientConnections = new Dictionary<string, string>();
+    private static readonly Dictionary<string, List<string>> therapistConnections = new Dictionary<string, List<string>>();
 
     private static readonly Dictionary<string, List<Message>> messageQueue = new Dictionary<string, List<Message>>();
-    private static readonly Dictionary<string, string> entities = new Dictionary<string, string>();
-
-    public  override Task OnConnectedAsync(){
+    public override Task OnConnectedAsync()
+    {
       var userId = Context?.User?.FindFirst("UserId")?.Value!;
       if (userId == null)
       {
         return Task.CompletedTask;
       }
       var missingMessages = messageQueue.TryGetValue(userId, out var userMessageQueue);
-      if(!missingMessages || userMessageQueue == null){
+      if (!missingMessages || userMessageQueue == null)
+      {
         messageQueue.Add(userId, new List<Message>());
         return Task.CompletedTask;
       }
 
-      userMessageQueue.ForEach(async message => {
+      userMessageQueue.ForEach(async message =>
+      {
         await Clients.User(userId).SendAsync("ReceiveMessage", message);
         Thread.Sleep(50);
       });
@@ -44,25 +41,85 @@ namespace NoNicotine_Business.Chat.Hubs
 
       return Task.CompletedTask;
     }
+
     public void Subscribe(string recieverUserId)
     {
       var userId = Context?.User?.FindFirst("UserId")?.Value!;
-      if (userId == null)
+      if (userId == "")
       {
         return;
       }
 
-      if (connections.Any(connection => connection.Key == userId || connection.Value == userId))
-      {
-        return;
-      }
+      var role = Context?.User?.FindFirst(ClaimTypes.Role)?.Value!;
 
-      connections.Add(userId, recieverUserId);
+      switch (role)
+      {
+        case "patient":
+          {
+            SubscribePatientToTherapist(recieverUserId);
+            break;
+          }
+        case "therapist":
+          {
+            SubscribeTherapistToPatient(recieverUserId);
+            break;
+          }
+      }
     }
-    private bool IsAllowedToSendMessage(string senderEntityId, string recieverEntityId)
+    private void SubscribePatientToTherapist(string therapistUserId)
     {
-      return connections.Any(connection => (connection.Key == senderEntityId && connection.Value == recieverEntityId)
-      || (connection.Key == recieverEntityId && connection.Value == senderEntityId));
+      var userId = Context?.User?.FindFirst("UserId")?.Value!;
+      if (userId == "")
+      {
+        return;
+      }
+
+      patientConnections.TryAdd(userId, therapistUserId);
+    }
+
+    private void SubscribeTherapistToPatient(string recieverUserId)
+    {
+      var userId = Context?.User?.FindFirst("UserId")?.Value!;
+      if (userId == "" || recieverUserId == "")
+      {
+        return;
+      }
+
+      var found = therapistConnections.TryGetValue(userId, out var connectedPatients);
+      if (!found || connectedPatients == null)
+      {
+        connectedPatients = new List<string>();
+        connectedPatients.Add(recieverUserId);
+        therapistConnections.Add(userId, connectedPatients);
+        return;
+      }
+
+      if (connectedPatients.Any(patientId => patientId == recieverUserId))
+      {
+        return;
+      }
+
+      connectedPatients.Add(recieverUserId);
+    }
+
+    private bool IsAllowedToSendMessage(string role, string senderEntityId, string recieverEntityId)
+    {
+      switch (role)
+      {
+        case "patient":
+          {
+            return patientConnections.Any(connection => (connection.Key == senderEntityId
+            && connection.Value == recieverEntityId));
+          }
+        case "therapist":
+          {
+            return therapistConnections.Any(connection => connection.Key == senderEntityId
+            && connection.Value.Any(connection => connection == recieverEntityId));
+          }
+      }
+
+      return false;
+
     }
 
     public void AckMessage(string messageId)
@@ -82,7 +139,8 @@ namespace NoNicotine_Business.Chat.Hubs
     public Task SendPrivateMessage(string user, string message)
     {
       string senderUserId = Context.User?.FindFirst("UserId")?.Value!;
-      if (!IsAllowedToSendMessage(senderUserId, user))
+      var role = Context?.User?.FindFirst(ClaimTypes.Role)?.Value!;
+      if (!IsAllowedToSendMessage(role, senderUserId, user))
       {
         return Task.CompletedTask;
       }
@@ -90,12 +148,14 @@ namespace NoNicotine_Business.Chat.Hubs
       var newMessage = new Message(message);
 
       var hasMessageQueue = messageQueue.TryGetValue(user, out var userMessageQueue);
-      if(!hasMessageQueue || userMessageQueue == null){
-        messageQueue.Add(senderUserId, new List<Message>());
-        return Task.CompletedTask;
+      if (!hasMessageQueue || userMessageQueue == null)
+      {
+        messageQueue.Add(user, new List<Message>());
+        userMessageQueue = messageQueue[user];
       }
 
       userMessageQueue.Add(newMessage);
+
 
       return Clients.User(user).SendAsync("ReceiveMessage", newMessage);
     }
