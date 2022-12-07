@@ -2,10 +2,13 @@ using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using NoNicotine_Business.Chat;
+using NoNicotine_Business.Chat.Hubs;
 using NoNicotine_Business.Commands;
 using NoNicotine_Business.Repositories;
 using NoNicotine_Business.Services;
@@ -82,14 +85,16 @@ else {
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(name: "AllowAll",
+    options.AddDefaultPolicy(
         builder =>
         {
             builder
-               .WithOrigins(Environment.GetEnvironmentVariable("URL_CORS"))
-                .WithMethods("*")
-                .DisallowCredentials()
-                .WithHeaders("*");
+               .WithOrigins("https://127.0.0.1:5500")
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials()
+                .SetIsOriginAllowed(host => true);
+                
         });
 });
 
@@ -108,6 +113,9 @@ var logger = new LoggerConfiguration()
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(logger);
 
+builder.Services.AddSignalR();
+builder.Services.AddSingleton<IUserIdProvider, UserIdProvider>();
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
     options.RequireHttpsMetadata = false;
@@ -120,6 +128,23 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         ValidIssuer = builder.Configuration["Issuer"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Key"]))
     };
+
+      options.Events = new JwtBearerEvents
+      {
+          OnMessageReceived = context =>
+          {
+              var accessToken = context.Request.Query["access_token"];
+
+              var path = context.HttpContext.Request.Path;
+              if (!string.IsNullOrEmpty(accessToken) &&
+                  (path.StartsWithSegments("/Chat")))
+              {
+                  context.Token = accessToken;
+              }
+
+              return Task.CompletedTask;
+          }
+      };
 });
 
 builder.Services.AddSwaggerGen(setup => {
@@ -150,8 +175,10 @@ builder.Services.AddSwaggerGen(setup => {
 
 
 var app = builder.Build();
+app.UseCors();
 app.UseSwagger();
 app.UseSwaggerUI();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -169,6 +196,7 @@ app.UseAuthorization();
 
 app.UseStaticFiles();
 
+app.MapHub<ChatHub>("/Chat");
 
 app.MapControllerRoute(
     name: "default",

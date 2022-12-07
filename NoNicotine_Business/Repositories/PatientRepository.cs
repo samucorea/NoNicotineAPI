@@ -26,7 +26,7 @@ namespace NoNicotine_Business.Repositories
 
         public async Task<Patient?> GetPatientByUserIdAsync(string userId, CancellationToken cancellationToken)
         {
-            var patient = await _context.Patient.Where(patient => patient.IdentityUserId == userId).FirstOrDefaultAsync(cancellationToken);
+            var patient = await _context.Patient.Include("Therapist").Where(patient => patient.IdentityUserId == userId).FirstOrDefaultAsync(cancellationToken);
             if(patient == null)
             {
                 return null;

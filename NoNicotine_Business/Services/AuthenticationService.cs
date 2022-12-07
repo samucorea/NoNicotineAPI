@@ -67,7 +67,7 @@ namespace NoNicotine_Business.Services
           _configuration["Issuer"],
           _configuration["Audience"],
           claims,
-          expires: DateTime.UtcNow.AddMinutes(10),
+          expires: DateTime.UtcNow.AddHours(24),
           signingCredentials: signIn);
       if (token == null)
       {
