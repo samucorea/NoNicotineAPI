@@ -51,6 +51,7 @@ namespace NoNicotine_Business.Repositories
                 BirthDate = patient.BirthDate,
                 StartTime = patient.StartTime,
                 Active = patient.Active,
+                IdentityUserId = patient.IdentityUserId,
                 TherapistId = patient.TherapistId,
                 PatientConsumptionMethodsId = patient.PatientConsumptionMethodsId,
                 PatientConsumptionMethods = patient.PatientConsumptionMethods,
@@ -78,6 +79,7 @@ namespace NoNicotine_Business.Repositories
                 {
                     Name = patient.Name,
                     Sex = patient.Sex,
+                    IdentityUserId = patient.IdentityUserId,
                     BirthDate = patient.BirthDate,
                     StartTime = patient.StartTime,
                     Active = patient.Active,
