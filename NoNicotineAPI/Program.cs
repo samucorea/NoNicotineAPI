@@ -70,6 +70,7 @@ builder.Services.Configure<IdentityOptions>(options =>
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IEntryRepository, EntryRepository>();
+builder.Services.AddScoped<IPatientConsumptionMethodsRepository, PatientConsumptionMethodsRepository>();
 builder.Services.AddSingleton<IEmailService, EmailService>();
 
 if(builder.Environment.IsDevelopment()){
