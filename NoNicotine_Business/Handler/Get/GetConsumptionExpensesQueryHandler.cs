@@ -17,12 +17,13 @@ namespace NoNicotine_Business.Handler.Get
 {
     public class GetConsumptionExpensesQueryHandler : IRequestHandler<GetConsumptionExpensesQuery, Response<ConsumptionExpensesResponse>>
     {
-        private readonly AppDbContext _context;
         private readonly IPatientRepository _patientRepository;
-        public GetConsumptionExpensesQueryHandler(AppDbContext context, IPatientRepository patientRepository)
+        private readonly IPatientConsumptionMethodsRepository _patientConsumptionMethodsRepository;
+
+        public GetConsumptionExpensesQueryHandler(IPatientRepository patientRepository, IPatientConsumptionMethodsRepository consumptionMethodsRepository)
         {
-            _context = context;
             _patientRepository = patientRepository;
+            _patientConsumptionMethodsRepository = consumptionMethodsRepository;
         }
 
         public async Task<Response<ConsumptionExpensesResponse>> Handle(GetConsumptionExpensesQuery request, CancellationToken cancellationToken)
@@ -39,13 +40,9 @@ namespace NoNicotine_Business.Handler.Get
                 };
             }
 
-            var patientConsumptionMethods = await _context.PatientConsumptionMethods
-                .Include("ElectronicCigaretteDetails")
-                .Include("CigarDetails")
-                .Include("CigaretteDetails")
-                .Include("HookahDetails")
-                .Where(p => p.ID == patient.PatientConsumptionMethodsId).FirstOrDefaultAsync(cancellationToken);
-            if (patientConsumptionMethods == null)
+            var dailyConsumption = await _patientConsumptionMethodsRepository.CalculateDailyConsumption(patient.PatientConsumptionMethodsId, cancellationToken);
+
+            if (dailyConsumption == null)
             {
                 return new Response<ConsumptionExpensesResponse>()
                 {
@@ -54,12 +51,8 @@ namespace NoNicotine_Business.Handler.Get
                 };
             }
 
-            int cigarExpenses = CalculateCigarConsumptionExpense(patientConsumptionMethods.CigarDetails);
-            int cigaretteExpenses = CalculateCigaretteConsumptionExpense(patientConsumptionMethods.CigaretteDetails);
-            int electronicCigaretteExpenses = CalculateElectronicCigaretteConsumptionExpense(patientConsumptionMethods.ElectronicCigaretteDetails);
-            int hookahExpenses = CalculateHookahConsumptionExpense(patientConsumptionMethods.HookahDetails);           
-
-            int dailySavings = cigaretteExpenses + cigarExpenses + electronicCigaretteExpenses + hookahExpenses;
+            var (cigaretteDaily, cigarDaily, electronicCigaretteDaily, hookahDaily) = (dailyConsumption.Cigarette, dailyConsumption.Cigar, dailyConsumption.ElectronicCigarette, dailyConsumption.Hookah);
+            int totalDaily = cigaretteDaily + cigarDaily + electronicCigaretteDaily + hookahDaily;
             int multiplier = (int)(DateTime.Now - patient.StartTime).TotalDays;
 
             return new Response<ConsumptionExpensesResponse>()
@@ -67,53 +60,13 @@ namespace NoNicotine_Business.Handler.Get
                 Succeeded = true,
                 Data = new ConsumptionExpensesResponse()
                 {
-                    Total = dailySavings * multiplier,
-                    CigaretteTotal = cigaretteExpenses * multiplier,
-                    ElectronicCigaretteTotal = electronicCigaretteExpenses * multiplier,
-                    CigarTotal = cigarExpenses * multiplier,
-                    HookahTotal = hookahExpenses * multiplier,
+                    Total = totalDaily * multiplier,
+                    Cigarette = cigaretteDaily * multiplier,
+                    ElectronicCigarette = electronicCigaretteDaily * multiplier,
+                    Cigar = cigarDaily * multiplier,
+                    Hookah = hookahDaily * multiplier,
                 }
             };
-        }
-
-        private static int CalculateCigarConsumptionExpense(CigarDetails? cigarDetails)
-        {
-            if (cigarDetails == null)
-            {
-                return 0;
-            }
-
-            return (int)(cigarDetails.boxPrice / cigarDetails.unitsPerBox * cigarDetails.unitsPerDay * 7 / cigarDetails.daysPerWeek / 7);
-        }
-
-        private static int CalculateCigaretteConsumptionExpense(CigaretteDetails? cigaretteDetails)
-        {
-            if (cigaretteDetails == null)
-            {
-                return 0;
-            }
-
-            return (int)(cigaretteDetails.boxPrice / cigaretteDetails.unitsPerBox * cigaretteDetails.unitsPerDay * 7 / cigaretteDetails.daysPerWeek / 7);
-        }
-
-        private static int CalculateElectronicCigaretteConsumptionExpense(ElectronicCigaretteDetails? electronicCigaretteDetails)
-        {
-            if (electronicCigaretteDetails == null)
-            {
-                return 0;
-            }
-
-            return (int)(electronicCigaretteDetails.boxPrice / electronicCigaretteDetails.unitsPerBox / electronicCigaretteDetails.cartridgeLifespan / 7);
-        }
-
-        private static int CalculateHookahConsumptionExpense(HookahDetails? hookahDetails)
-        {
-            if (hookahDetails == null)
-            {
-                return 0;
-            }
-
-            return (int)(hookahDetails.setupPrice * hookahDetails.daysPerWeek / 7);
         }
     }
 }
