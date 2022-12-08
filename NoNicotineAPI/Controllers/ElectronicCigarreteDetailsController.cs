@@ -34,10 +34,11 @@ namespace NoNicotineAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetElectronicCigarreteDetail(GetElectronicCigarreteDetailQuery request)
+        [Route("{patientConsumptionMethodsId}")]
+        public async Task<IActionResult> GetElectronicCigarreteDetail(string patientConsumptionMethodsId)
         {
 
-            var result = await _mediator.Send(request);
+            var result = await _mediator.Send(new GetElectronicCigarreteDetailQuery(){PatientConsumtionId = patientConsumptionMethodsId});
             if (result.Succeeded)
             {
                 return Ok(result);
