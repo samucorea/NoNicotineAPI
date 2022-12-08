@@ -14,11 +14,14 @@ namespace NoNicotine_Business.Chat.Hubs
   {
     public string ID { get; set; }
 
+    public string SenderId {get;set;} = string.Empty;
+
     public string Content { get; set; }
-    public Message(string message)
+    public Message(string message, string senderId)
     {
       ID = Guid.NewGuid().ToString();
       Content = message;
+      SenderId = senderId;
     }
   }
 

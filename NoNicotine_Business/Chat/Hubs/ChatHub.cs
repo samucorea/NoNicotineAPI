@@ -145,7 +145,7 @@ namespace NoNicotine_Business.Chat.Hubs
         return Task.CompletedTask;
       }
 
-      var newMessage = new Message(message);
+      var newMessage = new Message(message, senderUserId);
 
       var hasMessageQueue = messageQueue.TryGetValue(user, out var userMessageQueue);
       if (!hasMessageQueue || userMessageQueue == null)
