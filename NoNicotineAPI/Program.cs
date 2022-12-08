@@ -114,7 +114,7 @@ var logger = new LoggerConfiguration()
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(logger);
 
-builder.Services.AddSignalR();
+builder.Services.AddSignalR().AddAzureSignalR();
 builder.Services.AddSingleton<IUserIdProvider, UserIdProvider>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
