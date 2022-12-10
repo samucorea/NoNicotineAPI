@@ -78,11 +78,13 @@ builder.Services.AddSingleton<IEmailService, EmailService>();
 
 if(builder.Environment.IsDevelopment()){
     builder.Services.AddSingleton<IEmailService, DummyEmailService>();
+    builder.Services.AddSignalR();
+    
 }
 else {
     builder.Services.AddSingleton<IEmailService, EmailService>();
+    builder.Services.AddSignalR().AddAzureSignalR();
 }
-
 
 builder.Services.AddCors(options =>
 {
@@ -114,7 +116,6 @@ var logger = new LoggerConfiguration()
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(logger);
 
-builder.Services.AddSignalR().AddAzureSignalR();
 builder.Services.AddSingleton<IUserIdProvider, UserIdProvider>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>

@@ -15,55 +15,57 @@ using System.Threading.Tasks;
 
 namespace NoNicotine_Business.Handler.Get
 {
-    public class GetPatientQueryHandler : IRequestHandler<GetPatientQuery, Response<Patient>>
+  public class GetPatientQueryHandler : IRequestHandler<GetPatientQuery, Response<PatientDTO>>
+  {
+
+    private readonly IPatientRepository _patientRepository;
+    public GetPatientQueryHandler(IPatientRepository patientRepository)
+    {
+      _patientRepository = patientRepository;
+    }
+
+    public async Task<Response<PatientDTO>> Handle(GetPatientQuery request, CancellationToken cancellationToken)
     {
 
-        private readonly IPatientRepository _patientRepository;
-        public GetPatientQueryHandler(IPatientRepository patientRepository)
+      var response = ValidateRequest(request);
+      if (response != null)
+      {
+        return response;
+      }
+
+      var patient = await _patientRepository.GetPatientByUserIdAsync(request.UserId, cancellationToken);
+      if (patient == null)
+      {
+        return new Response<PatientDTO>
         {
-            _patientRepository = patientRepository;
-        }
+          Succeeded = false,
+          Message = "Could not find Patient with specified id"
+        };
+      }
 
-        public async Task<Response<Patient>> Handle(GetPatientQuery request, CancellationToken cancellationToken)
-        {
 
-            var response = ValidateRequest(request);
-            if (response != null)
-            {
-                return response;
-            }
 
-            var patient = await _patientRepository.GetPatientByUserIdAsync(request.UserId, cancellationToken);
-            if (patient == null)
-            {
-                return new Response<Patient>
-                {
-                    Succeeded = false,
-                    Message = "Could not find Patient with specified id"
-                };
-            }
-
-            return new Response<Patient>
-            {
-                Succeeded = true,
-                Data = patient
-            };
-
-        }
-
-        private static Response<Patient>? ValidateRequest(GetPatientQuery request)
-        {
-            if (request.UserId == string.Empty)
-            {
-                return new Response<Patient>
-                {
-                    Succeeded = false,
-                    Message = "Missing Patient Id"
-                };
-            }
-
-            return null;
-        }
+      return new Response<PatientDTO>
+      {
+        Succeeded = true,
+        Data = patient
+      };
 
     }
+
+    private static Response<PatientDTO>? ValidateRequest(GetPatientQuery request)
+    {
+      if (request.UserId == string.Empty)
+      {
+        return new Response<PatientDTO>
+        {
+          Succeeded = false,
+          Message = "Missing Patient Id"
+        };
+      }
+
+      return null;
+    }
+
+  }
 }

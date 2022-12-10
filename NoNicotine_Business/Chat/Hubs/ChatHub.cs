@@ -26,17 +26,13 @@ namespace NoNicotine_Business.Chat.Hubs
         return Task.CompletedTask;
       }
       var missingMessages = messageQueue.TryGetValue(userId, out var userMessageQueue);
-      if (!missingMessages || userMessageQueue == null)
-      {
-        messageQueue.Add(userId, new List<Message>());
-        return Task.CompletedTask;
-      }
 
-      userMessageQueue.ForEach(async message =>
-      {
-        await Clients.User(userId).SendAsync("ReceiveMessage", message);
-        Thread.Sleep(50);
-      });
+
+      // userMessageQueue?.ForEach(async message =>
+      // {
+      //   await Clients.User(userId).SendAsync("ReceiveMessage", message);
+      //   Thread.Sleep(50);
+      // });
 
 
       return Task.CompletedTask;
@@ -140,10 +136,11 @@ namespace NoNicotine_Business.Chat.Hubs
     {
       string senderUserId = Context.User?.FindFirst("UserId")?.Value!;
       var role = Context?.User?.FindFirst(ClaimTypes.Role)?.Value!;
-      if (!IsAllowedToSendMessage(role, senderUserId, user))
-      {
-        return Task.CompletedTask;
-      }
+
+      // if (!IsAllowedToSendMessage(role, senderUserId, user))
+      // {
+      //   return Task.CompletedTask;
+      // }
 
       var newMessage = new Message(message, senderUserId);
 

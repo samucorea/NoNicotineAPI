@@ -14,6 +14,5 @@ namespace NoNicotine_Data.Entities
         public decimal boxPrice { get; set; }
 
         public string PatientConsumptionMethodsId { get; set; }
-        public PatientConsumptionMethods PatientConsumptionMethods { get; set; }
     }
 }

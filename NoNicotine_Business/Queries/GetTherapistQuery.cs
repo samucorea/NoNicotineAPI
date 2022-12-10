@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace NoNicotine_Business.Queries
 {
-    public class GetTherapistQuery : IRequest<Response<Therapist>>
+    public class GetTherapistQuery : IRequest<Response<TherapistDTO>>
     {
         public string UserId { get; set; }
     }

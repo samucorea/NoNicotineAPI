@@ -26,7 +26,7 @@ namespace NoNicotineAPI.UnitTests.Queries
         public async Task GetPatientByIdTest_ShouldReturnPatientWithSpecifiedId()
         {
 
-            _mockPatientRepository.Setup(r => r.GetPatientByUserIdAsync("abcd", CancellationToken.None)).ReturnsAsync(new Patient() { ID = "abcd" });
+            _mockPatientRepository.Setup(r => r.GetPatientByUserIdAsync("abcd", CancellationToken.None)).ReturnsAsync(new PatientDTO() { ID = "abcd" });
 
             var handler = new GetPatientQueryHandler(_mockPatientRepository.Object);
 
