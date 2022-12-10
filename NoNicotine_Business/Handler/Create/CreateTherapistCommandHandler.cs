@@ -70,7 +70,7 @@ namespace NoNicotine_Business.Handler.Create
                     Sex = request.Sex,
                     IdentityUserId = tempIdentityUser.Id,
                     Identification = request.Identification,
-                    IdentificationType = request.IdentificationTherapistType
+                    IdentificationType = request.IdentificationType
                 };
 
                 resultIdentity = await _userManager.AddToRoleAsync(tempIdentityUser, THERAPIST_ROLE);
@@ -187,7 +187,7 @@ namespace NoNicotine_Business.Handler.Create
                 };
             }
 
-            if (request.IdentificationTherapistType == string.Empty)
+            if (request.IdentificationType == string.Empty)
             {
                 return new Response<CreateTherapistResponse>
                 {

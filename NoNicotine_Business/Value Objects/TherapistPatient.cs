@@ -16,6 +16,8 @@ namespace NoNicotine_Business.Value_Objects
         public DateTime StartTime { get; set; }
         public bool Active { get; set; }
 
+        public string? IdentityUserId {get; set;}
+
         [ForeignKey("Therapist")]
         public string? TherapistId { get; set; }
 

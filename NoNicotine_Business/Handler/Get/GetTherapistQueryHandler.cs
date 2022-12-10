@@ -15,36 +15,62 @@ using System.Threading.Tasks;
 
 namespace NoNicotine_Business.Handler.Get
 {
-    public class GetTherapistQueryHandler : IRequestHandler<GetTherapistQuery, Response<Therapist>>
+  public class GetTherapistQueryHandler : IRequestHandler<GetTherapistQuery, Response<TherapistDTO>>
+  {
+
+    private readonly AppDbContext _context;
+    private readonly ILogger<GetTherapistQueryHandler> _logger;
+
+    private readonly UserManager<IdentityUser> _userManager;
+    public GetTherapistQueryHandler(AppDbContext context, ILogger<GetTherapistQueryHandler> logger, UserManager<IdentityUser> userManager)
+    {
+      _context = context;
+      _logger = logger;
+      _userManager = userManager;
+    }
+
+    public async Task<Response<TherapistDTO>> Handle(GetTherapistQuery request, CancellationToken cancellationToken)
     {
 
-        private readonly AppDbContext _context;
-        private readonly ILogger<GetTherapistQueryHandler> _logger;
-        public GetTherapistQueryHandler(AppDbContext context, ILogger<GetTherapistQueryHandler> logger)
+      var therapist = await _context.Therapist.Where(therapist => therapist.IdentityUserId == request.UserId).FirstOrDefaultAsync(cancellationToken);
+      if (therapist == null)
+      {
+        return new Response<TherapistDTO>
         {
-            _context = context;
-            _logger = logger;
-        }
+          Succeeded = false,
+          Message = "Could not find Therapist with specified id"
+        };
+      }
 
-        public async Task<Response<Therapist>> Handle(GetTherapistQuery request, CancellationToken cancellationToken)
-        {
+      var user = await _userManager.FindByIdAsync(therapist.IdentityUserId);
+      string email = "";
+      if (user != null)
+      {
+        email = user.Email;
+      }
 
-            var therapist = await _context.Therapist.Where(therapist => therapist.IdentityUserId == request.UserId).FirstOrDefaultAsync(cancellationToken);
-            if (therapist == null)
-            {
-                return new Response<Therapist>
-                {
-                    Succeeded = false,
-                    Message = "Could not find Therapist with specified id"
-                };
-            }
 
-            return new Response<Therapist>
-            {
-                Succeeded = true,
-                Data = therapist
-            };
+      var responseTherapist = new TherapistDTO()
+      {
+        Name = therapist.Name,
+        Sex = therapist.Sex,
+        BirthDate = therapist.BirthDate,
+        Identification = therapist.Identification,
+        IdentificationType = therapist.IdentificationType,
+        Active = therapist.Active,
+        IdentityUserId = therapist.IdentityUserId,
+        Email = email
+      };
 
-        }
+
+
+
+      return new Response<TherapistDTO>
+      {
+        Succeeded = true,
+        Data = responseTherapist
+      };
+
     }
+  }
 }

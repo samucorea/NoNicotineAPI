@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
@@ -46,8 +47,8 @@ namespace NoNicotine_Business.Handler.Create
                 return response;
             }
 
-            var userRefreshToken = _context.RefreshToken.Where(refreshToken => refreshToken.Token == request.RefreshToken
-            ).FirstOrDefault();
+            var userRefreshToken = await _context.RefreshToken.Where(refreshToken => refreshToken.Token == request.RefreshToken
+            ).FirstOrDefaultAsync(cancellationToken);
 
             if (userRefreshToken == null)
             {

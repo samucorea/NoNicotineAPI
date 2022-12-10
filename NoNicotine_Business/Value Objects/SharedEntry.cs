@@ -12,10 +12,10 @@ namespace NoNicotine_Business.Value_Objects
         public string Message { get; set; } = string.Empty;
         public bool TherapistAllowed { get; set; }
         public string PatientId { get; set; }
-        //saved as "tired,headache"
-        public string Symptoms { get; set; } = string.Empty;
+     
+        public List<string> Symptoms { get; set; } = new List<string>();
 
-        //saved as "sad,shamed"
-        public string Feelings { get; set; } = string.Empty;
+
+        public List<string> Feelings { get; set; } = new List<string>();
     }
 }

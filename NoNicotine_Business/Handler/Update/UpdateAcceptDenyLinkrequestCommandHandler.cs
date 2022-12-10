@@ -31,7 +31,7 @@ namespace NoNicotine_Business.Handler.Update
                     return response;
                 }
 
-                var isLinkRequest = await _context.LinkRequest.Where(x => x.ID == request.LinkRequestId && x.Patient.IdentityUserId == request.UserId).FirstOrDefaultAsync(cancellationToken);
+                var isLinkRequest = await _context.LinkRequest.Include("Patient").Where(x => x.ID == request.LinkRequestId && x.Patient.IdentityUserId == request.UserId).FirstOrDefaultAsync(cancellationToken);
                 if (isLinkRequest == null)
                 {
                     return new Response<bool>()
