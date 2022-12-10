@@ -97,7 +97,23 @@ namespace NoNicotineAPI.Controllers
 
             return Ok(result.Data);
         }
-        
+
+        [HttpGet]
+        [Route("consumptionExpensesByDate")]
+        public async Task<IActionResult> GetConsumptionExpensesByDate(GetConsumptionExpensesByDateQuery request)
+        {
+            if (HttpContext.User.Identity is not ClaimsIdentity identity)
+            {
+                return Unauthorized();
+            }
+            var result = await _mediator.Send(request);
+            if (!result.Succeeded)
+            {
+                return BadRequest();
+            }
+            return Ok(result.Data);
+        }
+
         [HttpPut]
         [Route("indicateRelapse")]
         public async Task<IActionResult> IndicateRelapse(IndicateRelapseCommand request)
