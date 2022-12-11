@@ -32,8 +32,23 @@ namespace NoNicotine_Business.Handler.Update
                     return response;
                 }
 
-                var isPatient = await _context.Patient.Where(x => x.ID == request.PatientId && x.IdentityUserId == request.UserId).FirstOrDefaultAsync(cancellationToken);
-                if (isPatient == null)
+                Patient? patient = null;
+
+                if(request.Role == "patient"){
+                    patient = await _context.Patient.Where(x => x.ID == request.PatientId && x.IdentityUserId == request.UserId).FirstOrDefaultAsync(cancellationToken);
+                }
+                else if(request.Role == "therapist"){
+                    var therapistAssociated = await _context.Therapist.FirstOrDefaultAsync(therapist => therapist.IdentityUserId == request.UserId);
+                    if(therapistAssociated == null){
+                        return new Response<bool>{
+                            Succeeded = false,
+                            Message = "No therapist found"
+                        };
+                    }
+                    patient = await _context.Patient.FirstOrDefaultAsync(patient => patient.TherapistId == therapistAssociated.ID);
+                }
+                
+                if (patient == null)
                 {
                     return new Response<bool>()
                     {
@@ -43,9 +58,9 @@ namespace NoNicotine_Business.Handler.Update
                     };
                 }
 
-                isPatient.TherapistId = null;
+                patient.TherapistId = null;
 
-                _context.Patient.Update(isPatient);
+                _context.Patient.Update(patient);
 
                 var result = await _context.SaveChangesAsync();
 

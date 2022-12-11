@@ -13,5 +13,7 @@ namespace NoNicotine_Business.Commands.Update
     {
         public string UserId { get; set; } = string.Empty;
         public string PatientId { get; set; } = string.Empty;
+
+        public string Role {get;set;} = string.Empty;
     }
 }

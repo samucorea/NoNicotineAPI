@@ -5,6 +5,7 @@ using NoNicotine_Business.Commands.Create;
 using NoNicotine_Business.Commands.Update;
 using NoNicotine_Business.Queries;
 using System.Data;
+using System.Security.Claims;
 
 namespace NoNicotineAPI.Controllers
 {
@@ -46,12 +47,14 @@ namespace NoNicotineAPI.Controllers
         public async Task<IActionResult> UnrelatePatientLink(UpdateUnrelatePatientTherapistCommand request)
         {
             var userId = User.FindFirst("UserId")?.Value;
-            if (userId == null)
+            var role = User.FindFirst(ClaimTypes.Role)?.Value;
+            if (userId == null || role == null)
             {
                 return Unauthorized();
             }
 
             request.UserId = userId;
+            request.Role = role;
 
             var result = await _mediator.Send(request);
             if (result.Succeeded)
