@@ -44,19 +44,11 @@ namespace NoNicotine_Business.Handler.Get
             }
 
             var patients = await _patientRepository.GetTherapistPatientsAsync(therapist.ID, cancellationToken);
-            if (patients == null)
-            {
-                return new Response<List<TherapistPatient>>
-                {
-                    Succeeded = false,
-                    Message = "Could not find Therapist's patients"
-                };
-            }
-
+      
             return new Response<List<TherapistPatient>>
             {
                 Succeeded = true,
-                Data = patients
+                Data = patients ?? new List<TherapistPatient>()
             };
 
         }

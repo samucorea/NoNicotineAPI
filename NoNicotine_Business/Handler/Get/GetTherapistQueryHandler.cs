@@ -59,7 +59,8 @@ namespace NoNicotine_Business.Handler.Get
         IdentificationType = therapist.IdentificationType,
         Active = therapist.Active,
         IdentityUserId = therapist.IdentityUserId,
-        Email = email
+        Email = email,
+        ID=therapist.ID
       };
 
 

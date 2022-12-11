@@ -56,6 +56,7 @@ namespace NoNicotine_Business.Repositories
           IdentificationType = patient.Therapist.IdentificationType,
           Active = patient.Therapist.Active,
           IdentityUserId = patient.Therapist.IdentityUserId,
+          ID = patient.Therapist.ID
         };
       }
 
