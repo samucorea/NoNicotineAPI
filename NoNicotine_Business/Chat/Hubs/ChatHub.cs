@@ -25,14 +25,15 @@ namespace NoNicotine_Business.Chat.Hubs
       {
         return Task.CompletedTask;
       }
-      var missingMessages = messageQueue.TryGetValue(userId, out var userMessageQueue);
+      // var missingMessages = messageQueue.TryGetValue(userId, out var userMessageQueue);
+    
 
+      // userMessageQueue?.ForEach(async message =>
+      // {
+      //   await Clients.User(userId).SendAsync("ReceiveMessage", message);
+      //   Thread.Sleep(50);
+      // });
 
-      userMessageQueue?.ForEach(async message =>
-      {
-        await Clients.User(userId).SendAsync("ReceiveMessage", message);
-        Thread.Sleep(50);
-      });
 
 
       return Task.CompletedTask;

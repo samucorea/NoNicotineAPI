@@ -56,7 +56,7 @@ namespace NoNicotine_Business.Handler.Create
                     return response;
                 }
 
-                var identityUser = new IdentityUser { UserName = request.Email, Email = request.Email };
+                var identityUser = new IdentityUser { UserName = request.Email.ToLower(), Email = request.Email.ToLower() };
                 var resultIdentity = await _userManager.CreateAsync(identityUser, request.Password);
 
                 if (!resultIdentity.Succeeded)
