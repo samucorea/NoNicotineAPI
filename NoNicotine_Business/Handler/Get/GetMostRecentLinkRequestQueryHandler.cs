@@ -45,7 +45,7 @@ namespace NoNicotine_Business.Handler.Get
                 };
             }
 
-            var mostRecentLinkRequest = await _context.LinkRequest
+            var mostRecentLinkRequest = await _context.LinkRequest.Include("Therapist")
             .OrderByDescending(linkRequest => linkRequest.CreatedAt)
             .Where(linkRequest => linkRequest.PatientId == patient.ID)
             .FirstOrDefaultAsync(cancellationToken);
