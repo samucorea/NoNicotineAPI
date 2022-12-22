@@ -62,6 +62,7 @@ namespace NoNicotine_Business.Handler.Create
                 Friday = request.Friday,
                 Saturday = request.Saturday,
                 Sunday = request.Sunday,
+                Hour = request.Hour,
                 PatientId = patient.ID
             };
 
