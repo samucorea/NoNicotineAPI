@@ -29,7 +29,7 @@ namespace NoNicotine_Business.Chat.Hubs
       userMessageQueue?.ForEach(async message =>
       {
         await Clients.User(userId).SendAsync("ReceiveMessage", message);
-        Thread.Sleep(300);
+        Thread.Sleep(100);
       });
 
       return Task.CompletedTask;
@@ -147,10 +147,10 @@ namespace NoNicotine_Business.Chat.Hubs
         messageQueue.Add(user, new List<Message>());
         userMessageQueue = messageQueue[user];
       }
-
-      userMessageQueue.Add(newMessage);
-
-
+      if(!userMessageQueue.Any(message => message.ID == newMessage.ID)){
+         userMessageQueue.Add(newMessage);
+      }
+    
       return Clients.User(user).SendAsync("ReceiveMessage", newMessage);
     }
 
