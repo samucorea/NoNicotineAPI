@@ -1,12 +1,56 @@
 ﻿@{
-    ViewBag.Title = "Password reset success";
+    ViewBag.Title = "Reinicio de contraseña exitoso";
     Layout = "_Layout";
 }
-@{
-    ViewBag.Title = "Confirmacion de correo exitosa";
-    Layout = "_Layout";
+
+@section head {
+   <style>
+    body {
+    display: flex;
+    justify-content: center;
+    font-family: Lato;
+    color: #3C5A82;
+    display: flex;
+    justify-content: center;
+ 
+    }
+
+    .container-confirm {
+        box-shadow: 0px 2px 21px 5px rgba(51, 51, 51, 0.25);
+        border-radius: 16px;
+        width: 480px;
+        height: 480px;
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top:10rem;
+    }
+
+    .title {
+        font-size: 1.75rem;
+        display:flex;
+        align-items:center;
+        gap:5px;
+        justify-content: center;
+        font-style:normal;
+        font-weight: 600;
+    }
+
+    .sub-title {
+        font-size: 1.25rem;
+        font-weight: 400;
+        display: flex;
+        gap: 5px;
+        align-items: center;
+    }
+
+   </style>
 }
-<div class="text-center m-2">
-    <div class="flex justify-center"><img width="300px" height="auto" src="~/Assets/nonicotine.jpg" /></div>
-    <h1>Password reset was successful!!</h1>
+<div class="container-confirm">
+    <div>
+      <div style="display:flex;justify-content:center;"><img width="252px" height="252px" src="~/Assets/nonicotinelightlogo.png" /></div>
+ <h1 class="title">Contraseña cambiada <div><img src="~/Assets/check.png" /></div></h1>
+  <h2 class="sub-title">Su contraseña ha sido cambiada con éxito</h2>
+  </div>
 </div>
