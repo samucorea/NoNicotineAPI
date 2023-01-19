@@ -24,7 +24,7 @@ namespace NoNicotine_Business.Handler.Update
         }
         public async Task<Response<CigarDetails>> Handle(UpdateCigarDetailsCommand request, CancellationToken cancellationToken)
         {
-            var currentCigarDetail = await _context.CigarDetails.Where(x => x.PatientConsumptionMethodsId == request.patientConsumptionId).FirstOrDefaultAsync();
+            var currentCigarDetail = await _context.CigarDetails.Where(x => x.PatientConsumptionMethodsId == request.patientConsumptionMethodsId).FirstOrDefaultAsync();
             if (currentCigarDetail == null)
             {
                 return new Response<CigarDetails>()

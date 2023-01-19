@@ -27,11 +27,11 @@ namespace NoNicotine_Business.Handler.Update
             try
             {
                 var response = await ValidateRequest(request);
-                if (request is not null)
+                if (response != null)
                 {
                     return response;
                 }
-                var isCigarreteDetail = await _context.CigaretteDetails.Where(x => x.PatientConsumptionMethodsId == request.PatientMethodId).FirstOrDefaultAsync(); ;
+                var isCigarreteDetail = await _context.CigaretteDetails.Where(x => x.PatientConsumptionMethodsId == request.patientConsumptionMethodsId).FirstOrDefaultAsync(); ;
 
                 if (request.unitsPerDay is not null)
                     isCigarreteDetail.unitsPerDay = (short)request.unitsPerDay;
@@ -74,7 +74,7 @@ namespace NoNicotine_Business.Handler.Update
 
         private async Task<Response<CigaretteDetails>>? ValidateRequest(UpdateCigarreteDetailsCommand request)
         {
-            var isCigarreteDetail = await _context.CigaretteDetails.Where(x => x.PatientConsumptionMethodsId == request.PatientMethodId).FirstOrDefaultAsync();
+            var isCigarreteDetail = await _context.CigaretteDetails.Where(x => x.PatientConsumptionMethodsId == request.patientConsumptionMethodsId).FirstOrDefaultAsync();
             if (isCigarreteDetail is null)
             {
                 return new Response<CigaretteDetails>()

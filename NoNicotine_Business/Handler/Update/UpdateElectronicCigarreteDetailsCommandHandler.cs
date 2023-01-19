@@ -29,7 +29,7 @@ namespace NoNicotine_Business.Handler.Update
             try
             {
                 var response = await ValidateRequest(request);
-                if (request is not null)
+                if (response != null)
                 {
                     return response;
                 }

@@ -14,7 +14,7 @@ namespace NoNicotine_Business.Commands.Update
 {
     public class UpdateCigarreteDetailsCommand : IRequest<Response<CigaretteDetails>>
     {
-        public string PatientMethodId { get; set; }
+        public string patientConsumptionMethodsId { get; set; }
         public short? unitsPerDay { get; set; }
         public short? daysPerWeek { get; set; }
         public short? unitsPerBox { get; set; }
