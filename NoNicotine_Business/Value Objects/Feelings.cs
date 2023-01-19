@@ -12,7 +12,9 @@ namespace NoNicotine_Business.Value_Objects
         {
             {"sad", true },
             {"happy", true },
-            {"proud", true }
+            {"proud", true },
+            {"anxious", true },
+            {"irritable", true},
         };
     }
 }

@@ -11,7 +11,10 @@ namespace NoNicotine_Business.Value_Objects
         public readonly static  Dictionary<string, bool> Values = new()
         {
             {"tired", true },
-            {"headache", true }
+            {"headache", true },
+            {"smoking desire", true },
+            {"diziness", true},
+            {"insomnia", true }
         };
     }
 }
